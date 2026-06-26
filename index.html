@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolio Sphere</title>
+    <link rel="stylesheet" href="sphere.css" />
+  </head>
+  <body>
+    <main class="sphere-page">
+      <canvas id="sphereCanvas" aria-label="Portfolio sphere"></canvas>
+
+      <header class="sphere-brand">
+        <div>PORTFOLIO SPHERE</div>
+        <div>LOCAL RENDERER</div>
+      </header>
+
+      <nav class="top-nav" aria-label="Primary navigation">
+        <button class="top-nav-link" id="cvOpen" type="button">CV</button>
+        <a class="top-nav-link" href="admin.html">ADMIN</a>
+      </nav>
+
+      <aside class="sphere-dials">
+        <label class="sphere-control">
+          <span class="sphere-control-label">SPHERE SIZE</span>
+          <span class="sphere-dial" id="sphereSizeDial">
+            <svg viewBox="0 0 124 124" aria-hidden="true">
+              <circle class="sphere-dial-track" cx="62" cy="62" r="54"></circle>
+              <circle class="sphere-dial-arc" cx="62" cy="62" r="54"></circle>
+            </svg>
+            <span class="sphere-dial-value" id="sphereSizeValue">0.4</span>
+            <input class="sphere-range" id="sphereSizeRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Sphere size" />
+          </span>
+        </label>
+
+        <label class="sphere-control">
+          <span class="sphere-control-label">ELEMENT SCALE</span>
+          <span class="sphere-dial" id="elementScaleDial">
+            <svg viewBox="0 0 124 124" aria-hidden="true">
+              <circle class="sphere-dial-track" cx="62" cy="62" r="54"></circle>
+              <circle class="sphere-dial-arc" cx="62" cy="62" r="54"></circle>
+            </svg>
+            <span class="sphere-dial-value" id="elementScaleValue">1.00</span>
+            <input class="sphere-range" id="elementScaleRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Element scale" />
+          </span>
+        </label>
+      </aside>
+
+      <aside class="sphere-bottom">
+        <label class="sphere-bottom-group">
+          <span class="sphere-bottom-label">FISHEYE</span>
+          <span class="sphere-fisheye">
+            <span id="fisheyeValue">0.15</span>
+            <input class="sphere-range" id="fisheyeRange" type="range" min="0" max="1" step="0.01" value="0.15" aria-label="Fisheye" />
+          </span>
+        </label>
+
+        <label class="sphere-bottom-group">
+          <span class="sphere-bottom-label">DIRECTION</span>
+          <span class="sphere-pad" id="directionPad">
+            <span class="sphere-pad-line horizontal"></span>
+            <span class="sphere-pad-line vertical"></span>
+            <span class="sphere-pad-handle" id="padHandle"></span>
+          </span>
+        </label>
+
+      </aside>
+
+      <section class="project-view-ui" id="projectViewUi" hidden>
+        <button class="project-back" id="projectBack" type="button">BACK</button>
+        <div class="project-heading">
+          <strong id="projectTitle">DESIGN CASE</strong>
+          <span>Visual system, AI content direction and digital presentation</span>
+        </div>
+        <article class="project-case">
+          <p>
+            A compact design case built around a visual identity and image-driven presentation system.
+            The work combines art direction, AI-assisted production, retouching and interface-ready assets.
+          </p>
+          <div class="project-case-grid">
+            <span><b>Tools</b> Figma, Photoshop, Midjourney, After Effects</span>
+            <span><b>Timeline</b> 2 weeks from concept to final assets</span>
+            <span><b>Scope</b> Direction, image series, layout logic and motion-ready materials</span>
+            <span><b>Result</b> A flexible visual language for portfolio, social and landing-page use</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="cv-view" id="cvView" hidden>
+        <button class="cv-back" id="cvBack" type="button">BACK</button>
+        <div class="cv-room" aria-label="CV 3D room">
+          <div class="cv-room-space">
+            <section class="cv-panel cv-panel-center" data-look="center">
+              <p>CV / ART DIRECTION / AI DESIGN</p>
+              <h1>Alexander</h1>
+              <span>
+                Creative designer building visual systems, AI-assisted image stories and interactive
+                portfolio experiences for brands, digital products and creative presentations.
+              </span>
+            </section>
+
+            <section class="cv-panel cv-panel-top" data-look="top">
+              <h2>Profile</h2>
+              <p>
+                Designer focused on visual direction, generative content, interface composition and
+                cinematic digital cases.
+              </p>
+            </section>
+
+            <section class="cv-panel cv-panel-bottom" data-look="bottom">
+              <h2>Experience</h2>
+              <p>
+                Portfolio systems, AI campaigns, social content packs, landing visuals, presentation
+                decks and image-led case studies.
+              </p>
+            </section>
+
+            <section class="cv-panel cv-panel-left" data-look="left">
+              <h2>Tools</h2>
+              <p>Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea, Web layout basics.</p>
+            </section>
+
+            <section class="cv-panel cv-panel-right" data-look="right">
+              <h2>Contact</h2>
+              <p>Available for visual identity, AI art direction, portfolio sites and design case packaging.</p>
+            </section>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="sphere-assets.js"></script>
+    <script src="admin-storage.js"></script>
+    <script src="sphere.js"></script>
+  </body>
+</html>
