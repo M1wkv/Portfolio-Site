@@ -1,12 +1,48 @@
 (async () => {
   const STORAGE_ASSETS = "portfolioSphere.assets";
   const STORAGE_CV = "portfolioSphere.cvNodes";
+  const SPHERE_ASSET_LIMIT = 50;
   const client = window.createPortfolioSupabase ? window.createPortfolioSupabase() : null;
 
   function normalizeAssets(items) {
     return items
       .filter((item) => item && typeof item.src === "string" && item.src.trim())
       .map((item) => ({ src: item.src.trim(), title: item.title || "" }));
+  }
+
+  function shuffle(items) {
+    const result = items.slice();
+    for (let index = result.length - 1; index > 0; index--) {
+      const nextIndex = Math.floor(Math.random() * (index + 1));
+      [result[index], result[nextIndex]] = [result[nextIndex], result[index]];
+    }
+    return result;
+  }
+
+  function takeBalancedProjectAssets(projectGroups) {
+    const groups = projectGroups
+      .map((group) => ({ ...group, assets: shuffle(normalizeAssets(group.assets)) }))
+      .filter((group) => group.assets.length);
+    if (!groups.length) return [];
+
+    const limit = Math.min(SPHERE_ASSET_LIMIT, groups.reduce((total, group) => total + group.assets.length, 0));
+    const baseQuota = Math.floor(limit / groups.length);
+    let remainder = limit % groups.length;
+    const selected = [];
+    const leftovers = [];
+
+    groups.forEach((group) => {
+      const quota = baseQuota + (remainder > 0 ? 1 : 0);
+      remainder = Math.max(0, remainder - 1);
+      selected.push(...group.assets.slice(0, quota));
+      leftovers.push(...group.assets.slice(quota));
+    });
+
+    if (selected.length < limit && leftovers.length) {
+      selected.push(...shuffle(leftovers).slice(0, limit - selected.length));
+    }
+
+    return shuffle(selected.slice(0, limit));
   }
 
   async function loadAssets() {
@@ -33,14 +69,15 @@
       imageMap.get(image.project_id).push(image);
     });
 
-    const assets = [];
-    projects.forEach((project) => {
+    const projectGroups = projects.map((project) => {
+      const assets = [];
       if (project.cover_url) assets.push({ src: project.cover_url, title: project.title || "" });
       (imageMap.get(project.id) || []).forEach((image) => {
         if (image.image_url) assets.push({ src: image.image_url, title: project.title || image.title || "" });
       });
+      return { projectId: project.id, assets };
     });
-    return normalizeAssets(assets);
+    return takeBalancedProjectAssets(projectGroups);
   }
 
   async function loadCvNodes() {
