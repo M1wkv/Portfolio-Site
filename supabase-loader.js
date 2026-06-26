@@ -110,6 +110,10 @@
   function patchSphereSource(source) {
     let patched = source;
     patched = patched.replace(
+      "const defaultAssets = (window.SPHERE_ASSETS || []).slice(0, 100);",
+      "const defaultAssets = window.PORTFOLIO_SUPABASE ? [] : (window.SPHERE_ASSETS || []).slice(0, 100);"
+    );
+    patched = patched.replace(
       "let ribbonAutoPhaseStartedAt = 0;\n  let cvLook",
       "let ribbonAutoPhaseStartedAt = 0;\n  let activeProjectKey = \"\";\n  let cvLook"
     );
