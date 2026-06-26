@@ -2,19 +2,17 @@
   const STORAGE_CONTENT = "portfolioSphere.adminContent";
   const STORAGE_CV = "portfolioSphere.cvNodes";
   const STORAGE_ASSETS = "portfolioSphere.assets";
+  const supabaseClient = window.createPortfolioSupabase ? window.createPortfolioSupabase() : null;
+  const bucketName = window.PORTFOLIO_SUPABASE?.bucket || "portfolio";
 
   const defaultContent = {
     profile: {
       name: "Alexander",
       role: "CV / ART DIRECTION / AI DESIGN",
       photo: "",
+      photoUrl: "",
       description: "Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.",
-      socials: {
-        telegram: "",
-        behance: "",
-        linkedin: "",
-        instagram: ""
-      }
+      socials: { telegram: "", behance: "", linkedin: "", instagram: "" }
     },
     cv: {
       experience: "Portfolio systems, AI campaigns, social content packs, landing visuals and case studies.",
@@ -22,11 +20,10 @@
       skills: "Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics.",
       certificates: "",
       pdf: "",
-      pdfName: ""
+      pdfName: "",
+      pdfUrl: ""
     },
-    portfolio: {
-      projects: []
-    },
+    portfolio: { projects: [] },
     services: [
       { title: "Branding", description: "Visual identity, key visuals, guidelines.", enabled: true },
       { title: "SMM design", description: "Social media layouts, campaign packs, content systems.", enabled: true },
@@ -34,25 +31,20 @@
       { title: "Web / UI", description: "Landing pages, portfolio sites, interface concepts.", enabled: true },
       { title: "Print", description: "Posters, packaging layouts, printed brand materials.", enabled: true }
     ],
-    contacts: {
-      telegram: "",
-      email: "",
-      phone: "",
-      behance: "",
-      linkedin: "",
-      formEndpoint: ""
-    },
+    contacts: { telegram: "", email: "", phone: "", behance: "", linkedin: "", formEndpoint: "" },
     settings: {
       siteTitle: "Portfolio Sphere",
       description: "Creative portfolio with interactive sphere gallery and design cases.",
       favicon: "",
       faviconName: "",
+      faviconUrl: "",
       language: "ru",
       analytics: ""
     }
   };
 
   let content = clone(defaultContent);
+  let session = null;
 
   const tabs = Array.from(document.querySelectorAll("[data-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-panel]"));
@@ -101,11 +93,100 @@
   }
 
   async function loadContent() {
+    const supabaseContent = await loadSupabaseContent();
+    if (supabaseContent) return mergeContent(defaultContent, supabaseContent);
     try {
       const stored = await window.PortfolioStorage.get(STORAGE_CONTENT);
       return mergeContent(defaultContent, stored || loadLocalContent());
     } catch (error) {
       return loadLocalContent();
+    }
+  }
+
+  async function loadSupabaseContent() {
+    if (!supabaseClient) return null;
+    try {
+      const [
+        { data: profile },
+        { data: cvRows },
+        { data: projects },
+        { data: images },
+        { data: services },
+        { data: contacts },
+        { data: settings }
+      ] = await Promise.all([
+        supabaseClient.from("profile").select("*").limit(1).maybeSingle(),
+        supabaseClient.from("cv_sections").select("*").order("sort_order", { ascending: true }),
+        supabaseClient.from("projects").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: false }),
+        supabaseClient.from("project_images").select("*").order("sort_order", { ascending: true }),
+        supabaseClient.from("services").select("*").order("sort_order", { ascending: true }),
+        supabaseClient.from("contacts").select("*").limit(1).maybeSingle(),
+        supabaseClient.from("site_settings").select("*").limit(1).maybeSingle()
+      ]);
+
+      const imageMap = new Map();
+      (images || []).forEach((image) => {
+        if (!imageMap.has(image.project_id)) imageMap.set(image.project_id, []);
+        imageMap.get(image.project_id).push({ src: image.image_url, title: image.title || "" });
+      });
+
+      const cvByPosition = new Map((cvRows || []).map((row) => [row.position, row]));
+      const firstCv = cvRows?.[0];
+
+      return {
+        profile: {
+          name: profile?.name || defaultContent.profile.name,
+          role: profile?.role || defaultContent.profile.role,
+          photoUrl: profile?.photo_url || "",
+          description: profile?.short_description || defaultContent.profile.description,
+          socials: profile?.socials || {}
+        },
+        cv: {
+          experience: cvByPosition.get("experience")?.description || firstCv?.description || defaultContent.cv.experience,
+          education: cvByPosition.get("education")?.description || "",
+          skills: cvByPosition.get("skills")?.description || defaultContent.cv.skills,
+          certificates: cvByPosition.get("certificates")?.description || ""
+        },
+        portfolio: {
+          projects: (projects || []).map((project) => ({
+            id: project.id,
+            title: project.title || "Untitled",
+            category: project.category || "",
+            status: project.status || "published",
+            cover: "",
+            coverName: "",
+            coverUrl: project.cover_url || "",
+            description: project.description || "",
+            tools: project.tools || "",
+            timeline: project.timeline || "",
+            scope: project.scope || "",
+            result: project.result || "",
+            gallery: imageMap.get(project.id) || [],
+            galleryUrls: ""
+          }))
+        },
+        services: Array.isArray(services) && services.length
+          ? services.map((service) => ({ title: service.title || "", description: service.description || "", enabled: true }))
+          : defaultContent.services,
+        contacts: contacts ? {
+          telegram: contacts.telegram || "",
+          email: contacts.email || "",
+          phone: contacts.phone || "",
+          behance: contacts.behance || "",
+          linkedin: contacts.linkedin || "",
+          formEndpoint: ""
+        } : defaultContent.contacts,
+        settings: settings ? {
+          siteTitle: settings.site_title || defaultContent.settings.siteTitle,
+          description: settings.meta_description || defaultContent.settings.description,
+          faviconUrl: settings.favicon_url || "",
+          language: settings.language || "ru",
+          analytics: settings.analytics || ""
+        } : defaultContent.settings
+      };
+    } catch (error) {
+      setStatus(`Supabase load skipped: ${error.message}`);
+      return null;
     }
   }
 
@@ -129,9 +210,9 @@
       const value = getPath(field.name);
       field.value = value || "";
     });
-    document.getElementById("profilePhotoName").textContent = content.profile.photo ? "Image selected" : "No file selected";
-    document.getElementById("cvPdfName").textContent = content.cv.pdfName || "No file selected";
-    document.getElementById("faviconName").textContent = content.settings.faviconName || "No file selected";
+    document.getElementById("profilePhotoName").textContent = content.profile.photo || content.profile.photoUrl ? "Image selected" : "No file selected";
+    document.getElementById("cvPdfName").textContent = content.cv.pdfName || content.cv.pdfUrl || "No file selected";
+    document.getElementById("faviconName").textContent = content.settings.faviconName || content.settings.faviconUrl || "No file selected";
   }
 
   function collectInputs() {
@@ -153,8 +234,17 @@
     const file = input.files && input.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => callback(reader.result, file.name);
+    reader.onload = () => callback(reader.result, file.name, file);
     reader.readAsDataURL(file);
+  }
+
+  function readFiles(input) {
+    const files = Array.from(input.files || []);
+    return Promise.all(files.map((file) => new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve({ src: reader.result, title: file.name, file });
+      reader.readAsDataURL(file);
+    })));
   }
 
   function createProject() {
@@ -168,7 +258,11 @@
       coverUrl: "",
       description: "",
       gallery: [],
-      galleryUrls: ""
+      galleryUrls: "",
+      tools: "",
+      timeline: "",
+      scope: "",
+      result: ""
     };
   }
 
@@ -196,7 +290,7 @@
         <div class="project-head">
           <div class="project-meta">
             <span>Project ${String(index + 1).padStart(2, "0")}</span>
-            <strong>${project.title || "Untitled"}</strong>
+            <strong>${escapeHtml(project.title || "Untitled")}</strong>
           </div>
           <button class="project-remove" type="button">REMOVE</button>
         </div>
@@ -208,77 +302,42 @@
           </div>
         </div>
         <div class="project-grid">
-          <label>
-            <span>Название</span>
-            <input data-project-field="title" type="text">
-          </label>
-          <label>
-            <span>Категория</span>
-            <input data-project-field="category" type="text">
-          </label>
-          <label>
-            <span>Статус</span>
-            <select data-project-field="status">
-              <option value="published">Опубликован</option>
-              <option value="hidden">Скрыт</option>
-            </select>
-          </label>
-          <label>
-            <span>Обложка</span>
-            <input data-project-file="cover" type="file" accept="image/*">
-            <small>${project.coverName || "No cover selected"}</small>
-          </label>
-          <label>
-            <span>Обложка URL</span>
-            <input data-project-field="coverUrl" type="text" placeholder="https://...">
-          </label>
-          <label class="project-gallery">
-            <span>Галерея</span>
-            <input data-project-file="gallery" type="file" accept="image/*" multiple>
-            <small>${project.gallery.length ? `${project.gallery.length} images selected` : "No gallery images selected"}</small>
-          </label>
-          <label class="project-gallery">
-            <span>Галерея URL</span>
-            <textarea data-project-field="galleryUrls" rows="4" placeholder="Одна ссылка на строку"></textarea>
-          </label>
-          <label class="project-gallery">
-            <span>Описание</span>
-            <textarea data-project-field="description" rows="4"></textarea>
-          </label>
+          <label><span>Название</span><input data-project-field="title" type="text"></label>
+          <label><span>Категория</span><input data-project-field="category" type="text"></label>
+          <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
+          <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "No cover selected"}</small></label>
+          <label><span>Обложка URL</span><input data-project-field="coverUrl" type="text" placeholder="https://..."></label>
+          <label class="project-gallery"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} images selected` : "No gallery images selected"}</small></label>
+          <label class="project-gallery"><span>Галерея URL</span><textarea data-project-field="galleryUrls" rows="4" placeholder="Одна ссылка на строку"></textarea></label>
+          <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
+          <label><span>Tools</span><input data-project-field="tools" type="text"></label>
+          <label><span>Timeline</span><input data-project-field="timeline" type="text"></label>
+          <label class="project-gallery"><span>Scope</span><textarea data-project-field="scope" rows="3"></textarea></label>
+          <label class="project-gallery"><span>Result</span><textarea data-project-field="result" rows="3"></textarea></label>
         </div>
       `;
-      card.querySelector('[data-project-field="title"]').value = project.title || "";
-      card.querySelector('[data-project-field="category"]').value = project.category || "";
-      card.querySelector('[data-project-field="status"]').value = project.status || "published";
-      card.querySelector('[data-project-field="coverUrl"]').value = project.coverUrl || "";
-      card.querySelector('[data-project-field="galleryUrls"]').value = project.galleryUrls || "";
-      card.querySelector('[data-project-field="description"]').value = project.description || "";
-      card.querySelectorAll("[data-project-field]").forEach((field) => {
+      ["title", "category", "status", "coverUrl", "galleryUrls", "description", "tools", "timeline", "scope", "result"].forEach((fieldName) => {
+        const field = card.querySelector(`[data-project-field="${fieldName}"]`);
+        field.value = project[fieldName] || "";
         field.addEventListener("input", () => {
-          project[field.dataset.projectField] = field.value;
-          card.querySelector(".project-meta strong").textContent = project.title || "Untitled";
+          project[fieldName] = field.value;
+          if (fieldName === "title") card.querySelector(".project-meta strong").textContent = project.title || "Untitled";
         });
         field.addEventListener("change", () => {
-          project[field.dataset.projectField] = field.value;
-          if (["coverUrl", "galleryUrls", "status"].includes(field.dataset.projectField)) {
-            renderProjects();
-          }
+          project[fieldName] = field.value;
+          if (["coverUrl", "galleryUrls", "status"].includes(fieldName)) renderProjects();
         });
       });
       card.querySelector('[data-project-file="cover"]').addEventListener("change", (event) => {
-        readFile(event.currentTarget, (data, name) => {
+        readFile(event.currentTarget, (data, name, file) => {
           project.cover = data;
+          project.coverFile = file;
           project.coverName = name;
           renderProjects();
         });
       });
       card.querySelector('[data-project-file="gallery"]').addEventListener("change", (event) => {
-        const files = Array.from(event.currentTarget.files || []);
-        Promise.all(files.map((file) => new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve({ src: reader.result, title: file.name });
-          reader.readAsDataURL(file);
-        }))).then((images) => {
+        readFiles(event.currentTarget).then((images) => {
           project.gallery = images;
           renderProjects();
         });
@@ -297,14 +356,9 @@
       const card = document.createElement("article");
       card.className = "service-card";
       card.innerHTML = `
-        <div class="service-head">
-          <strong>${service.title}</strong>
-        </div>
+        <div class="service-head"><strong>${escapeHtml(service.title)}</strong></div>
         <textarea rows="3"></textarea>
-        <label>
-          <span>Active</span>
-          <input type="checkbox">
-        </label>
+        <label><span>Active</span><input type="checkbox"></label>
       `;
       const text = card.querySelector("textarea");
       const checkbox = card.querySelector('input[type="checkbox"]');
@@ -320,6 +374,138 @@
     });
   }
 
+  async function uploadDataUrl(path, dataUrl) {
+    if (!supabaseClient || !dataUrl || !dataUrl.startsWith("data:")) return dataUrl || "";
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+    const { error } = await supabaseClient.storage.from(bucketName).upload(path, blob, {
+      cacheControl: "3600",
+      upsert: true,
+      contentType: blob.type || "application/octet-stream"
+    });
+    if (error) throw error;
+    return supabaseClient.storage.from(bucketName).getPublicUrl(path).data.publicUrl;
+  }
+
+  function storagePath(folder, fileName) {
+    const safe = String(fileName || "file").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "");
+    return `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}-${safe || "file"}`;
+  }
+
+  async function saveSupabaseContent() {
+    if (!supabaseClient || !session) return;
+
+    const photoUrl = content.profile.photo?.startsWith("data:")
+      ? await uploadDataUrl(storagePath("profile", "profile-photo"), content.profile.photo)
+      : content.profile.photoUrl || content.profile.photo || "";
+    const faviconUrl = content.settings.favicon?.startsWith("data:")
+      ? await uploadDataUrl(storagePath("settings", content.settings.faviconName || "favicon"), content.settings.favicon)
+      : content.settings.faviconUrl || content.settings.favicon || "";
+
+    await upsertSingle("profile", {
+      name: content.profile.name,
+      role: content.profile.role,
+      photo_url: photoUrl,
+      short_description: content.profile.description,
+      socials: content.profile.socials || {},
+      updated_at: new Date().toISOString()
+    });
+
+    await replaceRows("cv_sections", [
+      { position: "experience", title: "Experience", description: content.cv.experience, sort_order: 1 },
+      { position: "education", title: "Education", description: content.cv.education, sort_order: 2 },
+      { position: "skills", title: "Skills", description: content.cv.skills, sort_order: 3 },
+      { position: "certificates", title: "Certificates", description: content.cv.certificates, sort_order: 4 }
+    ]);
+
+    await replaceRows("services", content.services
+      .filter((service) => service.enabled)
+      .map((service, index) => ({
+        title: service.title,
+        description: service.description,
+        sort_order: index,
+        updated_at: new Date().toISOString()
+      })));
+
+    await upsertSingle("contacts", {
+      telegram: content.contacts.telegram,
+      email: content.contacts.email,
+      phone: content.contacts.phone,
+      behance: content.contacts.behance,
+      linkedin: content.contacts.linkedin,
+      updated_at: new Date().toISOString()
+    });
+
+    await upsertSingle("site_settings", {
+      site_title: content.settings.siteTitle,
+      meta_description: content.settings.description,
+      favicon_url: faviconUrl,
+      language: content.settings.language,
+      analytics: content.settings.analytics,
+      updated_at: new Date().toISOString()
+    });
+
+    await supabaseClient.from("project_images").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabaseClient.from("projects").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+
+    for (const [index, project] of content.portfolio.projects.entries()) {
+      const coverUrl = project.cover?.startsWith("data:")
+        ? await uploadDataUrl(storagePath("covers", project.coverName || `${project.title}-cover`), project.cover)
+        : project.coverUrl || project.cover || "";
+      const { data: insertedProjects, error: projectError } = await supabaseClient
+        .from("projects")
+        .insert({
+          title: project.title || "Untitled",
+          subtitle: "",
+          description: project.description || "",
+          category: project.category || "",
+          status: project.status || "published",
+          cover_url: coverUrl,
+          tools: project.tools || "",
+          timeline: project.timeline || "",
+          scope: project.scope || "",
+          result: project.result || "",
+          sort_order: index,
+          updated_at: new Date().toISOString()
+        })
+        .select("id")
+        .single();
+      if (projectError) throw projectError;
+
+      const rows = [];
+      for (const [galleryIndex, image] of project.gallery.entries()) {
+        const imageUrl = image.src?.startsWith("data:")
+          ? await uploadDataUrl(storagePath("gallery", image.title || `${project.title}-${galleryIndex}`), image.src)
+          : image.src || "";
+        if (imageUrl) rows.push({ project_id: insertedProjects.id, image_url: imageUrl, title: image.title || project.title, sort_order: galleryIndex });
+      }
+      projectGalleryUrls(project).forEach((image, urlIndex) => {
+        rows.push({ project_id: insertedProjects.id, image_url: image.src, title: image.title || project.title, sort_order: rows.length + urlIndex });
+      });
+      if (rows.length) {
+        const { error: imageError } = await supabaseClient.from("project_images").insert(rows);
+        if (imageError) throw imageError;
+      }
+    }
+  }
+
+  async function upsertSingle(table, payload) {
+    const { data: existing } = await supabaseClient.from(table).select("id").limit(1).maybeSingle();
+    const query = existing?.id
+      ? supabaseClient.from(table).update(payload).eq("id", existing.id)
+      : supabaseClient.from(table).insert(payload);
+    const { error } = await query;
+    if (error) throw error;
+  }
+
+  async function replaceRows(table, rows) {
+    const { error: deleteError } = await supabaseClient.from(table).delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    if (deleteError) throw deleteError;
+    if (!rows.length) return;
+    const { error } = await supabaseClient.from(table).insert(rows);
+    if (error) throw error;
+  }
+
   async function syncSphereData() {
     const services = content.services.filter((service) => service.enabled).map((service) => service.title).join(", ");
     const contact = [content.contacts.telegram, content.contacts.email, content.contacts.phone].filter(Boolean).join(" / ");
@@ -333,11 +519,6 @@
       { look: "right", yaw: 42, pitch: 0, title: "Contact", body: contact || "Available for visual identity, AI art direction, portfolio sites and design case packaging." }
     ];
     await window.PortfolioStorage.set(STORAGE_CV, nodes);
-    try {
-      localStorage.setItem(STORAGE_CV, JSON.stringify(nodes));
-    } catch (error) {
-      localStorage.removeItem(STORAGE_CV);
-    }
 
     const media = [];
     content.portfolio.projects
@@ -350,11 +531,6 @@
       });
     if (media.length) {
       await window.PortfolioStorage.set(STORAGE_ASSETS, media);
-      try {
-        localStorage.setItem(STORAGE_ASSETS, JSON.stringify(media.filter((item) => !item.src.startsWith("data:"))));
-      } catch (error) {
-        localStorage.removeItem(STORAGE_ASSETS);
-      }
     } else {
       await window.PortfolioStorage.remove(STORAGE_ASSETS);
       localStorage.removeItem(STORAGE_ASSETS);
@@ -365,32 +541,38 @@
     saveStatus.textContent = message;
   }
 
+  async function saveLocalCopy() {
+    await window.PortfolioStorage.set(STORAGE_CONTENT, content);
+    try {
+      localStorage.setItem(STORAGE_CONTENT, JSON.stringify({
+        ...content,
+        profile: { ...content.profile, photo: "" },
+        cv: { ...content.cv, pdf: "" },
+        settings: { ...content.settings, favicon: "" },
+        portfolio: {
+          projects: content.portfolio.projects.map((project) => ({
+            ...project,
+            cover: "",
+            coverFile: null,
+            gallery: project.gallery.map((image) => ({ ...image, src: image.src?.startsWith("data:") ? "" : image.src, file: null }))
+          }))
+        }
+      }));
+    } catch (error) {
+      localStorage.removeItem(STORAGE_CONTENT);
+    }
+  }
+
   async function saveContent() {
     collectInputs();
     setStatus("Saving...");
     saveButton.disabled = true;
     try {
-      await window.PortfolioStorage.set(STORAGE_CONTENT, content);
+      await saveSupabaseContent();
+      await saveLocalCopy();
       await syncSphereData();
-      try {
-        localStorage.setItem(STORAGE_CONTENT, JSON.stringify({
-          ...content,
-          profile: { ...content.profile, photo: "" },
-          cv: { ...content.cv, pdf: "" },
-          settings: { ...content.settings, favicon: "" },
-          portfolio: {
-            projects: content.portfolio.projects.map((project) => ({
-              ...project,
-              cover: "",
-              gallery: project.gallery.map((image) => ({ ...image, src: image.src.startsWith("data:") ? "" : image.src }))
-            }))
-          }
-        }));
-      } catch (error) {
-        localStorage.removeItem(STORAGE_CONTENT);
-      }
       saveButton.textContent = "SAVED";
-      setStatus("Saved");
+      setStatus(supabaseClient && session ? "Saved to Supabase" : "Saved locally");
       window.setTimeout(() => {
         saveButton.textContent = "SAVE";
       }, 900);
@@ -402,15 +584,83 @@
     }
   }
 
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => switchTab(tab.dataset.tab));
-  });
+  function escapeHtml(value) {
+    return String(value || "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#039;"
+    }[char]));
+  }
 
+  async function setupAuth() {
+    if (!supabaseClient) {
+      setStatus("Supabase config missing");
+      return;
+    }
+    const { data } = await supabaseClient.auth.getSession();
+    session = data.session;
+    renderAuthPanel();
+  }
+
+  function renderAuthPanel() {
+    let panel = document.getElementById("authPanel");
+    if (!panel) {
+      panel = document.createElement("section");
+      panel.id = "authPanel";
+      panel.className = "auth-panel";
+      document.body.appendChild(panel);
+    }
+    if (session) {
+      panel.innerHTML = `
+        <span>${escapeHtml(session.user.email || "Signed in")}</span>
+        <button id="logoutButton" type="button">LOGOUT</button>
+      `;
+      panel.querySelector("#logoutButton").addEventListener("click", async () => {
+        await supabaseClient.auth.signOut();
+        session = null;
+        saveButton.disabled = true;
+        renderAuthPanel();
+        setStatus("Logged out");
+      });
+      saveButton.disabled = false;
+      setStatus("Ready");
+      return;
+    }
+    panel.innerHTML = `
+      <form id="authForm">
+        <strong>SUPABASE LOGIN</strong>
+        <input name="email" type="email" placeholder="Email" required>
+        <input name="password" type="password" placeholder="Password" required>
+        <button type="submit">LOGIN</button>
+        <small>Войди пользователем, которого создал в Supabase Authentication.</small>
+      </form>
+    `;
+    saveButton.disabled = true;
+    panel.querySelector("#authForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      setStatus("Logging in...");
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: formData.get("email"),
+        password: formData.get("password")
+      });
+      if (error) {
+        setStatus(`Login failed: ${error.message}`);
+        alert(error.message);
+        return;
+      }
+      session = data.session;
+      renderAuthPanel();
+    });
+  }
+
+  tabs.forEach((tab) => tab.addEventListener("click", () => switchTab(tab.dataset.tab)));
   addProjectButton.addEventListener("click", () => {
     content.portfolio.projects.push(createProject());
     renderProjects();
   });
-
   resetButton.addEventListener("click", () => {
     Promise.all([
       window.PortfolioStorage.remove(STORAGE_CONTENT),
@@ -425,23 +675,22 @@
       renderProjects();
       renderServices();
       resetButton.textContent = "RESET DONE";
-      setStatus("Reset done");
+      setStatus("Reset local data done");
       window.setTimeout(() => {
         resetButton.textContent = "RESET";
       }, 900);
     });
   });
-
   saveButton.addEventListener("click", saveContent);
 
   document.getElementById("profilePhotoInput").addEventListener("change", (event) => {
     readFile(event.currentTarget, (data, name) => {
       content.profile.photo = data;
+      content.profile.photoUrl = "";
       document.querySelector('[name="profile.photo"]').value = data;
       document.getElementById("profilePhotoName").textContent = name;
     });
   });
-
   document.getElementById("cvPdfInput").addEventListener("change", (event) => {
     readFile(event.currentTarget, (data, name) => {
       content.cv.pdf = data;
@@ -450,21 +699,22 @@
       document.getElementById("cvPdfName").textContent = name;
     });
   });
-
   document.getElementById("faviconInput").addEventListener("change", (event) => {
     readFile(event.currentTarget, (data, name) => {
       content.settings.favicon = data;
+      content.settings.faviconUrl = "";
       content.settings.faviconName = name;
       document.querySelector('[name="settings.favicon"]').value = data;
       document.getElementById("faviconName").textContent = name;
     });
   });
 
+  setupAuth();
   loadContent().then((storedContent) => {
     content = storedContent;
     bindInputs();
     renderProjects();
     renderServices();
-    setStatus("Ready");
+    if (!supabaseClient) setStatus("Ready locally");
   });
 })();
