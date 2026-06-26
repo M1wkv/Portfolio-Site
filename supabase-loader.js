@@ -109,10 +109,59 @@
     ];
   }
 
-  function loadScript(src) {
+  function patchSphereSource(source) {
+    let patched = source;
+    patched = patched.replace(
+      "let ribbonAutoPhaseStartedAt = 0;\n  let cvLook",
+      "let ribbonAutoPhaseStartedAt = 0;\n  let activeProjectKey = \"\";\n  let cvLook"
+    );
+    patched = patched.replace(
+      "title: asset.title || `Work ${index + 1}`,\n        loaded: false",
+      "title: asset.title || `Work ${index + 1}`,\n        projectId: asset.projectId || asset.project_id || \"\",\n        loaded: false"
+    );
+    patched = patched.replace(
+      "title: typeof asset.title === \"string\" ? asset.title.trim() : \"\"",
+      "title: typeof asset.title === \"string\" ? asset.title.trim() : \"\",\n        projectId: typeof asset.projectId === \"string\" ? asset.projectId : (typeof asset.project_id === \"string\" ? asset.project_id : \"\")"
+    );
+    patched = patched.replace(
+      "function getVisibleItems() {\n    return items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length));\n  }",
+      "function getVisibleItems() {\n    return items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length));\n  }\n\n  function projectKey(item) {\n    return item?.projectId || item?.title || item?.src || \"\";\n  }\n\n  function getProjectItems() {\n    if (!activeProjectKey) return getVisibleItems();\n    const projectItems = items.filter((item) => projectKey(item) === activeProjectKey);\n    return projectItems.length ? projectItems.slice(0, Math.min(MAX_VISIBLE_ITEMS, projectItems.length)) : getVisibleItems();\n  }\n\n  function getRenderItems() {\n    return projectActive() ? getProjectItems() : getVisibleItems();\n  }"
+    );
+    patched = patched.replace(
+      "const visibleItems = getVisibleItems();\n    const sphereEntries",
+      "const visibleItems = getRenderItems();\n    const sphereEntries"
+    );
+    patched = patched.replace(
+      "function openProject(item) {\n    const index = Math.max(0, getVisibleItems().findIndex((candidate) => candidate === item));",
+      "function openProject(item) {\n    activeProjectKey = projectKey(item);\n    const projectItems = getProjectItems();\n    const index = Math.max(0, projectItems.findIndex((candidate) => candidate === item));"
+    );
+    patched = patched.replace(
+      "function centerProjectItem(item, index) {\n    const visibleItems = getVisibleItems();",
+      "function centerProjectItem(item, index) {\n    const visibleItems = getProjectItems();"
+    );
+    patched = patched.replace(
+      "function syncCenteredProjectTitle() {\n    if (viewMode !== \"project\") return;\n    const visibleItems = getVisibleItems();",
+      "function syncCenteredProjectTitle() {\n    if (viewMode !== \"project\") return;\n    const visibleItems = getProjectItems();"
+    );
+    patched = patched.replace(
+      "function closeProject() {\n    transitionTarget = 0;\n    viewMode = \"sphere\";",
+      "function closeProject() {\n    transitionTarget = 0;\n    viewMode = \"sphere\";\n    activeProjectKey = \"\";"
+    );
+    return patched;
+  }
+
+  async function loadScript(src) {
     const script = document.createElement("script");
-    script.src = src;
-    script.defer = true;
+    try {
+      const response = await fetch(`${src}?v=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Unable to load ${src}`);
+      const source = await response.text();
+      const blob = new Blob([patchSphereSource(source)], { type: "text/javascript" });
+      script.src = URL.createObjectURL(blob);
+    } catch (error) {
+      console.warn("Sphere runtime patch skipped", error);
+      script.src = src;
+    }
     document.body.appendChild(script);
   }
 
