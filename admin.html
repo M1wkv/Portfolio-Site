@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolio Admin</title>
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <aside class="admin-sidebar">
+        <a class="admin-back" href="sphere-embed.html">BACK TO SITE</a>
+        <div class="admin-title">
+          <span>LOCAL ADMIN</span>
+          <strong>Portfolio Control</strong>
+        </div>
+        <nav class="admin-tabs" aria-label="Admin sections">
+          <button class="is-active" type="button" data-tab="profile">Profile</button>
+          <button type="button" data-tab="cv">CV</button>
+          <button type="button" data-tab="portfolio">Portfolio</button>
+          <button type="button" data-tab="services">Services</button>
+          <button type="button" data-tab="contacts">Contacts</button>
+          <button type="button" data-tab="settings">Settings / SEO</button>
+        </nav>
+      </aside>
+
+      <section class="admin-workspace">
+        <header class="workspace-header">
+          <div>
+            <span id="sectionKicker">Profile / Главный блок</span>
+            <h1 id="sectionTitle">Главный блок</h1>
+          </div>
+          <div class="workspace-actions">
+            <span id="saveStatus" class="save-status">Not saved</span>
+            <button id="resetButton" type="button">RESET</button>
+            <button id="saveButton" type="button">SAVE</button>
+          </div>
+        </header>
+
+        <form id="adminForm" class="admin-form">
+          <section class="admin-section is-active" data-panel="profile">
+            <div class="form-grid two">
+              <label>
+                <span>Имя</span>
+                <input name="profile.name" type="text" />
+              </label>
+              <label>
+                <span>Должность</span>
+                <input name="profile.role" type="text" />
+              </label>
+              <label class="wide">
+                <span>Фото</span>
+                <input id="profilePhotoInput" type="file" accept="image/*" />
+                <input name="profile.photo" type="hidden" />
+                <small id="profilePhotoName">No file selected</small>
+              </label>
+              <label class="wide">
+                <span>Короткое описание</span>
+                <textarea name="profile.description" rows="5"></textarea>
+              </label>
+              <label>
+                <span>Telegram</span>
+                <input name="profile.socials.telegram" type="text" />
+              </label>
+              <label>
+                <span>Behance</span>
+                <input name="profile.socials.behance" type="text" />
+              </label>
+              <label>
+                <span>LinkedIn</span>
+                <input name="profile.socials.linkedin" type="text" />
+              </label>
+              <label>
+                <span>Instagram</span>
+                <input name="profile.socials.instagram" type="text" />
+              </label>
+            </div>
+          </section>
+
+          <section class="admin-section" data-panel="cv">
+            <div class="form-grid two">
+              <label class="wide">
+                <span>Опыт работы</span>
+                <textarea name="cv.experience" rows="6"></textarea>
+              </label>
+              <label class="wide">
+                <span>Образование</span>
+                <textarea name="cv.education" rows="4"></textarea>
+              </label>
+              <label class="wide">
+                <span>Навыки</span>
+                <textarea name="cv.skills" rows="4"></textarea>
+              </label>
+              <label class="wide">
+                <span>Сертификаты</span>
+                <textarea name="cv.certificates" rows="4"></textarea>
+              </label>
+              <label class="wide">
+                <span>PDF-CV</span>
+                <input id="cvPdfInput" type="file" accept="application/pdf" />
+                <input name="cv.pdf" type="hidden" />
+                <small id="cvPdfName">No file selected</small>
+              </label>
+            </div>
+          </section>
+
+          <section class="admin-section" data-panel="portfolio">
+            <div class="section-toolbar">
+              <p>Добавление проектов, обложка, описание, галерея, категория, статус.</p>
+              <button id="addProjectButton" type="button">ADD PROJECT</button>
+            </div>
+            <div id="projectsList" class="projects-list"></div>
+          </section>
+
+          <section class="admin-section" data-panel="services">
+            <div class="services-list" id="servicesList"></div>
+          </section>
+
+          <section class="admin-section" data-panel="contacts">
+            <div class="form-grid two">
+              <label>
+                <span>Telegram</span>
+                <input name="contacts.telegram" type="text" />
+              </label>
+              <label>
+                <span>Email</span>
+                <input name="contacts.email" type="email" />
+              </label>
+              <label>
+                <span>Телефон</span>
+                <input name="contacts.phone" type="tel" />
+              </label>
+              <label>
+                <span>Behance</span>
+                <input name="contacts.behance" type="text" />
+              </label>
+              <label>
+                <span>LinkedIn</span>
+                <input name="contacts.linkedin" type="text" />
+              </label>
+              <label>
+                <span>Форма заявки</span>
+                <input name="contacts.formEndpoint" type="text" />
+              </label>
+            </div>
+          </section>
+
+          <section class="admin-section" data-panel="settings">
+            <div class="form-grid two">
+              <label>
+                <span>Название сайта</span>
+                <input name="settings.siteTitle" type="text" />
+              </label>
+              <label>
+                <span>Язык</span>
+                <select name="settings.language">
+                  <option value="ru">Русский</option>
+                  <option value="en">English</option>
+                </select>
+              </label>
+              <label class="wide">
+                <span>Описание для Google</span>
+                <textarea name="settings.description" rows="4"></textarea>
+              </label>
+              <label class="wide">
+                <span>Favicon</span>
+                <input id="faviconInput" type="file" accept="image/*" />
+                <input name="settings.favicon" type="hidden" />
+                <small id="faviconName">No file selected</small>
+              </label>
+              <label class="wide">
+                <span>Аналитика</span>
+                <textarea name="settings.analytics" rows="5"></textarea>
+              </label>
+            </div>
+          </section>
+        </form>
+      </section>
+    </main>
+
+    <script src="admin-storage.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>
