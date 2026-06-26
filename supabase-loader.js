@@ -7,7 +7,7 @@
   function normalizeAssets(items) {
     return items
       .filter((item) => item && typeof item.src === "string" && item.src.trim())
-      .map((item) => ({ src: item.src.trim(), title: item.title || "" }));
+      .map((item) => ({ src: item.src.trim(), title: item.title || "", projectId: item.projectId || item.project_id || "" }));
   }
 
   function shuffle(items) {
@@ -71,9 +71,9 @@
 
     const projectGroups = projects.map((project) => {
       const assets = [];
-      if (project.cover_url) assets.push({ src: project.cover_url, title: project.title || "" });
+      if (project.cover_url) assets.push({ src: project.cover_url, title: project.title || "", projectId: project.id });
       (imageMap.get(project.id) || []).forEach((image) => {
-        if (image.image_url) assets.push({ src: image.image_url, title: project.title || image.title || "" });
+        if (image.image_url) assets.push({ src: image.image_url, title: project.title || image.title || "", projectId: project.id });
       });
       return { projectId: project.id, assets };
     });
