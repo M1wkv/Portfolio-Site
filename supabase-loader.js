@@ -124,6 +124,10 @@
       "title: typeof asset.title === \"string\" ? asset.title.trim() : \"\",\n        projectId: typeof asset.projectId === \"string\" ? asset.projectId : (typeof asset.project_id === \"string\" ? asset.project_id : \"\")"
     );
     patched = patched.replace(
+      "const supabaseAssets = await loadSupabaseAssets();\n      if (supabaseAssets.length) return supabaseAssets;\n      if (!window.PortfolioStorage) return loadStoredAssets();\n      return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS) || loadStoredAssets());",
+      "const storedAssets = loadStoredAssets();\n      if (storedAssets.length) return storedAssets;\n      if (!window.PortfolioStorage) return storedAssets;\n      return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS) || storedAssets);"
+    );
+    patched = patched.replace(
       "function getVisibleItems() {\n    return items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length));\n  }",
       "function getVisibleItems() {\n    return items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length));\n  }\n\n  function projectKey(item) {\n    return item?.projectId || item?.title || item?.src || \"\";\n  }\n\n  function getProjectItems() {\n    if (!activeProjectKey) return getVisibleItems();\n    const projectItems = items.filter((item) => projectKey(item) === activeProjectKey);\n    return projectItems.length ? projectItems.slice(0, Math.min(MAX_VISIBLE_ITEMS, projectItems.length)) : getVisibleItems();\n  }\n\n  function getRenderItems() {\n    return projectActive() ? getProjectItems() : getVisibleItems();\n  }"
     );
