@@ -168,10 +168,13 @@
   }
 
   try {
+    localStorage.removeItem(STORAGE_ASSETS);
     const [assets, cvNodes] = await Promise.all([loadAssets(), loadCvNodes()]);
     if (assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(assets));
+    else localStorage.removeItem(STORAGE_ASSETS);
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
   } catch (error) {
+    localStorage.removeItem(STORAGE_ASSETS);
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadScript("sphere.js");
