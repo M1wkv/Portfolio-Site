@@ -25,24 +25,22 @@
       .filter((group) => group.assets.length);
     if (!groups.length) return [];
 
-    const limit = Math.min(SPHERE_ASSET_LIMIT, groups.reduce((total, group) => total + group.assets.length, 0));
+    const limit = SPHERE_ASSET_LIMIT;
     const baseQuota = Math.floor(limit / groups.length);
     let remainder = limit % groups.length;
     const selected = [];
-    const leftovers = [];
 
     groups.forEach((group) => {
       const quota = baseQuota + (remainder > 0 ? 1 : 0);
       remainder = Math.max(0, remainder - 1);
-      selected.push(...group.assets.slice(0, quota));
-      leftovers.push(...group.assets.slice(quota));
+      for (let index = 0; index < quota; index++) {
+        const cycle = Math.floor(index / group.assets.length);
+        const source = cycle === 0 ? group.assets : shuffle(group.assets);
+        selected.push(source[index % source.length]);
+      }
     });
 
-    if (selected.length < limit && leftovers.length) {
-      selected.push(...shuffle(leftovers).slice(0, limit - selected.length));
-    }
-
-    return shuffle(selected.slice(0, limit));
+    return shuffle(selected);
   }
 
   async function loadAssets() {
