@@ -20,7 +20,7 @@
   }
 
   function takeBalancedProjectAssets(projectGroups) {
-    const groups = projectGroups
+    const groups = shuffle(projectGroups)
       .map((group) => ({ ...group, assets: shuffle(normalizeAssets(group.assets)) }))
       .filter((group) => group.assets.length);
     if (!groups.length) return [];
@@ -28,19 +28,35 @@
     const limit = SPHERE_ASSET_LIMIT;
     const baseQuota = Math.floor(limit / groups.length);
     let remainder = limit % groups.length;
-    const selected = [];
-
-    groups.forEach((group) => {
+    const queues = groups.map((group) => {
       const quota = baseQuota + (remainder > 0 ? 1 : 0);
+      const queue = [];
       remainder = Math.max(0, remainder - 1);
+
       for (let index = 0; index < quota; index++) {
         const cycle = Math.floor(index / group.assets.length);
         const source = cycle === 0 ? group.assets : shuffle(group.assets);
-        selected.push(source[index % source.length]);
+        queue.push(source[index % source.length]);
       }
+
+      return { projectId: group.projectId, queue };
     });
 
-    return shuffle(selected);
+    const selected = [];
+    while (selected.length < limit && queues.some((group) => group.queue.length)) {
+      const previousProjectId = selected[selected.length - 1]?.projectId || "";
+      let round = shuffle(queues.filter((group) => group.queue.length));
+      if (round.length > 1 && round[0].projectId === previousProjectId) {
+        const nextIndex = round.findIndex((group) => group.projectId !== previousProjectId);
+        if (nextIndex > 0) [round[0], round[nextIndex]] = [round[nextIndex], round[0]];
+      }
+
+      round.forEach((group) => {
+        if (selected.length < limit && group.queue.length) selected.push(group.queue.shift());
+      });
+    }
+
+    return selected;
   }
 
   async function loadAssets() {
