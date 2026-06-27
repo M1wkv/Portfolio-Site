@@ -3,6 +3,7 @@
   const STORAGE_CV = "portfolioSphere.cvNodes";
   const SPHERE_ASSET_LIMIT = 50;
   const client = window.createPortfolioSupabase ? window.createPortfolioSupabase() : null;
+  let activeProjectSignature = "";
 
   function normalizeAssets(items) {
     return items
@@ -62,6 +63,24 @@
       Object.fromEntries(Object.entries(summary).map(([key, value]) => [key, value.count]))
     );
     document.documentElement.dataset.sphereProjectSummary = JSON.stringify(summary);
+  }
+
+  function projectSignature(assets) {
+    return Array.from(new Set(assets.map((asset) => asset.projectId).filter(Boolean))).sort().join("|");
+  }
+
+  async function refreshIfProjectsChanged() {
+    if (!client || document.visibilityState !== "visible" || !activeProjectSignature) return;
+    try {
+      const nextAssets = await loadAssets();
+      const nextSignature = projectSignature(nextAssets);
+      if (nextSignature && nextSignature !== activeProjectSignature) {
+        localStorage.setItem(STORAGE_ASSETS, JSON.stringify(nextAssets));
+        location.reload();
+      }
+    } catch (error) {
+      console.warn("Sphere project refresh skipped", error);
+    }
   }
 
   async function loadAssets() {
@@ -269,6 +288,7 @@
     const [assets, cvNodes] = await Promise.all([loadAssets(), loadCvNodes()]);
     if (assets.length) {
       localStorage.setItem(STORAGE_ASSETS, JSON.stringify(assets));
+      activeProjectSignature = projectSignature(assets);
       exposeAssetDiagnostics(assets);
     }
     else localStorage.removeItem(STORAGE_ASSETS);
@@ -279,5 +299,10 @@
   } finally {
     loadScript("sphere.js");
   }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshIfProjectsChanged();
+  });
+  window.setInterval(refreshIfProjectsChanged, 60000);
 })();
 
