@@ -24,8 +24,9 @@
   const MAX_VISIBLE_ITEMS = 50;
   const STORAGE_ASSETS = "portfolioSphere.assets";
   const STORAGE_CV = "portfolioSphere.cvNodes";
-  const defaultAssets = (window.SPHERE_ASSETS || []).slice(0, 100);
-  let assets = loadStoredAssets();
+  const defaultAssets = window.PORTFOLIO_SUPABASE ? [] : (window.SPHERE_ASSETS || []).slice(0, 100);
+  const bootstrapAssets = normalizeAssets(window.PORTFOLIO_BOOTSTRAP?.assets || []);
+  let assets = bootstrapAssets.length ? bootstrapAssets : loadStoredAssets();
   let items = [];
   let width = 0;
   let height = 0;
@@ -53,6 +54,7 @@
   let ribbonAutoSpeed = 0;
   let ribbonAutoDirection = 1;
   let ribbonAutoPhaseStartedAt = 0;
+  let activeProjectKey = "";
   let cvLook = "center";
   let cvCamera = { yaw: 0, pitch: 0 };
   let cvTargetCamera = { yaw: 0, pitch: 0 };
@@ -119,6 +121,18 @@
     return { x: x1, y: y1, z: z2 };
   }
 
+  function exposeLoadedProjectDiagnostics() {
+    const loaded = {};
+    const failed = {};
+    items.forEach((item) => {
+      const key = item.projectId || "missing";
+      if (item.loaded) loaded[key] = (loaded[key] || 0) + 1;
+      if (item.loadFailed) failed[key] = (failed[key] || 0) + 1;
+    });
+    document.documentElement.dataset.sphereLoadedProjectCounts = JSON.stringify(loaded);
+    document.documentElement.dataset.sphereFailedProjectCounts = JSON.stringify(failed);
+  }
+
   function loadItems(nextAssets) {
     items = nextAssets.map((asset, index) => {
       const img = new Image();
@@ -128,16 +142,22 @@
         img,
         src: asset.src,
         title: asset.title || `Work ${index + 1}`,
-        loaded: false
+        projectId: asset.projectId || asset.project_id || "",
+        loaded: false,
+        loadFailed: false
       };
     });
 
     items.forEach((item) => {
       item.img.onload = () => {
         item.loaded = true;
+        item.loadFailed = false;
+        exposeLoadedProjectDiagnostics();
       };
       item.img.onerror = () => {
         item.loaded = false;
+        item.loadFailed = true;
+        exposeLoadedProjectDiagnostics();
       };
     });
 
@@ -258,7 +278,100 @@
   }
 
   function getVisibleItems() {
-    return items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length));
+    return mixSpatialItems(items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length)));
+  }
+
+  function projectKey(item) {
+    return item?.projectId || item?.title || item?.src || "";
+  }
+
+  function initialSphereSlot(index, count) {
+    const point = fibonacciPoint(index, count);
+    const cosY = Math.cos(0.48);
+    const sinY = Math.sin(0.48);
+    const cosX = Math.cos(-0.22);
+    const sinX = Math.sin(-0.22);
+    const x1 = point.x * cosY - point.z * sinY;
+    const z1 = point.x * sinY + point.z * cosY;
+    const y1 = point.y * cosX - z1 * sinX;
+    const z2 = point.y * sinX + z1 * cosX;
+    return { index, depth: z2, angle: Math.atan2(y1, x1), radius: Math.hypot(x1, y1) };
+  }
+
+  function mixSpatialItems(sourceItems) {
+    if (sourceItems.length < 3) return sourceItems;
+
+    const groups = new Map();
+    sourceItems.forEach((item) => {
+      const key = projectKey(item);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(item);
+    });
+
+    const queues = Array.from(groups.entries())
+      .map(([key, groupItems]) => ({ key, title: groupItems[0]?.title || "", items: groupItems.slice() }))
+      .filter((group) => group.items.length);
+    if (queues.length < 2) return sourceItems;
+
+    const allSlots = sourceItems.map((_, index) => initialSphereSlot(index, sourceItems.length));
+    const frontCandidates = allSlots.filter((slot) => slot.depth > 0.1);
+    const anchorSlots = [];
+    const anchorCount = Math.min(frontCandidates.length, queues.length * 3);
+    for (let anchorIndex = 0; anchorIndex < anchorCount; anchorIndex++) {
+      const targetAngle = -Math.PI + (Math.PI * 2 * anchorIndex) / anchorCount;
+      const targetRadius = 0.42 + (Math.floor(anchorIndex / queues.length) % 3) * 0.12;
+      let bestIndex = 0;
+      let bestScore = -Infinity;
+      frontCandidates.forEach((slot, index) => {
+        const angleDistance = Math.abs(Math.atan2(Math.sin(slot.angle - targetAngle), Math.cos(slot.angle - targetAngle)));
+        const score = slot.depth * 1.4 - angleDistance * 0.75 - Math.abs(slot.radius - targetRadius) * 1.2;
+        if (score > bestScore) {
+          bestScore = score;
+          bestIndex = index;
+        }
+      });
+      anchorSlots.push(frontCandidates.splice(bestIndex, 1)[0]);
+    }
+
+    const anchorIndexes = new Set(anchorSlots.map((slot) => slot.index));
+    const depthSortedSlots = allSlots
+      .filter((slot) => !anchorIndexes.has(slot.index))
+      .sort((a, b) => b.depth - a.depth);
+    const slots = [];
+    const bandSize = Math.max(queues.length, queues.length * 2);
+    for (let start = 0; start < depthSortedSlots.length; start += bandSize) {
+      slots.push(...depthSortedSlots.slice(start, start + bandSize).sort((a, b) => a.angle - b.angle));
+    }
+    const mixed = new Array(sourceItems.length);
+    anchorSlots.forEach((slot, index) => {
+      const group = queues[index % queues.length];
+      mixed[slot.index] = group.items.shift();
+    });
+    let slotIndex = 0;
+    let cycle = 0;
+
+    while (slotIndex < slots.length && queues.some((group) => group.items.length)) {
+      const active = queues.filter((group) => group.items.length);
+      const start = cycle % active.length;
+      for (let offset = 0; offset < active.length && slotIndex < slots.length; offset++) {
+        const group = active[(start + offset) % active.length];
+        mixed[slots[slotIndex].index] = group.items.shift();
+        slotIndex += 1;
+      }
+      cycle += 1;
+    }
+
+    return mixed.filter(Boolean);
+  }
+
+  function getProjectItems() {
+    if (!activeProjectKey) return getVisibleItems();
+    const projectItems = items.filter((item) => projectKey(item) === activeProjectKey);
+    return projectItems.length ? projectItems.slice(0, Math.min(MAX_VISIBLE_ITEMS, projectItems.length)) : getVisibleItems();
+  }
+
+  function getRenderItems() {
+    return projectActive() ? getProjectItems() : getVisibleItems();
   }
 
   function getSphereEntries(visibleItems) {
@@ -420,7 +533,8 @@
       body: "Available for visual identity, AI art direction, portfolio sites and design case packaging."
     }
   ];
-  let cvNodes = loadStoredCvNodes();
+  const bootstrapCvNodes = window.PORTFOLIO_BOOTSTRAP?.cvNodes || [];
+  let cvNodes = bootstrapCvNodes.length ? normalizeCvNodes(bootstrapCvNodes) : loadStoredCvNodes();
 
   function readJsonStorage(key, fallback) {
     try {
@@ -439,108 +553,8 @@
       .filter((asset) => asset && typeof asset.src === "string" && asset.src.trim())
       .map((asset) => ({
         src: asset.src.trim(),
-        title: typeof asset.title === "string" ? asset.title.trim() : ""
-      }));
-  }
-
-  function loadStoredAssets() {
-    return normalizeAssets(readJsonStorage(STORAGE_ASSETS, defaultAssets));
-  }
-
-  async function loadStoredAssetsAsync() {
-    try {
-      if (!window.PortfolioStorage) return loadStoredAssets();
-      return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS) || loadStoredAssets());
-    } catch (error) {
-      return loadStoredAssets();
-    }
-  }
-
-  function normalizeCvNodes(nextNodes) {
-    const byLook = new Map(Array.isArray(nextNodes) ? nextNodes.map((node) => [node.look, node]) : []);
-    return defaultCvNodes.map((defaultNode) => {
-      const stored = byLook.get(defaultNode.look) || {};
-      return {
-        ...defaultNode,
-        eyebrow: typeof stored.eyebrow === "string" ? stored.eyebrow : defaultNode.eyebrow,
-        title: typeof stored.title === "string" ? stored.title : defaultNode.title,
-        body: typeof stored.body === "string" ? stored.body : defaultNode.body
-      };
-    });
-  }
-
-  function loadStoredCvNodes() {
-    return normalizeCvNodes(readJsonStorage(STORAGE_CV, defaultCvNodes));
-  }
-
-  async function loadStoredCvNodesAsync() {
-    try {
-      if (!window.PortfolioStorage) return loadStoredCvNodes();
-      return normalizeCvNodes(await window.PortfolioStorage.get(STORAGE_CV) || loadStoredCvNodes());
-    } catch (error) {
-      return loadStoredCvNodes();
-    }
-  }
-
-  function cvDirection(yawDeg, pitchDeg) {
-    const yaw = yawDeg * Math.PI / 180;
-    const pitch = pitchDeg * Math.PI / 180;
-    return {
-      x: Math.sin(yaw) * Math.cos(pitch),
-      y: -Math.sin(pitch),
-      z: Math.cos(yaw) * Math.cos(pitch)
-    };
-  }
-
-  function cvCameraPoint(point) {
-    const cy = Math.cos(cvCamera.yaw * Math.PI / 180);
-    const sy = Math.sin(cvCamera.yaw * Math.PI / 180);
-    let x = point.x * cy - point.z * sy;
-    let z = point.x * sy + point.z * cy;
-    let y = point.y;
-
-    const cx = Math.cos(cvCamera.pitch * Math.PI / 180);
-    const sx = Math.sin(cvCamera.pitch * Math.PI / 180);
-    const y2 = y * cx + z * sx;
-    const z2 = -y * sx + z * cx;
-    return { x, y: y2, z: z2 };
-  }
-
-  function wrapText(text, maxWidth, font) {
-    ctx.font = font;
-    const words = text.split(" ");
-    const lines = [];
-    let line = "";
-    words.forEach((word) => {
-      const next = line ? `${line} ${word}` : word;
-      if (ctx.measureText(next).width <= maxWidth || !line) {
-        line = next;
-      } else {
-        lines.push(line);
-        line = word;
-      }
-    });
-    if (line) lines.push(line);
-    return lines;
-  }
-
-  function drawCvBlock(entry) {
-    const { node, x, y, z, scale, alpha, active } = entry;
-    const isHero = node.type === "hero";
-    const blockW = (isHero ? 620 : 360) * scale;
-    const blockH = (isHero ? 270 : 210) * scale;
-    const radius = Math.max(26, 58 * scale);
-
-    ctx.save();
-    ctx.translate(x, y);
-    const turn = Math.max(-0.74, Math.min(0.74, entry.xNorm * 0.52));
-    const lift = Math.max(-0.4, Math.min(0.4, -entry.yNorm * 0.3));
-    const edgeCompress = Math.max(0.66, 1 - entry.edge * 0.18);
-    const verticalBend = 1 + entry.edge * 0.06 - Math.abs(lift) * 0.18;
-    ctx.transform(edgeCompress, lift, turn, verticalBend, 0, 0);
-    ctx.globalAlpha = alpha;
-
-    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, Math.max(blockW, blockH) * 0.72);
+        title: typeof asset.title === "string" ? asset.title.trim() : "",
+   …1750 tokens truncated…2);
     gradient.addColorStop(0, active ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.055)");
     gradient.addColorStop(0.6, "rgba(255,255,255,0.018)");
     gradient.addColorStop(1, "rgba(255,255,255,0.003)");
@@ -757,7 +771,7 @@
     rotation.x += velocity.x * 2.18 * hoverFactor;
     rotation.y += velocity.y * 2.18 * hoverFactor;
 
-    const visibleItems = getVisibleItems();
+    const visibleItems = getRenderItems();
     const sphereEntries = getSphereEntries(visibleItems);
     const ribbonEntries = getRibbonEntries(visibleItems);
     const eased = transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
@@ -796,7 +810,9 @@
   }
 
   function openProject(item) {
-    const index = Math.max(0, getVisibleItems().findIndex((candidate) => candidate === item));
+    activeProjectKey = projectKey(item);
+    const projectItems = getProjectItems();
+    const index = Math.max(0, projectItems.findIndex((candidate) => candidate === item));
     ribbonTargetOffset = index;
     ribbonOffset = index;
     ribbonVelocity = 0;
@@ -811,7 +827,7 @@
   }
 
   function centerProjectItem(item, index) {
-    const visibleItems = getVisibleItems();
+    const visibleItems = getProjectItems();
     const nextIndex = Number.isFinite(index)
       ? index
       : visibleItems.findIndex((candidate) => candidate === item);
@@ -828,7 +844,7 @@
 
   function syncCenteredProjectTitle() {
     if (viewMode !== "project") return;
-    const visibleItems = getVisibleItems();
+    const visibleItems = getProjectItems();
     if (!visibleItems.length) return;
     const index = ((Math.round(ribbonTargetOffset) % visibleItems.length) + visibleItems.length) % visibleItems.length;
     projectTitle.textContent = projectLabel(visibleItems[index], index);
@@ -837,6 +853,7 @@
   function closeProject() {
     transitionTarget = 0;
     viewMode = "sphere";
+    activeProjectKey = "";
     spherePage.classList.remove("is-project");
     projectViewUi.hidden = true;
   }
@@ -1082,3 +1099,4 @@
   });
   render();
 })();
+
