@@ -1,4 +1,3 @@
-
 (async () => {
   const STORAGE_ASSETS = "portfolioSphere.assets";
   const STORAGE_CV = "portfolioSphere.cvNodes";
@@ -148,7 +147,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260627-project-ui-6";
+    script.src = "sphere.js?v=20260627-project-zoom-7";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -205,5 +204,4 @@
   });
   window.setInterval(refreshIfContentChanged, 15000);
 })();
-
 
