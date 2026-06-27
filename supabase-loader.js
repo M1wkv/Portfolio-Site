@@ -26,21 +26,24 @@
 
   function selectBalancedAssets(projectGroups) {
     const groups = shuffle(projectGroups)
-      .map((group) => ({ ...group, assets: shuffle(normalizeAssets(group.assets)) }))
+      .map((group) => {
+        const uniqueAssets = Array.from(
+          new Map(normalizeAssets(group.assets).map((asset) => [asset.src, asset])).values()
+        );
+        return { ...group, assets: shuffle(uniqueAssets) };
+      })
       .filter((group) => group.assets.length);
     if (!groups.length) return [];
 
-    const quota = Math.max(
-      1,
-      Math.min(Math.floor(SPHERE_ASSET_LIMIT / groups.length), ...groups.map((group) => group.assets.length))
-    );
+    const quota = Math.max(1, Math.floor(SPHERE_ASSET_LIMIT / groups.length));
     const selected = [];
     for (let assetIndex = 0; assetIndex < quota; assetIndex++) {
       groups.forEach((group) => {
-        selected.push({ ...group.assets[assetIndex], projectId: group.projectId });
+        const asset = group.assets[assetIndex % group.assets.length];
+        selected.push({ ...asset, projectId: group.projectId });
       });
     }
-    return selected;
+    return shuffle(selected);
   }
 
   function exposeAssetDiagnostics(assets, projectGroups) {
@@ -147,7 +150,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260627-project-zoom-7";
+    script.src = "sphere.js?v=20260627-project-zoom-8";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -204,4 +207,3 @@
   });
   window.setInterval(refreshIfContentChanged, 15000);
 })();
-
