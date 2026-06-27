@@ -7,17 +7,17 @@
 
   const defaultContent = {
     profile: {
-      name: "Alexander",
-      role: "CV / ART DIRECTION / AI DESIGN",
+      name: "Александр",
+      role: "РЕЗЮМЕ / АРТ-ДИРЕКШН / ИИ-ДИЗАЙН",
       photo: "",
       photoUrl: "",
-      description: "Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.",
+      description: "Креативный дизайнер. Создаю визуальные системы, проекты с использованием ИИ и интерактивные портфолио.",
       socials: { telegram: "", behance: "", linkedin: "", instagram: "" }
     },
     cv: {
-      experience: "Portfolio systems, AI campaigns, social content packs, landing visuals and case studies.",
+      experience: "Системы портфолио, ИИ-кампании, контент для социальных сетей, визуалы для лендингов и дизайн-кейсы.",
       education: "",
-      skills: "Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics.",
+      skills: "Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea и основы веб-вёрстки.",
       certificates: "",
       pdf: "",
       pdfName: "",
@@ -25,16 +25,16 @@
     },
     portfolio: { projects: [] },
     services: [
-      { title: "Branding", description: "Visual identity, key visuals, guidelines.", enabled: true },
-      { title: "SMM design", description: "Social media layouts, campaign packs, content systems.", enabled: true },
-      { title: "Presentations", description: "Pitch decks, portfolio decks, case packaging.", enabled: true },
-      { title: "Web / UI", description: "Landing pages, portfolio sites, interface concepts.", enabled: true },
-      { title: "Print", description: "Posters, packaging layouts, printed brand materials.", enabled: true }
+      { title: "Брендинг", description: "Айдентика, ключевые визуалы и гайдлайны.", enabled: true },
+      { title: "SMM-дизайн", description: "Макеты для социальных сетей, кампании и контент-системы.", enabled: true },
+      { title: "Презентации", description: "Питч-деки, портфолио и оформление кейсов.", enabled: true },
+      { title: "Web / UI", description: "Лендинги, сайты-портфолио и концепции интерфейсов.", enabled: true },
+      { title: "Печатный дизайн", description: "Постеры, упаковка и печатные материалы бренда.", enabled: true }
     ],
     contacts: { telegram: "", email: "", phone: "", behance: "", linkedin: "", formEndpoint: "" },
     settings: {
-      siteTitle: "Portfolio Sphere",
-      description: "Creative portfolio with interactive sphere gallery and design cases.",
+      siteTitle: "Сфера портфолио",
+      description: "Креативное портфолио с интерактивной сферой и дизайн-кейсами.",
       favicon: "",
       faviconName: "",
       faviconUrl: "",
@@ -60,13 +60,33 @@
   const servicesList = document.getElementById("servicesList");
 
   const sectionLabels = {
-    profile: ["Profile / Главный блок", "Главный блок"],
-    cv: ["CV / Резюме", "Резюме"],
-    portfolio: ["Portfolio / Кейсы", "Кейсы"],
-    services: ["Services / Услуги", "Услуги"],
-    contacts: ["Contacts / Связь", "Связь"],
-    settings: ["Settings / SEO", "SEO и настройки"]
+    profile: ["Профиль / Главный блок", "Главный блок"],
+    cv: ["Резюме", "Резюме"],
+    portfolio: ["Портфолио / Кейсы", "Кейсы"],
+    services: ["Услуги", "Услуги"],
+    contacts: ["Контакты", "Связь"],
+    settings: ["Настройки / SEO", "SEO и настройки"]
   };
+
+  const knownTextTranslations = new Map([
+    ["Alexander", "Александр"],
+    ["CV / ART DIRECTION / AI DESIGN", "РЕЗЮМЕ / АРТ-ДИРЕКШН / ИИ-ДИЗАЙН"],
+    ["Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.", defaultContent.profile.description],
+    ["Portfolio systems, AI campaigns, social content packs, landing visuals and case studies.", defaultContent.cv.experience],
+    ["Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics.", defaultContent.cv.skills],
+    ["Branding", "Брендинг"], ["SMM design", "SMM-дизайн"], ["Presentations", "Презентации"], ["Print", "Печатный дизайн"],
+    ["Visual identity, key visuals, guidelines.", "Айдентика, ключевые визуалы и гайдлайны."],
+    ["Social media layouts, campaign packs, content systems.", "Макеты для социальных сетей, кампании и контент-системы."],
+    ["Pitch decks, portfolio decks, case packaging.", "Питч-деки, портфолио и оформление кейсов."],
+    ["Landing pages, portfolio sites, interface concepts.", "Лендинги, сайты-портфолио и концепции интерфейсов."],
+    ["Posters, packaging layouts, printed brand materials.", "Постеры, упаковка и печатные материалы бренда."],
+    ["Portfolio Sphere", "Сфера портфолио"],
+    ["Creative portfolio with interactive sphere gallery and design cases.", "Креативное портфолио с интерактивной сферой и дизайн-кейсами."]
+  ]);
+
+  function localizeKnownText(value) {
+    return knownTextTranslations.get(value) || value;
+  }
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -160,22 +180,22 @@
 
       return {
         profile: {
-          name: profile?.name || defaultContent.profile.name,
-          role: profile?.role || defaultContent.profile.role,
+          name: localizeKnownText(profile?.name || defaultContent.profile.name),
+          role: localizeKnownText(profile?.role || defaultContent.profile.role),
           photoUrl: profile?.photo_url || "",
-          description: profile?.short_description || defaultContent.profile.description,
+          description: localizeKnownText(profile?.short_description || defaultContent.profile.description),
           socials: profile?.socials || {}
         },
         cv: {
-          experience: cvByPosition.get("experience")?.description || firstCv?.description || defaultContent.cv.experience,
-          education: cvByPosition.get("education")?.description || "",
-          skills: cvByPosition.get("skills")?.description || defaultContent.cv.skills,
-          certificates: cvByPosition.get("certificates")?.description || ""
+          experience: localizeKnownText(cvByPosition.get("experience")?.description || firstCv?.description || defaultContent.cv.experience),
+          education: localizeKnownText(cvByPosition.get("education")?.description || ""),
+          skills: localizeKnownText(cvByPosition.get("skills")?.description || defaultContent.cv.skills),
+          certificates: localizeKnownText(cvByPosition.get("certificates")?.description || "")
         },
         portfolio: {
           projects: (projects || []).map((project) => ({
             id: project.id,
-            title: project.title || "Untitled",
+            title: project.title || "Без названия",
             category: project.category || "",
             status: project.status || "published",
             cover: "",
@@ -191,7 +211,7 @@
           }))
         },
         services: Array.isArray(services) && services.length
-          ? services.map((service) => ({ title: service.title || "", description: service.description || "", enabled: true }))
+          ? services.map((service) => ({ title: localizeKnownText(service.title || ""), description: localizeKnownText(service.description || ""), enabled: true }))
           : defaultContent.services,
         contacts: contacts ? {
           telegram: contacts.telegram || "",
@@ -202,8 +222,8 @@
           formEndpoint: ""
         } : defaultContent.contacts,
         settings: settings ? {
-          siteTitle: settings.site_title || defaultContent.settings.siteTitle,
-          description: settings.meta_description || defaultContent.settings.description,
+          siteTitle: localizeKnownText(settings.site_title || defaultContent.settings.siteTitle),
+          description: localizeKnownText(settings.meta_description || defaultContent.settings.description),
           faviconUrl: settings.favicon_url || "",
           language: settings.language || "ru",
           analytics: packedSettings.analytics,
@@ -211,7 +231,7 @@
         } : defaultContent.settings
       };
     } catch (error) {
-      setStatus(`Supabase load skipped: ${error.message}`);
+      setStatus(`Не удалось загрузить данные Supabase: ${error.message}`);
       return null;
     }
   }
@@ -236,9 +256,9 @@
       const value = getPath(field.name);
       field.value = value ?? "";
     });
-    document.getElementById("profilePhotoName").textContent = content.profile.photo || content.profile.photoUrl ? "Image selected" : "No file selected";
-    document.getElementById("cvPdfName").textContent = content.cv.pdfName || content.cv.pdfUrl || "No file selected";
-    document.getElementById("faviconName").textContent = content.settings.faviconName || content.settings.faviconUrl || "No file selected";
+    document.getElementById("profilePhotoName").textContent = content.profile.photo || content.profile.photoUrl ? "Изображение выбрано" : "Файл не выбран";
+    document.getElementById("cvPdfName").textContent = content.cv.pdfName || content.cv.pdfUrl || "Файл не выбран";
+    document.getElementById("faviconName").textContent = content.settings.faviconName || content.settings.faviconUrl || "Файл не выбран";
   }
 
   function collectInputs() {
@@ -276,8 +296,8 @@
   function createProject() {
     return {
       id: `project-${Date.now()}`,
-      title: "New case",
-      category: "Design",
+      title: "Новый кейс",
+      category: "Дизайн",
       status: "published",
       cover: "",
       coverName: "",
@@ -301,7 +321,7 @@
       .split(/\r?\n/)
       .map((url) => url.trim())
       .filter(Boolean)
-      .map((src, index) => ({ src, title: `${project.title || "Project"} URL ${index + 1}` }));
+      .map((src, index) => ({ src, title: `${project.title || "Проект"} URL ${index + 1}` }));
   }
 
   function renderProjects() {
@@ -315,31 +335,31 @@
       card.innerHTML = `
         <div class="project-head">
           <div class="project-meta">
-            <span>Project ${String(index + 1).padStart(2, "0")}</span>
-            <strong>${escapeHtml(project.title || "Untitled")}</strong>
+            <span>Проект ${String(index + 1).padStart(2, "0")}</span>
+            <strong>${escapeHtml(project.title || "Без названия")}</strong>
           </div>
-          <button class="project-remove" type="button">REMOVE</button>
+          <button class="project-remove" type="button">УДАЛИТЬ</button>
         </div>
         <div class="project-preview">
-          ${cover ? `<img src="${cover}" alt="">` : `<span>No cover</span>`}
+          ${cover ? `<img src="${cover}" alt="">` : `<span>Нет обложки</span>`}
           <div>
-            <b>${project.status === "published" ? "Published" : "Hidden"}</b>
-            <small>${galleryCount} gallery images</small>
+            <b>${project.status === "published" ? "Опубликован" : "Скрыт"}</b>
+            <small>Изображений в галерее: ${galleryCount}</small>
           </div>
         </div>
         <div class="project-grid">
           <label><span>Название</span><input data-project-field="title" type="text"></label>
           <label><span>Категория</span><input data-project-field="category" type="text"></label>
           <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
-          <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "No cover selected"}</small></label>
+          <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "Обложка не выбрана"}</small></label>
           <label><span>Обложка URL</span><input data-project-field="coverUrl" type="text" placeholder="https://..."></label>
-          <label class="project-gallery"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} images selected` : "No gallery images selected"}</small></label>
+          <label class="project-gallery"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `Выбрано изображений: ${project.gallery.length}` : "Изображения не выбраны"}</small></label>
           <label class="project-gallery"><span>Галерея URL</span><textarea data-project-field="galleryUrls" rows="4" placeholder="Одна ссылка на строку"></textarea></label>
           <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
-          <label><span>Tools</span><input data-project-field="tools" type="text"></label>
-          <label><span>Timeline</span><input data-project-field="timeline" type="text"></label>
-          <label class="project-gallery"><span>Scope</span><textarea data-project-field="scope" rows="3"></textarea></label>
-          <label class="project-gallery"><span>Result</span><textarea data-project-field="result" rows="3"></textarea></label>
+          <label><span>Инструменты</span><input data-project-field="tools" type="text"></label>
+          <label><span>Срок</span><input data-project-field="timeline" type="text"></label>
+          <label class="project-gallery"><span>Задачи</span><textarea data-project-field="scope" rows="3"></textarea></label>
+          <label class="project-gallery"><span>Результат</span><textarea data-project-field="result" rows="3"></textarea></label>
         </div>
       `;
       ["title", "category", "status", "coverUrl", "galleryUrls", "description", "tools", "timeline", "scope", "result"].forEach((fieldName) => {
@@ -347,7 +367,7 @@
         field.value = project[fieldName] || "";
         field.addEventListener("input", () => {
           project[fieldName] = field.value;
-          if (fieldName === "title") card.querySelector(".project-meta strong").textContent = project.title || "Untitled";
+          if (fieldName === "title") card.querySelector(".project-meta strong").textContent = project.title || "Без названия";
         });
         field.addEventListener("change", () => {
           project[fieldName] = field.value;
@@ -384,7 +404,7 @@
       card.innerHTML = `
         <div class="service-head"><strong>${escapeHtml(service.title)}</strong></div>
         <textarea rows="3"></textarea>
-        <label><span>Active</span><input type="checkbox"></label>
+        <label><span>Активна</span><input type="checkbox"></label>
       `;
       const text = card.querySelector("textarea");
       const checkbox = card.querySelector('input[type="checkbox"]');
@@ -434,7 +454,7 @@
       const desiredStatus = project.status || "published";
       const existingProject = existingById.get(project.id);
       const payload = {
-        title: project.title || "Untitled",
+        title: project.title || "Без названия",
         subtitle: "",
         description: project.description || "",
         category: project.category || "",
@@ -525,10 +545,10 @@
     });
 
     await replaceRows("cv_sections", [
-      { position: "experience", title: "Experience", description: content.cv.experience, sort_order: 1 },
-      { position: "education", title: "Education", description: content.cv.education, sort_order: 2 },
-      { position: "skills", title: "Skills", description: content.cv.skills, sort_order: 3 },
-      { position: "certificates", title: "Certificates", description: content.cv.certificates, sort_order: 4 }
+      { position: "experience", title: "Опыт", description: content.cv.experience, sort_order: 1 },
+      { position: "education", title: "Образование", description: content.cv.education, sort_order: 2 },
+      { position: "skills", title: "Навыки", description: content.cv.skills, sort_order: 3 },
+      { position: "certificates", title: "Сертификаты", description: content.cv.certificates, sort_order: 4 }
     ]);
 
     await replaceRows("services", content.services
@@ -585,10 +605,10 @@
     const profileSummary = content.profile.description || defaultContent.profile.description;
     const nodes = [
       { look: "center", yaw: 0, pitch: 0, eyebrow: content.profile.role, title: content.profile.name, body: profileSummary, type: "hero" },
-      { look: "top", yaw: 0, pitch: 34, title: "Profile", body: profileSummary },
-      { look: "bottom", yaw: 0, pitch: -34, title: "CV", body: cvSummary || defaultContent.cv.experience },
-      { look: "left", yaw: -42, pitch: 0, title: "Services", body: services || defaultContent.services.map((service) => service.title).join(", ") },
-      { look: "right", yaw: 42, pitch: 0, title: "Contact", body: contact || "Available for visual identity, AI art direction, portfolio sites and design case packaging." }
+      { look: "top", yaw: 0, pitch: 34, title: "Профиль", body: profileSummary },
+      { look: "bottom", yaw: 0, pitch: -34, title: "Резюме", body: cvSummary || defaultContent.cv.experience },
+      { look: "left", yaw: -42, pitch: 0, title: "Услуги", body: services || defaultContent.services.map((service) => service.title).join(", ") },
+      { look: "right", yaw: 42, pitch: 0, title: "Контакты", body: contact || "Открыт к проектам по айдентике, ИИ-арт-дирекшну, сайтам-портфолио и оформлению дизайн-кейсов." }
     ];
     await window.PortfolioStorage.set(STORAGE_CV, nodes);
 
@@ -643,20 +663,20 @@
 
   async function saveContent() {
     collectInputs();
-    setStatus("Saving...");
+    setStatus("Сохранение...");
     saveButton.disabled = true;
     try {
       await saveSupabaseContent();
       await saveLocalCopy();
       await syncSphereData();
-      saveButton.textContent = "SAVED";
-      setStatus(supabaseClient && session ? "Saved to Supabase" : "Saved locally");
+      saveButton.textContent = "СОХРАНЕНО";
+      setStatus(supabaseClient && session ? "Сохранено в Supabase" : "Сохранено локально");
       window.setTimeout(() => {
-        saveButton.textContent = "SAVE";
+        saveButton.textContent = "СОХРАНИТЬ";
       }, 900);
     } catch (error) {
-      setStatus(`Save failed: ${error.message}`);
-      alert(`Save failed: ${error.message}`);
+      setStatus(`Ошибка сохранения: ${error.message}`);
+      alert(`Ошибка сохранения: ${error.message}`);
     } finally {
       saveButton.disabled = false;
     }
@@ -674,7 +694,7 @@
 
   async function setupAuth() {
     if (!supabaseClient) {
-      setStatus("Supabase config missing");
+      setStatus("Не найдена конфигурация Supabase");
       return;
     }
     const { data } = await supabaseClient.auth.getSession();
@@ -692,40 +712,40 @@
     }
     if (session) {
       panel.innerHTML = `
-        <span>${escapeHtml(session.user.email || "Signed in")}</span>
-        <button id="logoutButton" type="button">LOGOUT</button>
+        <span>${escapeHtml(session.user.email || "Выполнен вход")}</span>
+        <button id="logoutButton" type="button">ВЫЙТИ</button>
       `;
       panel.querySelector("#logoutButton").addEventListener("click", async () => {
         await supabaseClient.auth.signOut();
         session = null;
         saveButton.disabled = true;
         renderAuthPanel();
-        setStatus("Logged out");
+        setStatus("Вы вышли из аккаунта");
       });
       saveButton.disabled = false;
-      setStatus("Ready");
+      setStatus("Готово");
       return;
     }
     panel.innerHTML = `
       <form id="authForm">
-        <strong>SUPABASE LOGIN</strong>
-        <input name="email" type="email" placeholder="Email" required>
-        <input name="password" type="password" placeholder="Password" required>
-        <button type="submit">LOGIN</button>
-        <small>Войди пользователем, которого создал в Supabase Authentication.</small>
+        <strong>ВХОД В SUPABASE</strong>
+        <input name="email" type="email" placeholder="Эл. почта" required>
+        <input name="password" type="password" placeholder="Пароль" required>
+        <button type="submit">ВОЙТИ</button>
+        <small>Войдите под пользователем, созданным в Supabase Authentication.</small>
       </form>
     `;
     saveButton.disabled = true;
     panel.querySelector("#authForm").addEventListener("submit", async (event) => {
       event.preventDefault();
       const formData = new FormData(event.currentTarget);
-      setStatus("Logging in...");
+      setStatus("Вход...");
       const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: formData.get("email"),
         password: formData.get("password")
       });
       if (error) {
-        setStatus(`Login failed: ${error.message}`);
+        setStatus(`Ошибка входа: ${error.message}`);
         alert(error.message);
         return;
       }
@@ -752,10 +772,10 @@
       bindInputs();
       renderProjects();
       renderServices();
-      resetButton.textContent = "RESET DONE";
-      setStatus("Reset local data done");
+      resetButton.textContent = "СБРОШЕНО";
+      setStatus("Локальные данные сброшены");
       window.setTimeout(() => {
-        resetButton.textContent = "RESET";
+        resetButton.textContent = "СБРОСИТЬ";
       }, 900);
     });
   });
@@ -793,7 +813,7 @@
     bindInputs();
     renderProjects();
     renderServices();
-    if (!supabaseClient) setStatus("Ready locally");
+    if (!supabaseClient) setStatus("Локальный режим готов");
   });
 })();
 
