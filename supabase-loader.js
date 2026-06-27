@@ -129,10 +129,24 @@
     ];
   }
 
+  async function loadSphereSettings() {
+    const defaults = { size: 0.4, elementScale: 0.4, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 };
+    if (!client) return { values: defaults, signature: "" };
+    const { data, error } = await client.from("site_settings").select("analytics,updated_at").limit(1).maybeSingle();
+    if (error) throw error;
+    try {
+      const parsed = JSON.parse(data?.analytics || "null");
+      const values = parsed?.portfolioSphere === 1 ? { ...defaults, ...(parsed.sphere || {}) } : defaults;
+      return { values, signature: data?.updated_at || data?.analytics || "" };
+    } catch (error) {
+      return { values: defaults, signature: data?.updated_at || "" };
+    }
+  }
+
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260627-native-projects-3";
+    script.src = "sphere.js?v=20260627-project-ui-4";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -161,23 +175,24 @@
   async function refreshIfContentChanged() {
     if (!client || document.visibilityState !== "visible" || !activeContentSignature) return;
     try {
-      const bundle = await loadAssetBundle();
-      if (bundle.signature && bundle.signature !== activeContentSignature) location.reload();
+      const [bundle, sphereSettings] = await Promise.all([loadAssetBundle(), loadSphereSettings()]);
+      const nextSignature = `${bundle.signature}|${sphereSettings.signature}`;
+      if (bundle.signature && nextSignature !== activeContentSignature) location.reload();
     } catch (error) {
       console.warn("Sphere content refresh skipped", error);
     }
   }
 
   try {
-    const [bundle, cvNodes] = await Promise.all([loadAssetBundle(), loadCvNodes()]);
-    activeContentSignature = bundle.signature;
-    setBootstrapPayload({ assets: bundle.assets, cvNodes });
+    const [bundle, cvNodes, sphereSettings] = await Promise.all([loadAssetBundle(), loadCvNodes(), loadSphereSettings()]);
+    activeContentSignature = `${bundle.signature}|${sphereSettings.signature}`;
+    setBootstrapPayload({ assets: bundle.assets, cvNodes, sphereSettings: sphereSettings.values });
     if (bundle.assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(bundle.assets));
     else localStorage.removeItem(STORAGE_ASSETS);
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
-    setBootstrapPayload({ assets: [], cvNodes: [] });
+    setBootstrapPayload({ assets: [], cvNodes: [], sphereSettings: { size: 0.4, elementScale: 0.4, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
