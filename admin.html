@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Админ-панель портфолио</title>
-    <link rel="stylesheet" href="admin.css?v=20260628-project-tiles-1" />
+    <link rel="stylesheet" href="admin.css?v=20260628-admin-mobile-2" />
   </head>
   <body>
     <main class="admin-shell">
@@ -19,7 +19,6 @@
           <button type="button" data-tab="cv">Резюме</button>
           <button type="button" data-tab="portfolio">Портфолио</button>
           <button type="button" data-tab="services">Услуги</button>
-          <button type="button" data-tab="contacts">Контакты</button>
           <button type="button" data-tab="settings">Настройки / SEO</button>
         </nav>
       </aside>
@@ -102,6 +101,38 @@
                 <small id="cvPdfName">Файл не выбран</small>
               </label>
             </div>
+            <div class="settings-subsection cv-contacts-section">
+              <div class="settings-subsection-head">
+                <span>Контакты</span>
+                <p>Контактные данные для резюме и связи.</p>
+              </div>
+              <div class="form-grid two">
+                <label>
+                  <span>Telegram</span>
+                  <input name="contacts.telegram" type="text" />
+                </label>
+                <label>
+                  <span>Email</span>
+                  <input name="contacts.email" type="email" />
+                </label>
+                <label>
+                  <span>Телефон</span>
+                  <input name="contacts.phone" type="tel" />
+                </label>
+                <label>
+                  <span>Behance</span>
+                  <input name="contacts.behance" type="text" />
+                </label>
+                <label>
+                  <span>LinkedIn</span>
+                  <input name="contacts.linkedin" type="text" />
+                </label>
+                <label>
+                  <span>Форма заявки</span>
+                  <input name="contacts.formEndpoint" type="text" />
+                </label>
+              </div>
+            </div>
           </section>
 
           <section class="admin-section" data-panel="portfolio">
@@ -117,35 +148,6 @@
 
           <section class="admin-section" data-panel="services">
             <div class="services-list" id="servicesList"></div>
-          </section>
-
-          <section class="admin-section" data-panel="contacts">
-            <div class="form-grid two">
-              <label>
-                <span>Telegram</span>
-                <input name="contacts.telegram" type="text" />
-              </label>
-              <label>
-                <span>Email</span>
-                <input name="contacts.email" type="email" />
-              </label>
-              <label>
-                <span>Телефон</span>
-                <input name="contacts.phone" type="tel" />
-              </label>
-              <label>
-                <span>Behance</span>
-                <input name="contacts.behance" type="text" />
-              </label>
-              <label>
-                <span>LinkedIn</span>
-                <input name="contacts.linkedin" type="text" />
-              </label>
-              <label>
-                <span>Форма заявки</span>
-                <input name="contacts.formEndpoint" type="text" />
-              </label>
-            </div>
           </section>
 
           <section class="admin-section" data-panel="settings">
@@ -182,23 +184,23 @@
                 </div>
                 <div class="form-grid two sphere-settings-grid">
                   <label>
-                    <span>Размер сферы</span>
+                    <span class="sphere-setting-head"><span>Размер сферы</span><b data-sphere-value="settings.sphere.size">0.6</b></span>
                     <input name="settings.sphere.size" type="range" min="0.1" max="1" step="0.01" />
                   </label>
                   <label>
-                    <span>Размер элементов</span>
+                    <span class="sphere-setting-head"><span>Размер элементов</span><b data-sphere-value="settings.sphere.elementScale">0.60</b></span>
                     <input name="settings.sphere.elementScale" type="range" min="0.1" max="1" step="0.01" />
                   </label>
                   <label>
-                    <span>Рыбий глаз</span>
+                    <span class="sphere-setting-head"><span>Рыбий глаз</span><b data-sphere-value="settings.sphere.fisheye">0.15</b></span>
                     <input name="settings.sphere.fisheye" type="range" min="0" max="1" step="0.01" />
                   </label>
                   <label>
-                    <span>Горизонтальное вращение</span>
+                    <span class="sphere-setting-head"><span>Горизонтальное вращение</span><b data-sphere-value="settings.sphere.rotationX">0.14</b></span>
                     <input name="settings.sphere.rotationX" type="range" min="-0.32" max="0.32" step="0.01" />
                   </label>
                   <label>
-                    <span>Вертикальное вращение</span>
+                    <span class="sphere-setting-head"><span>Вертикальное вращение</span><b data-sphere-value="settings.sphere.rotationY">-0.09</b></span>
                     <input name="settings.sphere.rotationY" type="range" min="-0.32" max="0.32" step="0.01" />
                   </label>
                 </div>
@@ -213,7 +215,7 @@
     <script src="supabase-config.js"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="admin.js?v=20260628-project-tiles-1"></script>
+<script src="admin.js?v=20260628-admin-mobile-2"></script>
 <script src="admin-localization.js?v=20260627-safe-ru-2"></script>
   </body>
 </html>
