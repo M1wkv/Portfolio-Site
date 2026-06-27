@@ -39,7 +39,8 @@
       faviconName: "",
       faviconUrl: "",
       language: "ru",
-      analytics: ""
+      analytics: "",
+      sphere: { size: 0.4, elementScale: 0.4, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 }
     }
   };
 
@@ -81,7 +82,30 @@
     result.services = Array.isArray(next.services) ? next.services : result.services;
     Object.assign(result.contacts, next.contacts || {});
     Object.assign(result.settings, next.settings || {});
+    Object.assign(result.settings.sphere, next.settings?.sphere || {});
     return result;
+  }
+
+  function decodeSettingsPayload(value) {
+    const fallback = { analytics: String(value || ""), sphere: clone(defaultContent.settings.sphere) };
+    try {
+      const parsed = JSON.parse(value || "null");
+      if (parsed?.portfolioSphere !== 1) return fallback;
+      return {
+        analytics: typeof parsed.analytics === "string" ? parsed.analytics : "",
+        sphere: { ...fallback.sphere, ...(parsed.sphere || {}) }
+      };
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function encodeSettingsPayload() {
+    return JSON.stringify({
+      portfolioSphere: 1,
+      analytics: content.settings.analytics || "",
+      sphere: content.settings.sphere || defaultContent.settings.sphere
+    });
   }
 
   function loadLocalContent() {
@@ -132,6 +156,7 @@
 
       const cvByPosition = new Map((cvRows || []).map((row) => [row.position, row]));
       const firstCv = cvRows?.[0];
+      const packedSettings = decodeSettingsPayload(settings?.analytics);
 
       return {
         profile: {
@@ -181,7 +206,8 @@
           description: settings.meta_description || defaultContent.settings.description,
           faviconUrl: settings.favicon_url || "",
           language: settings.language || "ru",
-          analytics: settings.analytics || ""
+          analytics: packedSettings.analytics,
+          sphere: packedSettings.sphere
         } : defaultContent.settings
       };
     } catch (error) {
@@ -208,7 +234,7 @@
     Array.from(form.elements).forEach((field) => {
       if (!field.name) return;
       const value = getPath(field.name);
-      field.value = value || "";
+      field.value = value ?? "";
     });
     document.getElementById("profilePhotoName").textContent = content.profile.photo || content.profile.photoUrl ? "Image selected" : "No file selected";
     document.getElementById("cvPdfName").textContent = content.cv.pdfName || content.cv.pdfUrl || "No file selected";
@@ -528,7 +554,7 @@
       meta_description: content.settings.description,
       favicon_url: faviconUrl,
       language: content.settings.language,
-      analytics: content.settings.analytics,
+      analytics: encodeSettingsPayload(),
       updated_at: new Date().toISOString()
     });
 
