@@ -137,13 +137,17 @@
   }
 
   async function loadSphereSettings() {
-    const defaults = { size: 0.4, elementScale: 0.4, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 };
+    const defaults = { size: 0.6, elementScale: 0.6, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 };
     if (!client) return { values: defaults, signature: "" };
     const { data, error } = await client.from("site_settings").select("analytics,updated_at").limit(1).maybeSingle();
     if (error) throw error;
     try {
       const parsed = JSON.parse(data?.analytics || "null");
-      const values = parsed?.portfolioSphere === 1 ? { ...defaults, ...(parsed.sphere || {}) } : defaults;
+      const values = parsed?.portfolioSphere ? { ...defaults, ...(parsed.sphere || {}) } : defaults;
+      if (parsed?.portfolioSphere < 2) {
+        if (Number(values.size) === 0.4) values.size = 0.6;
+        if (Number(values.elementScale) === 0.4) values.elementScale = 0.6;
+      }
       return { values, signature: data?.updated_at || data?.analytics || "" };
     } catch (error) {
       return { values: defaults, signature: data?.updated_at || "" };
@@ -153,7 +157,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260627-full-project-cylinder-9";
+    script.src = "sphere.js?v=20260628-sphere-defaults-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -199,7 +203,7 @@
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
-    setBootstrapPayload({ assets: [], projectAssets: [], cvNodes: [], sphereSettings: { size: 0.4, elementScale: 0.4, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 } });
+    setBootstrapPayload({ assets: [], projectAssets: [], cvNodes: [], sphereSettings: { size: 0.6, elementScale: 0.6, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
