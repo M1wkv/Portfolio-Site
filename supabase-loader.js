@@ -189,8 +189,7 @@
     });
     const queues = Array.from(groups.entries())
       .map(([key, groupItems]) => ({ key, title: groupItems[0]?.title || "", items: groupItems.slice() }))
-      .filter((group) => group.items.length)
-      .sort((a, b) => Number(b.title.toLowerCase() === "accent") - Number(a.title.toLowerCase() === "accent"));
+      .filter((group) => group.items.length);
     if (queues.length < 2) return sourceItems;
     const depthSortedSlots = sourceItems.map((_, index) => initialSphereSlot(index, sourceItems.length)).sort((a, b) => b.depth - a.depth);
     const slots = [];
