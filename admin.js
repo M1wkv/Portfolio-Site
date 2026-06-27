@@ -392,6 +392,93 @@
     return `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}-${safe || "file"}`;
   }
 
+  async function saveProjects() {
+    const { data: existingProjects, error: existingError } = await supabaseClient
+      .from("projects")
+      .select("id,status");
+    if (existingError) throw existingError;
+
+    const existingById = new Map((existingProjects || []).map((project) => [project.id, project]));
+    const retainedIds = [];
+
+    for (const [index, project] of content.portfolio.projects.entries()) {
+      const coverUrl = project.cover?.startsWith("data:")
+        ? await uploadDataUrl(storagePath("covers", project.coverName || `${project.title}-cover`), project.cover)
+        : project.coverUrl || project.cover || "";
+      const desiredStatus = project.status || "published";
+      const existingProject = existingById.get(project.id);
+      const payload = {
+        title: project.title || "Untitled",
+        subtitle: "",
+        description: project.description || "",
+        category: project.category || "",
+        status: existingProject?.status || "hidden",
+        cover_url: coverUrl,
+        tools: project.tools || "",
+        timeline: project.timeline || "",
+        scope: project.scope || "",
+        result: project.result || "",
+        sort_order: index,
+        updated_at: new Date().toISOString()
+      };
+
+      const projectQuery = existingProject
+        ? supabaseClient.from("projects").update(payload).eq("id", project.id)
+        : supabaseClient.from("projects").insert(payload);
+      const { data: savedProject, error: projectError } = await projectQuery.select("id").single();
+      if (projectError) throw projectError;
+
+      const projectId = savedProject.id;
+      retainedIds.push(projectId);
+      const { data: previousImages, error: previousImagesError } = await supabaseClient
+        .from("project_images")
+        .select("id")
+        .eq("project_id", projectId);
+      if (previousImagesError) throw previousImagesError;
+
+      const rows = [];
+      for (const [galleryIndex, image] of project.gallery.entries()) {
+        const imageUrl = image.src?.startsWith("data:")
+          ? await uploadDataUrl(storagePath("gallery", image.title || `${project.title}-${galleryIndex}`), image.src)
+          : image.src || "";
+        if (imageUrl) rows.push({ project_id: projectId, image_url: imageUrl, title: image.title || project.title, sort_order: galleryIndex });
+      }
+      projectGalleryUrls(project).forEach((image, urlIndex) => {
+        rows.push({ project_id: projectId, image_url: image.src, title: image.title || project.title, sort_order: rows.length + urlIndex });
+      });
+
+      if (rows.length) {
+        const { error: imageError } = await supabaseClient.from("project_images").insert(rows);
+        if (imageError) throw imageError;
+      }
+      const previousImageIds = (previousImages || []).map((image) => image.id);
+      if (previousImageIds.length) {
+        const { error: deleteImagesError } = await supabaseClient.from("project_images").delete().in("id", previousImageIds);
+        if (deleteImagesError) throw deleteImagesError;
+      }
+
+      const { error: publishError } = await supabaseClient
+        .from("projects")
+        .update({ status: desiredStatus, updated_at: new Date().toISOString() })
+        .eq("id", projectId);
+      if (publishError) throw publishError;
+
+      project.id = projectId;
+      project.cover = "";
+      project.coverUrl = coverUrl;
+    }
+
+    const removedIds = (existingProjects || [])
+      .map((project) => project.id)
+      .filter((projectId) => !retainedIds.includes(projectId));
+    if (removedIds.length) {
+      const { error: removeImagesError } = await supabaseClient.from("project_images").delete().in("project_id", removedIds);
+      if (removeImagesError) throw removeImagesError;
+      const { error: removeProjectsError } = await supabaseClient.from("projects").delete().in("id", removedIds);
+      if (removeProjectsError) throw removeProjectsError;
+    }
+  }
+
   async function saveSupabaseContent() {
     if (!supabaseClient || !session) return;
 
@@ -445,48 +532,7 @@
       updated_at: new Date().toISOString()
     });
 
-    await supabaseClient.from("project_images").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabaseClient.from("projects").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-
-    for (const [index, project] of content.portfolio.projects.entries()) {
-      const coverUrl = project.cover?.startsWith("data:")
-        ? await uploadDataUrl(storagePath("covers", project.coverName || `${project.title}-cover`), project.cover)
-        : project.coverUrl || project.cover || "";
-      const { data: insertedProjects, error: projectError } = await supabaseClient
-        .from("projects")
-        .insert({
-          title: project.title || "Untitled",
-          subtitle: "",
-          description: project.description || "",
-          category: project.category || "",
-          status: project.status || "published",
-          cover_url: coverUrl,
-          tools: project.tools || "",
-          timeline: project.timeline || "",
-          scope: project.scope || "",
-          result: project.result || "",
-          sort_order: index,
-          updated_at: new Date().toISOString()
-        })
-        .select("id")
-        .single();
-      if (projectError) throw projectError;
-
-      const rows = [];
-      for (const [galleryIndex, image] of project.gallery.entries()) {
-        const imageUrl = image.src?.startsWith("data:")
-          ? await uploadDataUrl(storagePath("gallery", image.title || `${project.title}-${galleryIndex}`), image.src)
-          : image.src || "";
-        if (imageUrl) rows.push({ project_id: insertedProjects.id, image_url: imageUrl, title: image.title || project.title, sort_order: galleryIndex });
-      }
-      projectGalleryUrls(project).forEach((image, urlIndex) => {
-        rows.push({ project_id: insertedProjects.id, image_url: image.src, title: image.title || project.title, sort_order: rows.length + urlIndex });
-      });
-      if (rows.length) {
-        const { error: imageError } = await supabaseClient.from("project_images").insert(rows);
-        if (imageError) throw imageError;
-      }
-    }
+    await saveProjects();
   }
 
   async function upsertSingle(table, payload) {
@@ -519,6 +565,12 @@
       { look: "right", yaw: 42, pitch: 0, title: "Contact", body: contact || "Available for visual identity, AI art direction, portfolio sites and design case packaging." }
     ];
     await window.PortfolioStorage.set(STORAGE_CV, nodes);
+
+    if (supabaseClient && session) {
+      await window.PortfolioStorage.remove(STORAGE_ASSETS);
+      localStorage.removeItem(STORAGE_ASSETS);
+      return;
+    }
 
     const media = [];
     content.portfolio.projects
@@ -718,3 +770,4 @@
     if (!supabaseClient) setStatus("Ready locally");
   });
 })();
+
