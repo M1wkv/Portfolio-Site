@@ -131,12 +131,22 @@
 
   function loadSphereScript() {
     const script = document.createElement("script");
+    script.async = false;
     script.src = "sphere.js?v=20260627-native-projects-2";
+    script.onload = () => {
+      document.documentElement.dataset.sphereScriptLoaded = "true";
+    };
     script.onerror = () => {
       document.documentElement.dataset.sphereRuntimeError = "script-load";
     };
     document.body.appendChild(script);
   }
+
+  window.addEventListener("error", (event) => {
+    if (String(event.filename || "").includes("sphere.js")) {
+      document.documentElement.dataset.sphereRuntimeError = event.message || "runtime-error";
+    }
+  });
 
   function setBootstrapPayload(payload) {
     window.PORTFOLIO_BOOTSTRAP = payload;
