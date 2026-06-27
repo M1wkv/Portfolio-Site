@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Админ-панель портфолио</title>
-    <link rel="stylesheet" href="admin.css?v=20260627-sphere-settings-3" />
+    <link rel="stylesheet" href="admin.css?v=20260628-project-tiles-1" />
   </head>
   <body>
     <main class="admin-shell">
@@ -106,8 +106,11 @@
 
           <section class="admin-section" data-panel="portfolio">
             <div class="section-toolbar">
-              <p>Добавление проектов, обложка, описание, галерея, категория, статус.</p>
-              <button id="addProjectButton" type="button">ДОБАВИТЬ ПРОЕКТ</button>
+              <p id="portfolioModeText">Выберите кейс, чтобы открыть его настройки.</p>
+              <div class="section-toolbar-actions">
+                <button id="projectsBackButton" type="button" hidden>К СПИСКУ</button>
+                <button id="addProjectButton" type="button">ДОБАВИТЬ ПРОЕКТ</button>
+              </div>
             </div>
             <div id="projectsList" class="projects-list"></div>
           </section>
@@ -210,7 +213,7 @@
     <script src="supabase-config.js"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="admin.js?v=20260627-safe-project-save-2"></script>
+<script src="admin.js?v=20260628-project-tiles-1"></script>
 <script src="admin-localization.js?v=20260627-safe-ru-2"></script>
   </body>
 </html>
