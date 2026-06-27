@@ -184,7 +184,10 @@
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(item);
     });
-    const queues = Array.from(groups.entries()).map(([key, groupItems]) => ({ key, items: groupItems.slice() })).filter((group) => group.items.length);
+    const queues = Array.from(groups.entries())
+      .map(([key, groupItems]) => ({ key, title: groupItems[0]?.title || "", items: groupItems.slice() }))
+      .filter((group) => group.items.length)
+      .sort((a, b) => Number(b.title.toLowerCase() === "accent") - Number(a.title.toLowerCase() === "accent"));
     if (queues.length < 2) return sourceItems;
     const slots = sourceItems.map((_, index) => ({ index, depth: initialSphereDepth(index, sourceItems.length) })).sort((a, b) => b.depth - a.depth);
     const mixed = new Array(sourceItems.length);
