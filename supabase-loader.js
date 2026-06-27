@@ -166,14 +166,17 @@
     return item?.projectId || item?.title || item?.src || "";
   }
 
-  function initialSphereDepth(index, count) {
+  function initialSphereSlot(index, count) {
     const point = fibonacciPoint(index, count);
     const cosY = Math.cos(0.48);
     const sinY = Math.sin(0.48);
     const cosX = Math.cos(-0.22);
     const sinX = Math.sin(-0.22);
+    const x1 = point.x * cosY - point.z * sinY;
     const z1 = point.x * sinY + point.z * cosY;
-    return point.y * sinX + z1 * cosX;
+    const y1 = point.y * cosX - z1 * sinX;
+    const z2 = point.y * sinX + z1 * cosX;
+    return { index, depth: z2, angle: Math.atan2(y1, x1) };
   }
 
   function mixSpatialItems(sourceItems) {
@@ -189,7 +192,12 @@
       .filter((group) => group.items.length)
       .sort((a, b) => Number(b.title.toLowerCase() === "accent") - Number(a.title.toLowerCase() === "accent"));
     if (queues.length < 2) return sourceItems;
-    const slots = sourceItems.map((_, index) => ({ index, depth: initialSphereDepth(index, sourceItems.length) })).sort((a, b) => b.depth - a.depth);
+    const depthSortedSlots = sourceItems.map((_, index) => initialSphereSlot(index, sourceItems.length)).sort((a, b) => b.depth - a.depth);
+    const slots = [];
+    const bandSize = Math.max(queues.length, queues.length * 2);
+    for (let start = 0; start < depthSortedSlots.length; start += bandSize) {
+      slots.push(...depthSortedSlots.slice(start, start + bandSize).sort((a, b) => a.angle - b.angle));
+    }
     const mixed = new Array(sourceItems.length);
     let slotIndex = 0;
     let cycle = 0;
