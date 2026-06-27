@@ -63,7 +63,7 @@
   }
 
   async function loadAssetBundle() {
-    if (!client) return { assets: [], signature: "", projectGroups: [] };
+    if (!client) return { assets: [], projectAssets: [], signature: "", projectGroups: [] };
     const { data: projects, error: projectsError } = await client
       .from("projects")
       .select("id,title,cover_url,status,sort_order,created_at,updated_at")
@@ -71,7 +71,7 @@
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false });
     if (projectsError) throw projectsError;
-    if (!projects?.length) return { assets: [], signature: "", projectGroups: [] };
+    if (!projects?.length) return { assets: [], projectAssets: [], signature: "", projectGroups: [] };
 
     const projectIds = projects.map((project) => project.id);
     const { data: images, error: imagesError } = await client
@@ -106,7 +106,10 @@
       .map((group) => `${group.projectId}:${group.assets.length}:${group.updatedAt}`)
       .sort()
       .join("|");
-    return { assets: selectBalancedAssets(projectGroups), signature, projectGroups };
+    const projectAssets = projectGroups.flatMap((group) => Array.from(
+      new Map(normalizeAssets(group.assets).map((asset) => [asset.src, asset])).values()
+    ).map((asset) => ({ ...asset, projectId: group.projectId })));
+    return { assets: selectBalancedAssets(projectGroups), projectAssets, signature, projectGroups };
   }
 
   async function loadCvNodes() {
@@ -150,7 +153,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260627-project-zoom-8";
+    script.src = "sphere.js?v=20260627-full-project-cylinder-9";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -190,13 +193,13 @@
   try {
     const [bundle, cvNodes, sphereSettings] = await Promise.all([loadAssetBundle(), loadCvNodes(), loadSphereSettings()]);
     activeContentSignature = `${bundle.signature}|${sphereSettings.signature}`;
-    setBootstrapPayload({ assets: bundle.assets, cvNodes, sphereSettings: sphereSettings.values });
+    setBootstrapPayload({ assets: bundle.assets, projectAssets: bundle.projectAssets, cvNodes, sphereSettings: sphereSettings.values });
     if (bundle.assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(bundle.assets));
     else localStorage.removeItem(STORAGE_ASSETS);
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
-    setBootstrapPayload({ assets: [], cvNodes: [], sphereSettings: { size: 0.4, elementScale: 0.4, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 } });
+    setBootstrapPayload({ assets: [], projectAssets: [], cvNodes: [], sphereSettings: { size: 0.4, elementScale: 0.4, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
