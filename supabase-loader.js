@@ -50,13 +50,18 @@
   }
 
   function exposeAssetDiagnostics(assets) {
-    const counts = assets.reduce((result, asset) => {
+    const summary = assets.reduce((result, asset) => {
       const key = asset.projectId || "missing";
-      result[key] = (result[key] || 0) + 1;
+      if (!result[key]) result[key] = { count: 0, title: asset.title || "", samples: [] };
+      result[key].count += 1;
+      if (result[key].samples.length < 3) result[key].samples.push(asset.src);
       return result;
     }, {});
     document.documentElement.dataset.sphereAssetCount = String(assets.length);
-    document.documentElement.dataset.sphereProjectCounts = JSON.stringify(counts);
+    document.documentElement.dataset.sphereProjectCounts = JSON.stringify(
+      Object.fromEntries(Object.entries(summary).map(([key, value]) => [key, value.count]))
+    );
+    document.documentElement.dataset.sphereProjectSummary = JSON.stringify(summary);
   }
 
   async function loadAssets() {
@@ -126,6 +131,10 @@
   function patchSphereSource(source) {
     let patched = source;
     patched = patched.replace(
+      "function loadItems(nextAssets) {",
+      "function exposeLoadedProjectDiagnostics() {\n    const loaded = {};\n    const failed = {};\n    items.forEach((item) => {\n      const key = item.projectId || item.title || \"missing\";\n      if (item.loaded) loaded[key] = (loaded[key] || 0) + 1;\n      if (item.loadFailed) failed[key] = (failed[key] || 0) + 1;\n    });\n    document.documentElement.dataset.sphereLoadedProjectCounts = JSON.stringify(loaded);\n    document.documentElement.dataset.sphereFailedProjectCounts = JSON.stringify(failed);\n  }\n\n  function loadItems(nextAssets) {"
+    );
+    patched = patched.replace(
       "const defaultAssets = (window.SPHERE_ASSETS || []).slice(0, 100);",
       "const defaultAssets = window.PORTFOLIO_SUPABASE ? [] : (window.SPHERE_ASSETS || []).slice(0, 100);"
     );
@@ -135,7 +144,11 @@
     );
     patched = patched.replace(
       "title: asset.title || `Work ${index + 1}`,\n        loaded: false",
-      "title: asset.title || `Work ${index + 1}`,\n        projectId: asset.projectId || asset.project_id || \"\",\n        loaded: false"
+      "title: asset.title || `Work ${index + 1}`,\n        projectId: asset.projectId || asset.project_id || \"\",\n        loaded: false,\n        loadFailed: false"
+    );
+    patched = patched.replace(
+      "item.img.onload = () => {\n        item.loaded = true;\n      };\n      item.img.onerror = () => {\n        item.loaded = false;\n      };",
+      "item.img.onload = () => {\n        item.loaded = true;\n        item.loadFailed = false;\n        exposeLoadedProjectDiagnostics();\n      };\n      item.img.onerror = () => {\n        item.loaded = false;\n        item.loadFailed = true;\n        exposeLoadedProjectDiagnostics();\n      };"
     );
     patched = patched.replace(
       "title: typeof asset.title === \"string\" ? asset.title.trim() : \"\"",
