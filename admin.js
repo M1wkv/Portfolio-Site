@@ -1,3 +1,4 @@
+
 (() => {
   const STORAGE_CONTENT = "portfolioSphere.adminContent";
   const STORAGE_CV = "portfolioSphere.cvNodes";
@@ -74,6 +75,7 @@
     ["Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.", defaultContent.profile.description],
     ["Portfolio systems, AI campaigns, social content packs, landing visuals and case studies.", defaultContent.cv.experience],
     ["Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics.", defaultContent.cv.skills],
+    ["Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics", defaultContent.cv.skills.replace(/\.$/, "")],
     ["Branding", "Брендинг"], ["SMM design", "SMM-дизайн"], ["Presentations", "Презентации"], ["Print", "Печатный дизайн"],
     ["Visual identity, key visuals, guidelines.", "Айдентика, ключевые визуалы и гайдлайны."],
     ["Social media layouts, campaign packs, content systems.", "Макеты для социальных сетей, кампании и контент-системы."],
