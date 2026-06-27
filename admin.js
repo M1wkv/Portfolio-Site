@@ -40,12 +40,13 @@
       faviconUrl: "",
       language: "ru",
       analytics: "",
-      sphere: { size: 0.4, elementScale: 0.4, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 }
+      sphere: { size: 0.6, elementScale: 0.6, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 }
     }
   };
 
   let content = clone(defaultContent);
   let session = null;
+  let activeProjectId = null;
   const pendingProjectRemovalIds = new Set();
 
   const tabs = Array.from(document.querySelectorAll("[data-tab]"));
@@ -58,6 +59,8 @@
   const saveStatus = document.getElementById("saveStatus");
   const projectsList = document.getElementById("projectsList");
   const addProjectButton = document.getElementById("addProjectButton");
+  const projectsBackButton = document.getElementById("projectsBackButton");
+  const portfolioModeText = document.getElementById("portfolioModeText");
   const servicesList = document.getElementById("servicesList");
 
   const sectionLabels = {
@@ -91,10 +94,15 @@
     const fallback = { analytics: String(value || ""), sphere: clone(defaultContent.settings.sphere) };
     try {
       const parsed = JSON.parse(value || "null");
-      if (parsed?.portfolioSphere !== 1) return fallback;
+      if (!parsed?.portfolioSphere) return fallback;
+      const sphere = { ...fallback.sphere, ...(parsed.sphere || {}) };
+      if (parsed.portfolioSphere < 2) {
+        if (Number(sphere.size) === 0.4) sphere.size = 0.6;
+        if (Number(sphere.elementScale) === 0.4) sphere.elementScale = 0.6;
+      }
       return {
         analytics: typeof parsed.analytics === "string" ? parsed.analytics : "",
-        sphere: { ...fallback.sphere, ...(parsed.sphere || {}) }
+        sphere
       };
     } catch (error) {
       return fallback;
@@ -103,7 +111,7 @@
 
   function encodeSettingsPayload() {
     return JSON.stringify({
-      portfolioSphere: 1,
+      portfolioSphere: 2,
       analytics: content.settings.analytics || "",
       sphere: content.settings.sphere || defaultContent.settings.sphere
     });
@@ -309,77 +317,134 @@
       .map((src, index) => ({ src, title: `${project.title || "Project"} URL ${index + 1}` }));
   }
 
-  function renderProjects() {
-    projectsList.innerHTML = "";
+  function isPersistedProject(project) {
+    return Boolean(project.id && !String(project.id).startsWith("project-"));
+  }
+
+  function renderProjectTiles() {
+    projectsList.classList.remove("is-editor");
+    projectsBackButton.hidden = true;
+    addProjectButton.hidden = false;
+    portfolioModeText.textContent = "Выберите кейс, чтобы открыть его настройки.";
+
+    if (!content.portfolio.projects.length) {
+      projectsList.innerHTML = '<div class="projects-empty">Кейсов пока нет. Добавьте первый проект.</div>';
+      return;
+    }
+
     content.portfolio.projects.forEach((project, index) => {
-      const card = document.createElement("article");
-      card.className = "project-card";
       const cover = projectCover(project);
-      const galleryUrls = projectGalleryUrls(project);
-      const galleryCount = project.gallery.length + galleryUrls.length;
-      card.innerHTML = `
-        <div class="project-head">
-          <div class="project-meta">
-            <span>Project ${String(index + 1).padStart(2, "0")}</span>
-            <strong>${escapeHtml(project.title || "Untitled")}</strong>
-          </div>
-          <button class="project-remove" type="button">REMOVE</button>
-        </div>
-        <div class="project-preview">
-          ${cover ? `<img src="${cover}" alt="">` : `<span>No cover</span>`}
-          <div>
-            <b>${project.status === "published" ? "Published" : "Hidden"}</b>
-            <small>${galleryCount} gallery images</small>
-          </div>
-        </div>
-        <div class="project-grid">
-          <label><span>Название</span><input data-project-field="title" type="text"></label>
-          <label><span>Категория</span><input data-project-field="category" type="text"></label>
-          <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
-          <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "No cover selected"}</small></label>
-          <label><span>Обложка URL</span><input data-project-field="coverUrl" type="text" placeholder="https://..."></label>
-          <label class="project-gallery"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} images selected` : "No gallery images selected"}</small></label>
-          <label class="project-gallery"><span>Галерея URL</span><textarea data-project-field="galleryUrls" rows="4" placeholder="Одна ссылка на строку"></textarea></label>
-          <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
-          <label><span>Tools</span><input data-project-field="tools" type="text"></label>
-          <label><span>Timeline</span><input data-project-field="timeline" type="text"></label>
-          <label class="project-gallery"><span>Scope</span><textarea data-project-field="scope" rows="3"></textarea></label>
-          <label class="project-gallery"><span>Result</span><textarea data-project-field="result" rows="3"></textarea></label>
-        </div>
+      const galleryCount = project.gallery.length + projectGalleryUrls(project).length;
+      const tile = document.createElement("button");
+      tile.className = "project-tile";
+      tile.type = "button";
+      tile.setAttribute("aria-label", `Открыть кейс ${project.title || index + 1}`);
+      tile.innerHTML = `
+        <span class="project-tile-media">${cover ? `<img src="${escapeHtml(cover)}" alt="">` : ""}</span>
+        <span class="project-tile-copy">
+          <strong>${escapeHtml(project.title || "Без названия")}</strong>
+          <span class="project-tile-meta">
+            <span>${project.status === "published" ? "Опубликован" : "Скрыт"}</span>
+            <span>${galleryCount} изображений</span>
+          </span>
+        </span>
       `;
-      ["title", "category", "status", "coverUrl", "galleryUrls", "description", "tools", "timeline", "scope", "result"].forEach((fieldName) => {
-        const field = card.querySelector(`[data-project-field="${fieldName}"]`);
-        field.value = project[fieldName] || "";
-        field.addEventListener("input", () => {
-          project[fieldName] = field.value;
-          if (fieldName === "title") card.querySelector(".project-meta strong").textContent = project.title || "Untitled";
-        });
-        field.addEventListener("change", () => {
-          project[fieldName] = field.value;
-          if (["coverUrl", "galleryUrls", "status"].includes(fieldName)) renderProjects();
-        });
-      });
-      card.querySelector('[data-project-file="cover"]').addEventListener("change", (event) => {
-        readFile(event.currentTarget, (data, name, file) => {
-          project.cover = data;
-          project.coverFile = file;
-          project.coverName = name;
-          renderProjects();
-        });
-      });
-      card.querySelector('[data-project-file="gallery"]').addEventListener("change", (event) => {
-        readFiles(event.currentTarget).then((images) => {
-          project.gallery = images;
-          renderProjects();
-        });
-      });
-      card.querySelector(".project-remove").addEventListener("click", () => {
-        if (project.id) pendingProjectRemovalIds.add(project.id);
-        content.portfolio.projects.splice(index, 1);
+      tile.addEventListener("click", () => {
+        activeProjectId = project.id;
         renderProjects();
       });
-      projectsList.appendChild(card);
+      projectsList.appendChild(tile);
     });
+  }
+
+  function renderProjectEditor(project, index) {
+    projectsList.classList.add("is-editor");
+    projectsBackButton.hidden = false;
+    addProjectButton.hidden = true;
+    portfolioModeText.textContent = `Редактирование: ${project.title || "Без названия"}`;
+
+    const card = document.createElement("article");
+    card.className = "project-card";
+    const cover = projectCover(project);
+    const galleryUrls = projectGalleryUrls(project);
+    const galleryCount = project.gallery.length + galleryUrls.length;
+    card.innerHTML = `
+      <div class="project-head">
+        <div class="project-meta">
+          <span>Кейс ${String(index + 1).padStart(2, "0")}</span>
+          <strong>${escapeHtml(project.title || "Без названия")}</strong>
+        </div>
+        <button class="project-remove" type="button">УДАЛИТЬ</button>
+      </div>
+      <div class="project-preview">
+        ${cover ? `<img src="${escapeHtml(cover)}" alt="">` : `<span>Нет обложки</span>`}
+        <div>
+          <b>${project.status === "published" ? "Опубликован" : "Скрыт"}</b>
+          <small>${galleryCount} изображений в галерее</small>
+        </div>
+      </div>
+      <div class="project-grid">
+        <label><span>Название</span><input data-project-field="title" type="text"></label>
+        <label><span>Категория</span><input data-project-field="category" type="text"></label>
+        <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
+        <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "Обложка не выбрана"}</small></label>
+        <label><span>Обложка URL</span><input data-project-field="coverUrl" type="text" placeholder="https://..."></label>
+        <label class="project-gallery"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} изображений выбрано` : "Изображения не выбраны"}</small></label>
+        <label class="project-gallery"><span>Галерея URL</span><textarea data-project-field="galleryUrls" rows="4" placeholder="Одна ссылка на строку"></textarea></label>
+        <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
+        <label><span>Инструменты</span><input data-project-field="tools" type="text"></label>
+        <label><span>Срок</span><input data-project-field="timeline" type="text"></label>
+        <label class="project-gallery"><span>Что сделали</span><textarea data-project-field="scope" rows="3"></textarea></label>
+        <label class="project-gallery"><span>Результат</span><textarea data-project-field="result" rows="3"></textarea></label>
+      </div>
+    `;
+    ["title", "category", "status", "coverUrl", "galleryUrls", "description", "tools", "timeline", "scope", "result"].forEach((fieldName) => {
+      const field = card.querySelector(`[data-project-field="${fieldName}"]`);
+      field.value = project[fieldName] || "";
+      field.addEventListener("input", () => {
+        project[fieldName] = field.value;
+        if (fieldName === "title") {
+          card.querySelector(".project-meta strong").textContent = project.title || "Без названия";
+          portfolioModeText.textContent = `Редактирование: ${project.title || "Без названия"}`;
+        }
+      });
+      field.addEventListener("change", () => {
+        project[fieldName] = field.value;
+        if (["coverUrl", "galleryUrls", "status"].includes(fieldName)) renderProjects();
+      });
+    });
+    card.querySelector('[data-project-file="cover"]').addEventListener("change", (event) => {
+      readFile(event.currentTarget, (data, name, file) => {
+        project.cover = data;
+        project.coverFile = file;
+        project.coverName = name;
+        renderProjects();
+      });
+    });
+    card.querySelector('[data-project-file="gallery"]').addEventListener("change", (event) => {
+      readFiles(event.currentTarget).then((images) => {
+        project.gallery = images;
+        renderProjects();
+      });
+    });
+    card.querySelector(".project-remove").addEventListener("click", () => {
+      if (isPersistedProject(project)) pendingProjectRemovalIds.add(project.id);
+      content.portfolio.projects.splice(index, 1);
+      activeProjectId = null;
+      renderProjects();
+    });
+    projectsList.appendChild(card);
+  }
+
+  function renderProjects() {
+    projectsList.innerHTML = "";
+    const activeIndex = content.portfolio.projects.findIndex((project) => project.id === activeProjectId);
+    if (activeIndex < 0) {
+      activeProjectId = null;
+      renderProjectTiles();
+      return;
+    }
+    renderProjectEditor(content.portfolio.projects[activeIndex], activeIndex);
   }
 
   function renderServices() {
@@ -432,6 +497,7 @@
 
     const existingById = new Map((existingProjects || []).map((project) => [project.id, project]));
     for (const [index, project] of content.portfolio.projects.entries()) {
+      const previousProjectId = project.id;
       const coverUrl = project.cover?.startsWith("data:")
         ? await uploadDataUrl(storagePath("covers", project.coverName || `${project.title}-cover`), project.cover)
         : project.coverUrl || project.cover || "";
@@ -493,6 +559,7 @@
       if (publishError) throw publishError;
 
       project.id = projectId;
+      if (activeProjectId === previousProjectId) activeProjectId = projectId;
       project.cover = "";
       project.coverUrl = coverUrl;
     }
@@ -738,7 +805,13 @@
 
   tabs.forEach((tab) => tab.addEventListener("click", () => switchTab(tab.dataset.tab)));
   addProjectButton.addEventListener("click", () => {
-    content.portfolio.projects.push(createProject());
+    const project = createProject();
+    content.portfolio.projects.push(project);
+    activeProjectId = project.id;
+    renderProjects();
+  });
+  projectsBackButton.addEventListener("click", () => {
+    activeProjectId = null;
     renderProjects();
   });
   resetButton.addEventListener("click", () => {
@@ -751,6 +824,7 @@
       localStorage.removeItem(STORAGE_CV);
       localStorage.removeItem(STORAGE_ASSETS);
       content = clone(defaultContent);
+      activeProjectId = null;
       bindInputs();
       renderProjects();
       renderServices();
@@ -798,4 +872,3 @@
     if (!supabaseClient) setStatus("Ready locally");
   });
 })();
-
