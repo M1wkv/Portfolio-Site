@@ -1,4 +1,3 @@
-
 (() => {
   const STORAGE_CONTENT = "portfolioSphere.adminContent";
   const STORAGE_CV = "portfolioSphere.cvNodes";
@@ -47,6 +46,7 @@
 
   let content = clone(defaultContent);
   let session = null;
+  const pendingProjectRemovalIds = new Set();
 
   const tabs = Array.from(document.querySelectorAll("[data-tab]"));
   const panels = Array.from(document.querySelectorAll("[data-panel]"));
@@ -131,15 +131,7 @@
   async function loadSupabaseContent() {
     if (!supabaseClient) return null;
     try {
-      const [
-        { data: profile },
-        { data: cvRows },
-        { data: projects },
-        { data: images },
-        { data: services },
-        { data: contacts },
-        { data: settings }
-      ] = await Promise.all([
+      const responses = await Promise.all([
         supabaseClient.from("profile").select("*").limit(1).maybeSingle(),
         supabaseClient.from("cv_sections").select("*").order("sort_order", { ascending: true }),
         supabaseClient.from("projects").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: false }),
@@ -148,6 +140,18 @@
         supabaseClient.from("contacts").select("*").limit(1).maybeSingle(),
         supabaseClient.from("site_settings").select("*").limit(1).maybeSingle()
       ]);
+      const failedResponse = responses.find((response) => response.error);
+      if (failedResponse) throw failedResponse.error;
+
+      const [
+        { data: profile },
+        { data: cvRows },
+        { data: projects },
+        { data: images },
+        { data: services },
+        { data: contacts },
+        { data: settings }
+      ] = responses;
 
       const imageMap = new Map();
       (images || []).forEach((image) => {
@@ -370,6 +374,7 @@
         });
       });
       card.querySelector(".project-remove").addEventListener("click", () => {
+        if (project.id) pendingProjectRemovalIds.add(project.id);
         content.portfolio.projects.splice(index, 1);
         renderProjects();
       });
@@ -426,8 +431,6 @@
     if (existingError) throw existingError;
 
     const existingById = new Map((existingProjects || []).map((project) => [project.id, project]));
-    const retainedIds = [];
-
     for (const [index, project] of content.portfolio.projects.entries()) {
       const coverUrl = project.cover?.startsWith("data:")
         ? await uploadDataUrl(storagePath("covers", project.coverName || `${project.title}-cover`), project.cover)
@@ -456,7 +459,6 @@
       if (projectError) throw projectError;
 
       const projectId = savedProject.id;
-      retainedIds.push(projectId);
       const { data: previousImages, error: previousImagesError } = await supabaseClient
         .from("project_images")
         .select("id")
@@ -495,14 +497,13 @@
       project.coverUrl = coverUrl;
     }
 
-    const removedIds = (existingProjects || [])
-      .map((project) => project.id)
-      .filter((projectId) => !retainedIds.includes(projectId));
+    const removedIds = Array.from(pendingProjectRemovalIds);
     if (removedIds.length) {
       const { error: removeImagesError } = await supabaseClient.from("project_images").delete().in("project_id", removedIds);
       if (removeImagesError) throw removeImagesError;
       const { error: removeProjectsError } = await supabaseClient.from("projects").delete().in("id", removedIds);
       if (removeProjectsError) throw removeProjectsError;
+      pendingProjectRemovalIds.clear();
     }
   }
 
@@ -797,6 +798,4 @@
     if (!supabaseClient) setStatus("Ready locally");
   });
 })();
-
-
 
