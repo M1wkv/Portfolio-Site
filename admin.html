@@ -3,37 +3,37 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Portfolio Admin</title>
+    <title>Админ-панель портфолио</title>
     <link rel="stylesheet" href="admin.css?v=20260627-sphere-settings-3" />
   </head>
   <body>
     <main class="admin-shell">
       <aside class="admin-sidebar">
-        <a class="admin-back" href="sphere-embed.html">BACK TO SITE</a>
+        <a class="admin-back" href="sphere-embed.html">ВЕРНУТЬСЯ НА САЙТ</a>
         <div class="admin-title">
-          <span>LOCAL ADMIN</span>
-          <strong>Portfolio Control</strong>
+          <span>АДМИН-ПАНЕЛЬ</span>
+          <strong>Управление портфолио</strong>
         </div>
-        <nav class="admin-tabs" aria-label="Admin sections">
-          <button class="is-active" type="button" data-tab="profile">Profile</button>
-          <button type="button" data-tab="cv">CV</button>
-          <button type="button" data-tab="portfolio">Portfolio</button>
-          <button type="button" data-tab="services">Services</button>
-          <button type="button" data-tab="contacts">Contacts</button>
-          <button type="button" data-tab="settings">Settings / SEO</button>
+        <nav class="admin-tabs" aria-label="Разделы админ-панели">
+          <button class="is-active" type="button" data-tab="profile">Профиль</button>
+          <button type="button" data-tab="cv">Резюме</button>
+          <button type="button" data-tab="portfolio">Портфолио</button>
+          <button type="button" data-tab="services">Услуги</button>
+          <button type="button" data-tab="contacts">Контакты</button>
+          <button type="button" data-tab="settings">Настройки / SEO</button>
         </nav>
       </aside>
 
       <section class="admin-workspace">
         <header class="workspace-header">
           <div>
-            <span id="sectionKicker">Profile / Главный блок</span>
+            <span id="sectionKicker">Профиль / Главный блок</span>
             <h1 id="sectionTitle">Главный блок</h1>
           </div>
           <div class="workspace-actions">
-            <span id="saveStatus" class="save-status">Not saved</span>
-            <button id="resetButton" type="button">RESET</button>
-            <button id="saveButton" type="button">SAVE</button>
+            <span id="saveStatus" class="save-status">Не сохранено</span>
+            <button id="resetButton" type="button">СБРОСИТЬ</button>
+            <button id="saveButton" type="button">СОХРАНИТЬ</button>
           </div>
         </header>
 
@@ -52,7 +52,7 @@
                 <span>Фото</span>
                 <input id="profilePhotoInput" type="file" accept="image/*" />
                 <input name="profile.photo" type="hidden" />
-                <small id="profilePhotoName">No file selected</small>
+                <small id="profilePhotoName">Файл не выбран</small>
               </label>
               <label class="wide">
                 <span>Короткое описание</span>
@@ -99,7 +99,7 @@
                 <span>PDF-CV</span>
                 <input id="cvPdfInput" type="file" accept="application/pdf" />
                 <input name="cv.pdf" type="hidden" />
-                <small id="cvPdfName">No file selected</small>
+                <small id="cvPdfName">Файл не выбран</small>
               </label>
             </div>
           </section>
@@ -107,7 +107,7 @@
           <section class="admin-section" data-panel="portfolio">
             <div class="section-toolbar">
               <p>Добавление проектов, обложка, описание, галерея, категория, статус.</p>
-              <button id="addProjectButton" type="button">ADD PROJECT</button>
+              <button id="addProjectButton" type="button">ДОБАВИТЬ ПРОЕКТ</button>
             </div>
             <div id="projectsList" class="projects-list"></div>
           </section>
@@ -155,7 +155,7 @@
                 <span>Язык</span>
                 <select name="settings.language">
                   <option value="ru">Русский</option>
-                  <option value="en">English</option>
+                  <option value="en">Английский</option>
                 </select>
               </label>
               <label class="wide">
@@ -163,10 +163,10 @@
                 <textarea name="settings.description" rows="4"></textarea>
               </label>
               <label class="wide">
-                <span>Favicon</span>
+                <span>Иконка сайта</span>
                 <input id="faviconInput" type="file" accept="image/*" />
                 <input name="settings.favicon" type="hidden" />
-                <small id="faviconName">No file selected</small>
+                <small id="faviconName">Файл не выбран</small>
               </label>
               <label class="wide">
                 <span>Аналитика</span>
@@ -174,7 +174,7 @@
               </label>
               <div class="settings-subsection wide">
                 <div class="settings-subsection-head">
-                  <span>Sphere / Визуальные параметры</span>
+                  <span>Сфера / Визуальные параметры</span>
                   <p>Параметры применяются к главной 3D-сфере после сохранения.</p>
                 </div>
                 <div class="form-grid two sphere-settings-grid">
@@ -187,7 +187,7 @@
                     <input name="settings.sphere.elementScale" type="range" min="0.1" max="1" step="0.01" />
                   </label>
                   <label>
-                    <span>Fisheye</span>
+                    <span>Рыбий глаз</span>
                     <input name="settings.sphere.fisheye" type="range" min="0" max="1" step="0.01" />
                   </label>
                   <label>
@@ -209,7 +209,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="admin-storage.js"></script>
-<script src="admin.js?v=20260627-sphere-settings-3"></script>
+<script src="admin.js?v=20260627-ru-4"></script>
   </body>
 </html>
 
