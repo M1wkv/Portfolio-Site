@@ -1,3 +1,4 @@
+
 (async () => {
   const STORAGE_ASSETS = "portfolioSphere.assets";
   const STORAGE_CV = "portfolioSphere.cvNodes";
@@ -9,6 +10,8 @@
     ["Alexander", "Александр"],
     ["Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.", "Креативный дизайнер. Создаю визуальные системы, проекты с использованием ИИ и интерактивные портфолио."],
     ["Portfolio systems, AI campaigns, social content packs, landing visuals and case studies.", "Системы портфолио, ИИ-кампании, контент для социальных сетей, визуалы для лендингов и дизайн-кейсы."],
+    ["Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics.", "Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea и основы веб-вёрстки."],
+    ["Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics", "Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea и основы веб-вёрстки"],
     ["Available for visual identity, AI art direction, portfolio sites and design case packaging.", "Открыт к проектам по айдентике, ИИ-арт-дирекшну, сайтам-портфолио и оформлению дизайн-кейсов."],
     ["Profile", "Профиль"], ["Experience", "Опыт"], ["Education", "Образование"],
     ["Skills", "Навыки"], ["Certificates", "Сертификаты"], ["Services", "Услуги"],
@@ -132,7 +135,7 @@
     if (!profile && !cv?.length) return [];
 
     const profileText = localizeKnownText(profile?.short_description || "Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.");
-    const cvText = (cv || []).map((section) => [localizeKnownText(section.title), localizeKnownText(section.description)].filter(Boolean).join(": ")).filter(Boolean).join(" ");
+    const cvText = (cv || []).filter((section) => section.description).map((section) => [localizeKnownText(section.title), localizeKnownText(section.description)].join(": ")).join(" ");
     const serviceText = (services || []).map((service) => localizeKnownText(service.title)).filter(Boolean).join(", ");
     const contactText = contacts ? [contacts.telegram, contacts.email, contacts.phone].filter(Boolean).join(" / ") : "";
     return [
@@ -161,7 +164,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260627-ru-7";
+    script.src = "sphere.js?v=20260627-ru-8";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
