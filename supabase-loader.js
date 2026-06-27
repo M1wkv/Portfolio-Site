@@ -1,10 +1,24 @@
-
 (async () => {
   const STORAGE_ASSETS = "portfolioSphere.assets";
   const STORAGE_CV = "portfolioSphere.cvNodes";
   const SPHERE_ASSET_LIMIT = 50;
   const client = window.createPortfolioSupabase ? window.createPortfolioSupabase() : null;
   let activeContentSignature = "";
+  const knownTextTranslations = new Map([
+    ["CV / ART DIRECTION / AI DESIGN", "РЕЗЮМЕ / АРТ-ДИРЕКШН / ИИ-ДИЗАЙН"],
+    ["Alexander", "Александр"],
+    ["Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.", "Креативный дизайнер. Создаю визуальные системы, проекты с использованием ИИ и интерактивные портфолио."],
+    ["Portfolio systems, AI campaigns, social content packs, landing visuals and case studies.", "Системы портфолио, ИИ-кампании, контент для социальных сетей, визуалы для лендингов и дизайн-кейсы."],
+    ["Available for visual identity, AI art direction, portfolio sites and design case packaging.", "Открыт к проектам по айдентике, ИИ-арт-дирекшну, сайтам-портфолио и оформлению дизайн-кейсов."],
+    ["Profile", "Профиль"], ["Experience", "Опыт"], ["Education", "Образование"],
+    ["Skills", "Навыки"], ["Certificates", "Сертификаты"], ["Services", "Услуги"],
+    ["Contact", "Контакты"], ["CV", "Резюме"], ["Branding", "Брендинг"],
+    ["SMM design", "SMM-дизайн"], ["Presentations", "Презентации"], ["Print", "Печатный дизайн"]
+  ]);
+
+  function localizeKnownText(value) {
+    return knownTextTranslations.get(value) || value;
+  }
 
   function normalizeAssets(items) {
     return (Array.isArray(items) ? items : [])
@@ -94,7 +108,7 @@
       });
       return {
         projectId: project.id,
-        title: project.title || "Untitled",
+        title: project.title || "Без названия",
         updatedAt: project.updated_at || project.created_at || "",
         assets
       };
@@ -117,16 +131,16 @@
     ]);
     if (!profile && !cv?.length) return [];
 
-    const profileText = profile?.short_description || "Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.";
-    const cvText = (cv || []).map((section) => [section.title, section.description].filter(Boolean).join(": ")).filter(Boolean).join(" ");
-    const serviceText = (services || []).map((service) => service.title).filter(Boolean).join(", ");
+    const profileText = localizeKnownText(profile?.short_description || "Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.");
+    const cvText = (cv || []).map((section) => [localizeKnownText(section.title), localizeKnownText(section.description)].filter(Boolean).join(": ")).filter(Boolean).join(" ");
+    const serviceText = (services || []).map((service) => localizeKnownText(service.title)).filter(Boolean).join(", ");
     const contactText = contacts ? [contacts.telegram, contacts.email, contacts.phone].filter(Boolean).join(" / ") : "";
     return [
-      { look: "center", yaw: 0, pitch: 0, eyebrow: profile?.role || "CV / ART DIRECTION / AI DESIGN", title: profile?.name || "Alexander", body: profileText, type: "hero" },
-      { look: "top", yaw: 0, pitch: 34, title: "Profile", body: profileText },
-      { look: "bottom", yaw: 0, pitch: -34, title: "CV", body: cvText || "Portfolio systems, AI campaigns, social content packs, landing visuals and case studies." },
-      { look: "left", yaw: -42, pitch: 0, title: "Services", body: serviceText || "Branding, SMM design, presentations, Web / UI, print." },
-      { look: "right", yaw: 42, pitch: 0, title: "Contact", body: contactText || "Available for visual identity, AI art direction, portfolio sites and design case packaging." }
+      { look: "center", yaw: 0, pitch: 0, eyebrow: localizeKnownText(profile?.role || "CV / ART DIRECTION / AI DESIGN"), title: localizeKnownText(profile?.name || "Alexander"), body: profileText, type: "hero" },
+      { look: "top", yaw: 0, pitch: 34, title: "Профиль", body: profileText },
+      { look: "bottom", yaw: 0, pitch: -34, title: "Резюме", body: cvText || "Системы портфолио, ИИ-кампании, контент для социальных сетей, визуалы для лендингов и дизайн-кейсы." },
+      { look: "left", yaw: -42, pitch: 0, title: "Услуги", body: serviceText || "Брендинг, SMM-дизайн, презентации, Web / UI и печатный дизайн." },
+      { look: "right", yaw: 42, pitch: 0, title: "Контакты", body: contactText || "Открыт к проектам по айдентике, ИИ-арт-дирекшну, сайтам-портфолио и оформлению дизайн-кейсов." }
     ];
   }
 
@@ -147,7 +161,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260627-project-ui-6";
+    script.src = "sphere.js?v=20260627-ru-7";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
