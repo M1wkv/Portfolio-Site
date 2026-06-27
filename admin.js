@@ -62,13 +62,13 @@
   const projectsBackButton = document.getElementById("projectsBackButton");
   const portfolioModeText = document.getElementById("portfolioModeText");
   const servicesList = document.getElementById("servicesList");
+  const sphereSettingInputs = Array.from(form.querySelectorAll('input[type="range"][name^="settings.sphere."]'));
 
   const sectionLabels = {
     profile: ["Profile / Главный блок", "Главный блок"],
     cv: ["CV / Резюме", "Резюме"],
     portfolio: ["Portfolio / Кейсы", "Кейсы"],
     services: ["Services / Услуги", "Услуги"],
-    contacts: ["Contacts / Связь", "Связь"],
     settings: ["Settings / SEO", "SEO и настройки"]
   };
 
@@ -252,6 +252,16 @@
     document.getElementById("profilePhotoName").textContent = content.profile.photo || content.profile.photoUrl ? "Image selected" : "No file selected";
     document.getElementById("cvPdfName").textContent = content.cv.pdfName || content.cv.pdfUrl || "No file selected";
     document.getElementById("faviconName").textContent = content.settings.faviconName || content.settings.faviconUrl || "No file selected";
+    updateSphereSettingValues();
+  }
+
+  function updateSphereSettingValues() {
+    sphereSettingInputs.forEach((input) => {
+      const output = form.querySelector(`[data-sphere-value="${input.name}"]`);
+      if (!output) return;
+      const value = Number(input.value);
+      output.textContent = input.name === "settings.sphere.size" ? value.toFixed(1) : value.toFixed(2);
+    });
   }
 
   function collectInputs() {
@@ -385,20 +395,19 @@
       </div>
       <div class="project-grid">
         <label><span>Название</span><input data-project-field="title" type="text"></label>
-        <label><span>Категория</span><input data-project-field="category" type="text"></label>
         <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
         <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "Обложка не выбрана"}</small></label>
-        <label><span>Обложка URL</span><input data-project-field="coverUrl" type="text" placeholder="https://..."></label>
-        <label class="project-gallery"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} изображений выбрано` : "Изображения не выбраны"}</small></label>
-        <label class="project-gallery"><span>Галерея URL</span><textarea data-project-field="galleryUrls" rows="4" placeholder="Одна ссылка на строку"></textarea></label>
+        <label><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} изображений выбрано` : "Изображения не выбраны"}</small></label>
         <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
-        <label><span>Инструменты</span><input data-project-field="tools" type="text"></label>
-        <label><span>Срок</span><input data-project-field="timeline" type="text"></label>
-        <label class="project-gallery"><span>Что сделали</span><textarea data-project-field="scope" rows="3"></textarea></label>
-        <label class="project-gallery"><span>Результат</span><textarea data-project-field="result" rows="3"></textarea></label>
+        <div class="project-details-grid">
+          <label><span>Инструменты</span><textarea data-project-field="tools" rows="3"></textarea></label>
+          <label><span>Срок</span><textarea data-project-field="timeline" rows="3"></textarea></label>
+          <label><span>Что сделали</span><textarea data-project-field="scope" rows="3"></textarea></label>
+          <label><span>Результат</span><textarea data-project-field="result" rows="3"></textarea></label>
+        </div>
       </div>
     `;
-    ["title", "category", "status", "coverUrl", "galleryUrls", "description", "tools", "timeline", "scope", "result"].forEach((fieldName) => {
+    ["title", "status", "description", "tools", "timeline", "scope", "result"].forEach((fieldName) => {
       const field = card.querySelector(`[data-project-field="${fieldName}"]`);
       field.value = project[fieldName] || "";
       field.addEventListener("input", () => {
@@ -410,7 +419,7 @@
       });
       field.addEventListener("change", () => {
         project[fieldName] = field.value;
-        if (["coverUrl", "galleryUrls", "status"].includes(fieldName)) renderProjects();
+        if (fieldName === "status") renderProjects();
       });
     });
     card.querySelector('[data-project-file="cover"]').addEventListener("change", (event) => {
@@ -862,6 +871,7 @@
       document.getElementById("faviconName").textContent = name;
     });
   });
+  sphereSettingInputs.forEach((input) => input.addEventListener("input", updateSphereSettingValues));
 
   setupAuth();
   loadContent().then((storedContent) => {
