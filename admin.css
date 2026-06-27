@@ -340,6 +340,24 @@ input[type="range"]::-webkit-slider-thumb {
   min-height: 58px;
 }
 
+.sphere-setting-head {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sphere-setting-head b {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.cv-contacts-section {
+  margin-top: 30px;
+}
+
 small {
   color: var(--muted);
 }
@@ -521,6 +539,13 @@ small {
   grid-column: 1 / -1;
 }
 
+.project-details-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
 .service-card {
   grid-template-columns: minmax(160px, 0.36fr) minmax(0, 1fr) auto;
   align-items: start;
@@ -572,5 +597,105 @@ small {
   .project-grid,
   .service-card {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-panel {
+    position: static;
+    width: auto;
+    margin: 0 16px 16px;
+  }
+
+  .admin-sidebar {
+    gap: 18px;
+    padding: 18px 16px;
+  }
+
+  .admin-title strong {
+    max-width: none;
+    font-size: 28px;
+  }
+
+  .admin-tabs {
+    gap: 6px;
+  }
+
+  .admin-tabs button {
+    height: 42px;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  .workspace-header {
+    gap: 16px;
+    padding: 18px 16px;
+  }
+
+  .workspace-header h1 {
+    font-size: 30px;
+  }
+
+  .workspace-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .save-status {
+    grid-column: 1 / -1;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .workspace-actions button {
+    min-width: 0;
+    padding: 0 10px;
+  }
+
+  .admin-form {
+    padding: 18px 16px 32px;
+  }
+
+  .projects-list {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card {
+    padding: 14px;
+    border-radius: 8px;
+  }
+
+  .project-head {
+    align-items: flex-start;
+  }
+
+  .project-preview {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .project-preview img,
+  .project-preview > span {
+    width: 88px;
+    height: 66px;
+  }
+
+  .section-toolbar-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 440px) {
+  .project-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-tile-copy strong {
+    font-size: 18px;
+  }
+
+  .project-tile-meta {
+    flex-direction: column;
+    gap: 4px;
   }
 }
