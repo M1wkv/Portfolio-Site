@@ -4,95 +4,95 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Portfolio Sphere</title>
+    <title>Сфера портфолио</title>
     <link rel="stylesheet" href="sphere.css?v=20260627-project-ui-2" />
   </head>
   <body>
     <main class="sphere-page">
-      <canvas id="sphereCanvas" aria-label="Portfolio sphere"></canvas>
+      <canvas id="sphereCanvas" aria-label="Сфера портфолио"></canvas>
 
       <header class="sphere-brand">
-        <div>PORTFOLIO SPHERE</div>
-        <div>LOCAL RENDERER</div>
+        <div>СФЕРА ПОРТФОЛИО</div>
+        <div>ИНТЕРАКТИВНАЯ СЦЕНА</div>
       </header>
 
-      <nav class="top-nav" aria-label="Primary navigation">
-        <button class="top-nav-link" id="cvOpen" type="button">CV</button>
-        <a class="top-nav-link" href="admin.html">ADMIN</a>
+      <nav class="top-nav" aria-label="Основная навигация">
+        <button class="top-nav-link" id="cvOpen" type="button">РЕЗЮМЕ</button>
+        <a class="top-nav-link" href="admin.html">АДМИН</a>
       </nav>
 
       <aside class="sphere-dials">
         <label class="sphere-control" id="sphereSizeDial">
-          <span class="sphere-control-head"><span>SPHERE SIZE</span><b id="sphereSizeValue">0.4</b></span>
-          <input class="sphere-line-range" id="sphereSizeRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Sphere size" />
+          <span class="sphere-control-head"><span>РАЗМЕР СФЕРЫ</span><b id="sphereSizeValue">0.4</b></span>
+          <input class="sphere-line-range" id="sphereSizeRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Размер сферы" />
         </label>
 
         <label class="sphere-control" id="elementScaleDial">
-          <span class="sphere-control-head"><span>ELEMENT SCALE</span><b id="elementScaleValue">0.40</b></span>
-          <input class="sphere-line-range" id="elementScaleRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Element scale" />
+          <span class="sphere-control-head"><span>РАЗМЕР ЭЛЕМЕНТОВ</span><b id="elementScaleValue">0.40</b></span>
+          <input class="sphere-line-range" id="elementScaleRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Размер элементов" />
         </label>
       </aside>
       <input id="fisheyeRange" type="hidden" value="0.15" />
       <span id="fisheyeValue" hidden>0.15</span>
 
       <section class="project-view-ui" id="projectViewUi" hidden>
-        <button class="project-back" id="projectBack" type="button">BACK</button>
+        <button class="project-back" id="projectBack" type="button">НАЗАД</button>
         <div class="project-heading">
-          <strong id="projectTitle">DESIGN CASE</strong>
-          <span>Visual system, AI content direction and digital presentation</span>
+          <strong id="projectTitle">ДИЗАЙН-КЕЙС</strong>
+          <span>Визуальная система, ИИ-контент и цифровая презентация</span>
         </div>
-        <button class="project-open" id="projectOpen" type="button">OPEN</button>
+        <button class="project-open" id="projectOpen" type="button">ОТКРЫТЬ</button>
         <article class="project-case">
           <p>
-            A compact design case built around a visual identity and image-driven presentation system.
-            The work combines art direction, AI-assisted production, retouching and interface-ready assets.
+            Компактный дизайн-кейс, построенный вокруг визуальной айдентики и презентационной системы.
+            Проект объединяет арт-дирекшн, производство с помощью ИИ, ретушь и материалы для цифровых интерфейсов.
           </p>
           <div class="project-case-grid">
-            <span><b>Tools</b> Figma, Photoshop, Midjourney, After Effects</span>
-            <span><b>Timeline</b> 2 weeks from concept to final assets</span>
-            <span><b>Scope</b> Direction, image series, layout logic and motion-ready materials</span>
-            <span><b>Result</b> A flexible visual language for portfolio, social and landing-page use</span>
+            <span><b>Инструменты</b> Figma, Photoshop, Midjourney, After Effects</span>
+            <span><b>Срок</b> 2 недели от концепции до финальных материалов</span>
+            <span><b>Задачи</b> Арт-дирекшн, серия изображений, логика макетов и материалы для анимации</span>
+            <span><b>Результат</b> Гибкий визуальный язык для портфолио, соцсетей и лендингов</span>
           </div>
         </article>
       </section>
 
       <section class="cv-view" id="cvView" hidden>
-        <button class="cv-back" id="cvBack" type="button">BACK</button>
-        <div class="cv-room" aria-label="CV 3D room">
+        <button class="cv-back" id="cvBack" type="button">НАЗАД</button>
+        <div class="cv-room" aria-label="Трёхмерная сцена резюме">
           <div class="cv-room-space">
             <section class="cv-panel cv-panel-center" data-look="center">
-              <p>CV / ART DIRECTION / AI DESIGN</p>
-              <h1>Alexander</h1>
+              <p>РЕЗЮМЕ / АРТ-ДИРЕКШН / ИИ-ДИЗАЙН</p>
+              <h1>Александр</h1>
               <span>
-                Creative designer building visual systems, AI-assisted image stories and interactive
-                portfolio experiences for brands, digital products and creative presentations.
+                Креативный дизайнер. Создаю визуальные системы, проекты с использованием ИИ и интерактивные
+                портфолио для брендов, цифровых продуктов и творческих презентаций.
               </span>
             </section>
 
             <section class="cv-panel cv-panel-top" data-look="top">
-              <h2>Profile</h2>
+              <h2>Профиль</h2>
               <p>
-                Designer focused on visual direction, generative content, interface composition and
-                cinematic digital cases.
+                Работаю с визуальным направлением, генеративным контентом, композицией интерфейсов
+                и выразительными цифровыми кейсами.
               </p>
             </section>
 
             <section class="cv-panel cv-panel-bottom" data-look="bottom">
-              <h2>Experience</h2>
+              <h2>Опыт</h2>
               <p>
-                Portfolio systems, AI campaigns, social content packs, landing visuals, presentation
-                decks and image-led case studies.
+                Системы портфолио, ИИ-кампании, контент для социальных сетей, визуалы для лендингов,
+                презентации и дизайн-кейсы.
               </p>
             </section>
 
             <section class="cv-panel cv-panel-left" data-look="left">
-              <h2>Tools</h2>
-              <p>Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea, Web layout basics.</p>
+              <h2>Инструменты</h2>
+              <p>Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea и основы веб-вёрстки.</p>
             </section>
 
             <section class="cv-panel cv-panel-right" data-look="right">
-              <h2>Contact</h2>
-              <p>Available for visual identity, AI art direction, portfolio sites and design case packaging.</p>
+              <h2>Контакты</h2>
+              <p>Открыт к проектам по айдентике, ИИ-арт-дирекшну, сайтам-портфолио и оформлению дизайн-кейсов.</p>
             </section>
           </div>
         </div>
@@ -104,9 +104,9 @@
     <script src="supabase-config.js"></script>
     <script src="sphere-assets.js"></script>
     <script src="admin-storage.js"></script>
-<script src="supabase-loader.js?v=20260627-project-ui-20"></script>
+<script src="site-localization.js?v=20260627-safe-ru-1"></script>
+<script src="supabase-loader.js?v=20260627-safe-ru-1"></script>
   </body>
 </html>
-
 
 
