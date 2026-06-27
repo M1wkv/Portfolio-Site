@@ -158,9 +158,63 @@
       "const supabaseAssets = await loadSupabaseAssets();\n      if (supabaseAssets.length) return supabaseAssets;\n      if (!window.PortfolioStorage) return loadStoredAssets();\n      return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS) || loadStoredAssets());",
       "const storedAssets = loadStoredAssets();\n      if (storedAssets.length) return storedAssets;\n      if (!window.PortfolioStorage) return storedAssets;\n      return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS) || storedAssets);"
     );
+    const spatialReplacement = `function getVisibleItems() {
+    return mixSpatialItems(items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length)));
+  }
+
+  function projectKey(item) {
+    return item?.projectId || item?.title || item?.src || "";
+  }
+
+  function initialSphereDepth(index, count) {
+    const point = fibonacciPoint(index, count);
+    const cosY = Math.cos(0.48);
+    const sinY = Math.sin(0.48);
+    const cosX = Math.cos(-0.22);
+    const sinX = Math.sin(-0.22);
+    const z1 = point.x * sinY + point.z * cosY;
+    return point.y * sinX + z1 * cosX;
+  }
+
+  function mixSpatialItems(sourceItems) {
+    if (sourceItems.length < 3) return sourceItems;
+    const groups = new Map();
+    sourceItems.forEach((item) => {
+      const key = projectKey(item);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(item);
+    });
+    const queues = Array.from(groups.entries()).map(([key, groupItems]) => ({ key, items: groupItems.slice() })).filter((group) => group.items.length);
+    if (queues.length < 2) return sourceItems;
+    const slots = sourceItems.map((_, index) => ({ index, depth: initialSphereDepth(index, sourceItems.length) })).sort((a, b) => b.depth - a.depth);
+    const mixed = new Array(sourceItems.length);
+    let slotIndex = 0;
+    let cycle = 0;
+    while (slotIndex < slots.length && queues.some((group) => group.items.length)) {
+      const active = queues.filter((group) => group.items.length);
+      const start = cycle % active.length;
+      for (let offset = 0; offset < active.length && slotIndex < slots.length; offset++) {
+        const group = active[(start + offset) % active.length];
+        mixed[slots[slotIndex].index] = group.items.shift();
+        slotIndex += 1;
+      }
+      cycle += 1;
+    }
+    return mixed.filter(Boolean);
+  }
+
+  function getProjectItems() {
+    if (!activeProjectKey) return getVisibleItems();
+    const projectItems = items.filter((item) => projectKey(item) === activeProjectKey);
+    return projectItems.length ? projectItems.slice(0, Math.min(MAX_VISIBLE_ITEMS, projectItems.length)) : getVisibleItems();
+  }
+
+  function getRenderItems() {
+    return projectActive() ? getProjectItems() : getVisibleItems();
+  }`;
     patched = patched.replace(
       "function getVisibleItems() {\n    return items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length));\n  }",
-      "function getVisibleItems() {\n    return mixSpatialItems(items.slice(0, Math.min(MAX_VISIBLE_ITEMS, items.length)));\n  }\n\n  function projectKey(item) {\n    return item?.projectId || item?.title || item?.src || \"\";\n  }\n\n  function mixSpatialItems(sourceItems) {\n    if (sourceItems.length < 3) return sourceItems;\n    const groups = new Map();\n    sourceItems.forEach((item) => {\n      const key = projectKey(item);\n      if (!groups.has(key)) groups.set(key, []);\n      groups.get(key).push(item);\n    });\n    const queues = Array.from(groups.entries()).map(([key, groupItems]) => ({ key, items: groupItems.slice() })).filter((group) => group.items.length);\n    if (queues.length < 2) return sourceItems;\n    const mixed = [];\n    while (mixed.length < sourceItems.length && queues.some((group) => group.items.length)) {\n      const lastKey = projectKey(mixed[mixed.length - 1]);\n      queues.filter((group) => group.items.length).sort((a, b) => {\n        if (a.key === lastKey) return 1;\n        if (b.key === lastKey) return -1;\n        return b.items.length - a.items.length;\n      }).forEach((group) => {\n        if (mixed.length < sourceItems.length && group.items.length) mixed.push(group.items.shift());\n      });\n    }\n    return mixed;\n  }\n\n  function getProjectItems() {\n    if (!activeProjectKey) return getVisibleItems();\n    const projectItems = items.filter((item) => projectKey(item) === activeProjectKey);\n    return projectItems.length ? projectItems.slice(0, Math.min(MAX_VISIBLE_ITEMS, projectItems.length)) : getVisibleItems();\n  }\n\n  function getRenderItems() {\n    return projectActive() ? getProjectItems() : getVisibleItems();\n  }"
+      spatialReplacement
     );
     patched = patched.replace(
       "const visibleItems = getVisibleItems();\n    const sphereEntries",
