@@ -195,7 +195,7 @@
     const z1 = point.x * sinY + point.z * cosY;
     const y1 = point.y * cosX - z1 * sinX;
     const z2 = point.y * sinX + z1 * cosX;
-    return { index, depth: z2, angle: Math.atan2(y1, x1) };
+    return { index, depth: z2, angle: Math.atan2(y1, x1), radius: Math.hypot(x1, y1) };
   }
 
   function mixSpatialItems(sourceItems) {
@@ -210,13 +210,37 @@
       .map(([key, groupItems]) => ({ key, title: groupItems[0]?.title || "", items: groupItems.slice() }))
       .filter((group) => group.items.length);
     if (queues.length < 2) return sourceItems;
-    const depthSortedSlots = sourceItems.map((_, index) => initialSphereSlot(index, sourceItems.length)).sort((a, b) => b.depth - a.depth);
+    const allSlots = sourceItems.map((_, index) => initialSphereSlot(index, sourceItems.length));
+    const frontCandidates = allSlots.filter((slot) => slot.depth > 0.1);
+    const anchorSlots = [];
+    const anchorCount = Math.min(frontCandidates.length, queues.length * 3);
+    for (let anchorIndex = 0; anchorIndex < anchorCount; anchorIndex++) {
+      const targetAngle = -Math.PI + (Math.PI * 2 * anchorIndex) / anchorCount;
+      const targetRadius = 0.42 + (Math.floor(anchorIndex / queues.length) % 3) * 0.12;
+      let bestIndex = 0;
+      let bestScore = -Infinity;
+      frontCandidates.forEach((slot, index) => {
+        const angleDistance = Math.abs(Math.atan2(Math.sin(slot.angle - targetAngle), Math.cos(slot.angle - targetAngle)));
+        const score = slot.depth * 1.4 - angleDistance * 0.75 - Math.abs(slot.radius - targetRadius) * 1.2;
+        if (score > bestScore) {
+          bestScore = score;
+          bestIndex = index;
+        }
+      });
+      anchorSlots.push(frontCandidates.splice(bestIndex, 1)[0]);
+    }
+    const anchorIndexes = new Set(anchorSlots.map((slot) => slot.index));
+    const depthSortedSlots = allSlots.filter((slot) => !anchorIndexes.has(slot.index)).sort((a, b) => b.depth - a.depth);
     const slots = [];
     const bandSize = Math.max(queues.length, queues.length * 2);
     for (let start = 0; start < depthSortedSlots.length; start += bandSize) {
       slots.push(...depthSortedSlots.slice(start, start + bandSize).sort((a, b) => a.angle - b.angle));
     }
     const mixed = new Array(sourceItems.length);
+    anchorSlots.forEach((slot, index) => {
+      const group = queues[index % queues.length];
+      mixed[slot.index] = group.items.shift();
+    });
     let slotIndex = 0;
     let cycle = 0;
     while (slotIndex < slots.length && queues.some((group) => group.items.length)) {
