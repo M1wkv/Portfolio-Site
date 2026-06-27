@@ -109,6 +109,7 @@
 
   async function loadCvNodes() {
     if (!client) return [];
+    const t = window.PortfolioLocale?.text || ((value) => value);
     const [{ data: profile }, { data: cv }, { data: services }, { data: contacts }] = await Promise.all([
       client.from("profile").select("*").limit(1).maybeSingle(),
       client.from("cv_sections").select("*").order("sort_order", { ascending: true }),
@@ -117,16 +118,16 @@
     ]);
     if (!profile && !cv?.length) return [];
 
-    const profileText = profile?.short_description || "Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.";
-    const cvText = (cv || []).map((section) => [section.title, section.description].filter(Boolean).join(": ")).filter(Boolean).join(" ");
-    const serviceText = (services || []).map((service) => service.title).filter(Boolean).join(", ");
+    const profileText = t(profile?.short_description || "Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.");
+    const cvText = (cv || []).filter((section) => section.description).map((section) => [t(section.title), t(section.description)].join(": ")).join(" ");
+    const serviceText = (services || []).map((service) => t(service.title)).filter(Boolean).join(", ");
     const contactText = contacts ? [contacts.telegram, contacts.email, contacts.phone].filter(Boolean).join(" / ") : "";
     return [
-      { look: "center", yaw: 0, pitch: 0, eyebrow: profile?.role || "CV / ART DIRECTION / AI DESIGN", title: profile?.name || "Alexander", body: profileText, type: "hero" },
-      { look: "top", yaw: 0, pitch: 34, title: "Profile", body: profileText },
-      { look: "bottom", yaw: 0, pitch: -34, title: "CV", body: cvText || "Portfolio systems, AI campaigns, social content packs, landing visuals and case studies." },
-      { look: "left", yaw: -42, pitch: 0, title: "Services", body: serviceText || "Branding, SMM design, presentations, Web / UI, print." },
-      { look: "right", yaw: 42, pitch: 0, title: "Contact", body: contactText || "Available for visual identity, AI art direction, portfolio sites and design case packaging." }
+      { look: "center", yaw: 0, pitch: 0, eyebrow: t(profile?.role || "CV / ART DIRECTION / AI DESIGN"), title: t(profile?.name || "Alexander"), body: profileText, type: "hero" },
+      { look: "top", yaw: 0, pitch: 34, title: t("Profile"), body: profileText },
+      { look: "bottom", yaw: 0, pitch: -34, title: t("CV"), body: cvText || t("Portfolio systems, AI campaigns, social content packs, landing visuals and case studies.") },
+      { look: "left", yaw: -42, pitch: 0, title: t("Services"), body: serviceText || t("Branding, SMM design, presentations, Web / UI, print.") },
+      { look: "right", yaw: 42, pitch: 0, title: t("Contact"), body: contactText || t("Available for visual identity, AI art direction, portfolio sites and design case packaging.") }
     ];
   }
 
@@ -204,6 +205,5 @@
   });
   window.setInterval(refreshIfContentChanged, 15000);
 })();
-
 
 
