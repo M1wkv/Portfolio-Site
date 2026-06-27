@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Portfolio Sphere</title>
-    <link rel="stylesheet" href="sphere.css" />
+    <link rel="stylesheet" href="sphere.css?v=20260627-project-ui-2" />
   </head>
   <body>
     <main class="sphere-page">
@@ -21,50 +21,18 @@
       </nav>
 
       <aside class="sphere-dials">
-        <label class="sphere-control">
-          <span class="sphere-control-label">SPHERE SIZE</span>
-          <span class="sphere-dial" id="sphereSizeDial">
-            <svg viewBox="0 0 124 124" aria-hidden="true">
-              <circle class="sphere-dial-track" cx="62" cy="62" r="54"></circle>
-              <circle class="sphere-dial-arc" cx="62" cy="62" r="54"></circle>
-            </svg>
-            <span class="sphere-dial-value" id="sphereSizeValue">0.4</span>
-            <input class="sphere-range" id="sphereSizeRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Sphere size" />
-          </span>
+        <label class="sphere-control" id="sphereSizeDial">
+          <span class="sphere-control-head"><span>SPHERE SIZE</span><b id="sphereSizeValue">0.4</b></span>
+          <input class="sphere-line-range" id="sphereSizeRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Sphere size" />
         </label>
 
-        <label class="sphere-control">
-          <span class="sphere-control-label">ELEMENT SCALE</span>
-          <span class="sphere-dial" id="elementScaleDial">
-            <svg viewBox="0 0 124 124" aria-hidden="true">
-              <circle class="sphere-dial-track" cx="62" cy="62" r="54"></circle>
-              <circle class="sphere-dial-arc" cx="62" cy="62" r="54"></circle>
-            </svg>
-            <span class="sphere-dial-value" id="elementScaleValue">1.00</span>
-            <input class="sphere-range" id="elementScaleRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Element scale" />
-          </span>
+        <label class="sphere-control" id="elementScaleDial">
+          <span class="sphere-control-head"><span>ELEMENT SCALE</span><b id="elementScaleValue">0.40</b></span>
+          <input class="sphere-line-range" id="elementScaleRange" type="range" min="0.1" max="1" step="0.01" value="0.4" aria-label="Element scale" />
         </label>
       </aside>
-
-      <aside class="sphere-bottom">
-        <label class="sphere-bottom-group">
-          <span class="sphere-bottom-label">FISHEYE</span>
-          <span class="sphere-fisheye">
-            <span id="fisheyeValue">0.15</span>
-            <input class="sphere-range" id="fisheyeRange" type="range" min="0" max="1" step="0.01" value="0.15" aria-label="Fisheye" />
-          </span>
-        </label>
-
-        <label class="sphere-bottom-group">
-          <span class="sphere-bottom-label">DIRECTION</span>
-          <span class="sphere-pad" id="directionPad">
-            <span class="sphere-pad-line horizontal"></span>
-            <span class="sphere-pad-line vertical"></span>
-            <span class="sphere-pad-handle" id="padHandle"></span>
-          </span>
-        </label>
-
-      </aside>
+      <input id="fisheyeRange" type="hidden" value="0.15" />
+      <span id="fisheyeValue" hidden>0.15</span>
 
       <section class="project-view-ui" id="projectViewUi" hidden>
         <button class="project-back" id="projectBack" type="button">BACK</button>
@@ -72,6 +40,7 @@
           <strong id="projectTitle">DESIGN CASE</strong>
           <span>Visual system, AI content direction and digital presentation</span>
         </div>
+        <button class="project-open" id="projectOpen" type="button">OPEN</button>
         <article class="project-case">
           <p>
             A compact design case built around a visual identity and image-driven presentation system.
@@ -134,7 +103,7 @@
     <script src="supabase-config.js"></script>
     <script src="sphere-assets.js"></script>
     <script src="admin-storage.js"></script>
-<script src="supabase-loader.js?v=20260627-project-pipeline-17"></script>
+<script src="supabase-loader.js?v=20260627-project-ui-18"></script>
   </body>
 </html>
 
