@@ -24,8 +24,9 @@
   const MAX_VISIBLE_ITEMS = 50;
   const STORAGE_ASSETS = "portfolioSphere.assets";
   const STORAGE_CV = "portfolioSphere.cvNodes";
+  const bootstrapData = readBootstrapData();
   const defaultAssets = window.PORTFOLIO_SUPABASE ? [] : (window.SPHERE_ASSETS || []).slice(0, 100);
-  const bootstrapAssets = normalizeAssets(window.PORTFOLIO_BOOTSTRAP?.assets || []);
+  const bootstrapAssets = normalizeAssets(bootstrapData.assets || window.PORTFOLIO_BOOTSTRAP?.assets || []);
   let assets = bootstrapAssets.length ? bootstrapAssets : loadStoredAssets();
   let items = [];
   let width = 0;
@@ -58,6 +59,7 @@
   let cvLook = "center";
   let cvCamera = { yaw: 0, pitch: 0 };
   let cvTargetCamera = { yaw: 0, pitch: 0 };
+  document.documentElement.dataset.sphereRuntimeStarted = "true";
 
   const state = {
     sphereSize: Number(sizeRange.value),
@@ -160,6 +162,8 @@
         exposeLoadedProjectDiagnostics();
       };
     });
+
+    document.documentElement.dataset.sphereRuntimeItemCount = String(items.length);
 
     updateUi();
   }
@@ -533,7 +537,7 @@
       body: "Available for visual identity, AI art direction, portfolio sites and design case packaging."
     }
   ];
-  const bootstrapCvNodes = window.PORTFOLIO_BOOTSTRAP?.cvNodes || [];
+  const bootstrapCvNodes = bootstrapData.cvNodes || window.PORTFOLIO_BOOTSTRAP?.cvNodes || [];
   let cvNodes = bootstrapCvNodes.length ? normalizeCvNodes(bootstrapCvNodes) : loadStoredCvNodes();
 
   function readJsonStorage(key, fallback) {
@@ -547,14 +551,9 @@
     }
   }
 
-  function normalizeAssets(nextAssets) {
-    if (!Array.isArray(nextAssets)) return defaultAssets.slice();
-    return nextAssets
-      .filter((asset) => asset && typeof asset.src === "string" && asset.src.trim())
-      .map((asset) => ({
-        src: asset.src.trim(),
-        title: typeof asset.title === "string" ? asset.title.trim() : "",
-   …1750 tokens truncated…2);
+  function readBootstrapData() {
+    try {
+      return JSON.parse(document.getElementById("sphereBoot…1872 tokens truncated…2);
     gradient.addColorStop(0, active ? "rgba(255,255,255,0.09)" : "rgba(255,255,255,0.055)");
     gradient.addColorStop(0.6, "rgba(255,255,255,0.018)");
     gradient.addColorStop(1, "rgba(255,255,255,0.003)");
