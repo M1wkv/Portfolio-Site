@@ -131,8 +131,21 @@
 
   function loadSphereScript() {
     const script = document.createElement("script");
-    script.src = "sphere.js?v=20260627-native-projects-1";
+    script.src = "sphere.js?v=20260627-native-projects-2";
+    script.onerror = () => {
+      document.documentElement.dataset.sphereRuntimeError = "script-load";
+    };
     document.body.appendChild(script);
+  }
+
+  function setBootstrapPayload(payload) {
+    window.PORTFOLIO_BOOTSTRAP = payload;
+    document.getElementById("sphereBootstrapData")?.remove();
+    const dataNode = document.createElement("script");
+    dataNode.id = "sphereBootstrapData";
+    dataNode.type = "application/json";
+    dataNode.textContent = JSON.stringify(payload);
+    document.head.appendChild(dataNode);
   }
 
   async function refreshIfContentChanged() {
@@ -148,13 +161,13 @@
   try {
     const [bundle, cvNodes] = await Promise.all([loadAssetBundle(), loadCvNodes()]);
     activeContentSignature = bundle.signature;
-    window.PORTFOLIO_BOOTSTRAP = { assets: bundle.assets, cvNodes };
+    setBootstrapPayload({ assets: bundle.assets, cvNodes });
     if (bundle.assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(bundle.assets));
     else localStorage.removeItem(STORAGE_ASSETS);
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
-    window.PORTFOLIO_BOOTSTRAP = { assets: [], cvNodes: [] };
+    setBootstrapPayload({ assets: [], cvNodes: [] });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
