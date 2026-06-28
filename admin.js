@@ -40,7 +40,7 @@
       faviconUrl: "",
       language: "ru",
       analytics: "",
-      sphere: { size: 0.6, elementScale: 0.6, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 }
+      sphere: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 }
     }
   };
 
@@ -258,7 +258,8 @@
       const output = form.querySelector(`[data-sphere-value="${input.name}"]`);
       if (!output) return;
       const value = Number(input.value);
-      output.textContent = input.name === "settings.sphere.size" ? value.toFixed(1) : value.toFixed(2);
+      if (input.name === "settings.sphere.itemCount") output.textContent = String(Math.round(value));
+      else output.textContent = input.name === "settings.sphere.size" ? value.toFixed(1) : value.toFixed(2);
     });
   }
 
@@ -874,4 +875,3 @@
     if (!supabaseClient) setStatus("Ready locally");
   });
 })();
-
