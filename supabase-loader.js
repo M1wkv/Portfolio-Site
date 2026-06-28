@@ -157,7 +157,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260628-project-index-1";
+    script.src = "sphere.js?v=20260628-project-index-2";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
