@@ -24,7 +24,7 @@
     return result;
   }
 
-  function selectBalancedAssets(projectGroups) {
+  function selectBalancedAssets(projectGroups, requestedLimit = 50) {
     const groups = shuffle(projectGroups)
       .map((group) => {
         const uniqueAssets = Array.from(
@@ -35,10 +35,15 @@
       .filter((group) => group.assets.length);
     if (!groups.length) return [];
 
-    const quota = Math.max(1, Math.floor(SPHERE_ASSET_LIMIT / groups.length));
+    const limit = Math.max(10, Math.min(SPHERE_ASSET_LIMIT, Math.round(Number(requestedLimit) || 50)));
+    const quota = Math.floor(limit / groups.length);
+    const remainder = limit % groups.length;
+    const allocations = groups.map((_, index) => quota + (index < remainder ? 1 : 0));
     const selected = [];
-    for (let assetIndex = 0; assetIndex < quota; assetIndex++) {
-      groups.forEach((group) => {
+    const maxAllocation = Math.max(...allocations);
+    for (let assetIndex = 0; assetIndex < maxAllocation; assetIndex++) {
+      groups.forEach((group, groupIndex) => {
+        if (assetIndex >= allocations[groupIndex]) return;
         const asset = group.assets[assetIndex % group.assets.length];
         selected.push({ ...asset, projectId: group.projectId });
       });
@@ -157,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260628-cv-cylinder-1";
+    script.src = "sphere.js?v=20260628-optimize-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -196,6 +201,7 @@
 
   try {
     const [bundle, cvNodes, sphereSettings] = await Promise.all([loadAssetBundle(), loadCvNodes(), loadSphereSettings()]);
+    bundle.assets = selectBalancedAssets(bundle.projectGroups, sphereSettings.values.itemCount);
     activeContentSignature = `${bundle.signature}|${sphereSettings.signature}`;
     setBootstrapPayload({ assets: bundle.assets, projectAssets: bundle.projectAssets, cvNodes, sphereSettings: sphereSettings.values });
     if (bundle.assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(bundle.assets));
@@ -203,7 +209,7 @@
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
-    setBootstrapPayload({ assets: [], projectAssets: [], cvNodes: [], sphereSettings: { size: 0.6, elementScale: 0.6, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 } });
+    setBootstrapPayload({ assets: [], projectAssets: [], cvNodes: [], sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
