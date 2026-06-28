@@ -67,6 +67,77 @@ input {
   gap: 10px;
 }
 
+.project-index {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 6;
+  width: min(220px, 22vw);
+  padding: 18px 20px 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(12px);
+  transform: translateY(-50%);
+  transition: opacity 220ms ease, transform 320ms ease;
+}
+
+.project-index[hidden] {
+  display: none;
+}
+
+.project-index-title {
+  display: block;
+  margin-bottom: 13px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.project-index-list {
+  display: grid;
+}
+
+.project-index-button {
+  position: relative;
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 0 7px 14px;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 180ms ease, transform 220ms ease;
+}
+
+.project-index-button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 5px;
+  height: 1px;
+  background: currentColor;
+  transform: translateY(-50%);
+  transition: width 220ms ease;
+}
+
+.project-index-button:hover,
+.project-index-button:focus-visible,
+.project-index-button.is-active {
+  color: #fff;
+  outline: none;
+  transform: translateX(3px);
+}
+
+.project-index-button.is-active::before {
+  width: 9px;
+}
+
 .top-nav-link,
 .cv-back {
   height: 42px;
@@ -430,6 +501,7 @@ input {
 
 .sphere-page.is-project .sphere-brand,
 .sphere-page.is-project .top-nav,
+.sphere-page.is-project .project-index,
 .sphere-page.is-project .sphere-dials,
 .sphere-page.is-project .sphere-bottom {
   opacity: 0;
@@ -819,6 +891,7 @@ input {
 
 .sphere-page.is-cv .sphere-brand,
 .sphere-page.is-cv .top-nav,
+.sphere-page.is-cv .project-index,
 .sphere-page.is-cv .sphere-dials,
 .sphere-page.is-cv .sphere-bottom,
 .sphere-page.is-cv .project-view-ui {
@@ -866,6 +939,21 @@ input {
   .top-nav {
     top: 20px;
     right: 20px;
+  }
+
+  .project-index {
+    top: 92px;
+    right: 0;
+    width: 154px;
+    max-height: calc(100vh - 210px);
+    padding: 14px 14px 16px;
+    overflow-y: auto;
+    transform: none;
+  }
+
+  .project-index-button {
+    min-height: 31px;
+    font-size: 10px;
   }
 
   .sphere-dials,
