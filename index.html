@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Сфера портфолио</title>
-    <link rel="stylesheet" href="sphere.css?v=20260627-project-ui-2" />
+    <link rel="stylesheet" href="sphere.css?v=20260628-project-index-1" />
   </head>
   <body>
     <main class="sphere-page">
@@ -14,6 +14,11 @@
         <div>СФЕРА ПОРТФОЛИО</div>
         <div>ИНТЕРАКТИВНАЯ СЦЕНА</div>
       </header>
+
+      <aside class="project-index" id="projectIndex" aria-label="Проекты" hidden>
+        <span class="project-index-title">ПРОЕКТЫ</span>
+        <nav class="project-index-list" id="projectIndexList"></nav>
+      </aside>
 
       <nav class="top-nav" aria-label="Основная навигация">
         <button class="top-nav-link" id="cvOpen" type="button">РЕЗЮМЕ</button>
@@ -104,6 +109,7 @@
     <script src="sphere-assets.js"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="supabase-loader.js?v=20260628-sphere-defaults-1"></script>
+<script src="supabase-loader.js?v=20260628-project-index-1"></script>
   </body>
 </html>
+
