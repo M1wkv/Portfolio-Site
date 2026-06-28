@@ -378,6 +378,14 @@
     const cover = projectCover(project);
     const galleryUrls = projectGalleryUrls(project);
     const galleryCount = project.gallery.length + galleryUrls.length;
+    const galleryMarkup = project.gallery.length
+      ? project.gallery.map((image, galleryIndex) => `
+          <figure class="project-gallery-item">
+            <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.title || `Изображение ${galleryIndex + 1}`)}" loading="lazy">
+            <button type="button" data-gallery-remove="${galleryIndex}" aria-label="Удалить изображение ${galleryIndex + 1}" title="Удалить изображение">×</button>
+          </figure>
+        `).join("")
+      : '<p class="project-gallery-empty">В галерее пока нет изображений.</p>';
     card.innerHTML = `
       <div class="project-head">
         <div class="project-meta">
@@ -398,6 +406,10 @@
         <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
         <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "Обложка не выбрана"}</small></label>
         <label><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} изображений выбрано` : "Изображения не выбраны"}</small></label>
+        <div class="project-gallery-manager">
+          <div class="project-gallery-manager-head"><span>Изображения проекта</span><b>${project.gallery.length}</b></div>
+          <div class="project-gallery-grid">${galleryMarkup}</div>
+        </div>
         <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
         <div class="project-details-grid">
           <label><span>Инструменты</span><textarea data-project-field="tools" rows="3"></textarea></label>
@@ -432,7 +444,15 @@
     });
     card.querySelector('[data-project-file="gallery"]').addEventListener("change", (event) => {
       readFiles(event.currentTarget).then((images) => {
-        project.gallery = images;
+        project.gallery = [...project.gallery, ...images];
+        renderProjects();
+      });
+    });
+    card.querySelectorAll("[data-gallery-remove]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const galleryIndex = Number(button.dataset.galleryRemove);
+        if (!Number.isInteger(galleryIndex)) return;
+        project.gallery.splice(galleryIndex, 1);
         renderProjects();
       });
     });
@@ -882,3 +902,4 @@
     if (!supabaseClient) setStatus("Ready locally");
   });
 })();
+
