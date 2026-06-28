@@ -751,7 +751,9 @@
       return;
     }
     const { data } = await supabaseClient.auth.getSession();
-    session = data.session;
+    const allowedAdminId = window.PORTFOLIO_SUPABASE?.adminUserId;
+    session = data.session && (!allowedAdminId || data.session.user.id === allowedAdminId) ? data.session : null;
+    if (data.session && !session) await supabaseClient.auth.signOut();
     renderAuthPanel();
   }
 
@@ -782,8 +784,8 @@
     panel.innerHTML = `
       <form id="authForm">
         <strong>SUPABASE LOGIN</strong>
-        <input name="email" type="email" placeholder="Email" required>
-        <input name="password" type="password" placeholder="Password" required>
+        <input name="email" type="email" placeholder="Email" autocomplete="username" required>
+        <input name="password" type="password" placeholder="Password" autocomplete="current-password" required>
         <button type="submit">LOGIN</button>
         <small>Войди пользователем, которого создал в Supabase Authentication.</small>
       </form>
@@ -800,6 +802,14 @@
       if (error) {
         setStatus(`Login failed: ${error.message}`);
         alert(error.message);
+        return;
+      }
+      const allowedAdminId = window.PORTFOLIO_SUPABASE?.adminUserId;
+      if (allowedAdminId && data.session?.user.id !== allowedAdminId) {
+        await supabaseClient.auth.signOut();
+        session = null;
+        setStatus("Access denied");
+        alert("У этой учетной записи нет доступа к админ-панели.");
         return;
       }
       session = data.session;
