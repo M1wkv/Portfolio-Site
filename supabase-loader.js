@@ -1,7 +1,7 @@
 (async () => {
   const STORAGE_ASSETS = "portfolioSphere.assets";
   const STORAGE_CV = "portfolioSphere.cvNodes";
-  const SPHERE_ASSET_LIMIT = 50;
+  const SPHERE_ASSET_LIMIT = 100;
   const client = window.createPortfolioSupabase ? window.createPortfolioSupabase() : null;
   let activeContentSignature = "";
 
@@ -137,7 +137,7 @@
   }
 
   async function loadSphereSettings() {
-    const defaults = { size: 0.6, elementScale: 0.6, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 };
+    const defaults = { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 };
     if (!client) return { values: defaults, signature: "" };
     const { data, error } = await client.from("site_settings").select("analytics,updated_at").limit(1).maybeSingle();
     if (error) throw error;
@@ -157,7 +157,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260628-project-index-6";
+    script.src = "sphere.js?v=20260628-sphere-count-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
