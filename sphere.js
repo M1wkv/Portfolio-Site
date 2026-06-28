@@ -66,6 +66,7 @@ let sphereProjectFocusSrc="";
 let sphereProjectFocusTarget=0;
 let sphereProjectFocusProgress=0;
 let sphereProjectFocusRotation={x:rotation.x,y:rotation.y};
+const sphereProjectShownSources=new Map();
 let cvLook="center";
 let cvCamera={yaw:0,pitch:0};
 let cvTargetCamera={yaw:0,pitch:0};document.documentElement.dataset.sphereRuntimeStarted="true";
@@ -90,7 +91,7 @@ const z2=point.y*sinX+z1*cosX;return{x:x1,y:y1,z:z2};}
 function exposeLoadedProjectDiagnostics(){const loaded={};
 const failed={};items.forEach((item)=>{const key=item.projectId||"missing";if(item.loaded)loaded[key]=(loaded[key]||0)+1;if(item.loadFailed)failed[key]=(failed[key]||0)+1;});document.documentElement.dataset.sphereLoadedProjectCounts=JSON.stringify(loaded);document.documentElement.dataset.sphereFailedProjectCounts=JSON.stringify(failed);}
 function createMediaItems(nextAssets,trackDiagnostics){const nextItems=nextAssets.map((asset,index)=>{const img=new Image();img.decoding="async";img.src=asset.src;return{img,src:asset.src,title:asset.title||`Work ${index + 1}`,projectId:asset.projectId||asset.project_id||"",loaded:false,loadFailed:false};});nextItems.forEach((item)=>{item.img.onload=()=>{item.loaded=true;item.loadFailed=false;if(trackDiagnostics)exposeLoadedProjectDiagnostics();};item.img.onerror=()=>{item.loaded=false;item.loadFailed=true;if(trackDiagnostics)exposeLoadedProjectDiagnostics();};});return nextItems;}
-function loadItems(nextAssets){items=createMediaItems(nextAssets,true);projectMediaItems=createMediaItems(projectMediaAssets.length?projectMediaAssets:nextAssets,false);document.documentElement.dataset.sphereRuntimeItemCount=String(items.length);document.documentElement.dataset.projectMediaItemCount=String(projectMediaItems.length);renderProjectIndex();updateUi();}
+function loadItems(nextAssets){items=createMediaItems(nextAssets,true);projectMediaItems=createMediaItems(projectMediaAssets.length?projectMediaAssets:nextAssets,false);sphereProjectShownSources.clear();document.documentElement.dataset.sphereRuntimeItemCount=String(items.length);document.documentElement.dataset.projectMediaItemCount=String(projectMediaItems.length);renderProjectIndex();updateUi();}
 function imageRatio(item){return item.loaded&&item.img.naturalHeight?item.img.naturalWidth/item.img.naturalHeight:0.74;}
 function ribbonSlot(item,ribbonRadius,maxAngle){const ratio=Math.max(0.45,Math.min(2.4,imageRatio(item)));
 const baseWidth=112*effectiveElementScale()*1.92*Math.sqrt(ratio);
@@ -133,15 +134,18 @@ function setProjectIndexActive(key){projectIndexList?.querySelectorAll(".project
 function renderProjectIndex(){if(!projectIndex||!projectIndexList)return;
 const projects=new Map();(projectMediaItems.length?projectMediaItems:items).forEach((item)=>{const key=projectKey(item);if(key&&!projects.has(key)){projects.set(key,item.title||"Проект");}});projectIndexList.innerHTML="";projects.forEach((title,key)=>{const button=document.createElement("button");button.className="project-index-button";button.type="button";button.dataset.projectKey=key;button.textContent=title;button.addEventListener("click",()=>focusSphereProject(key));projectIndexList.appendChild(button);});projectIndex.hidden=!projects.size;setProjectIndexActive(sphereProjectFocusKey);}
 function nearestAngle(current,target){return current+Math.atan2(Math.sin(target-current),Math.cos(target-current));}
-function clearSphereProjectFocus(){sphereProjectFocusTarget=0;sphereProjectFocusKey="";sphereProjectFocusSrc="";delete document.documentElement.dataset.sphereFocusedProject;setProjectIndexActive("");}
+function clearSphereProjectFocus(){sphereProjectFocusTarget=0;sphereProjectFocusKey="";sphereProjectFocusSrc="";delete document.documentElement.dataset.sphereFocusedProject;delete document.documentElement.dataset.sphereFocusedSource;setProjectIndexActive("");}
 function focusSphereProject(key){if(viewMode!=="sphere")return;
 const visibleItems=getVisibleItems();
-const candidates=visibleItems.map((item,index)=>({item,index,point:fibonacciPoint(index,visibleItems.length)})).filter((entry)=>projectKey(entry.item)===key);if(!candidates.length)return;
+const projectCandidates=visibleItems.map((item,index)=>({item,index,point:fibonacciPoint(index,visibleItems.length)})).filter((entry)=>projectKey(entry.item)===key);if(!projectCandidates.length)return;
+let shownSources=sphereProjectShownSources.get(key)||new Set();
+let candidates=projectCandidates.filter((entry)=>!shownSources.has(entry.item.src));if(!candidates.length){shownSources=new Set();candidates=projectCandidates.filter((entry)=>entry.item.src!==sphereProjectFocusSrc);if(!candidates.length)candidates=projectCandidates;}
 const selected=candidates.reduce((best,entry)=>rotate(entry.point).z>rotate(best.point).z?entry:best,candidates[0]);
+shownSources.add(selected.item.src);sphereProjectShownSources.set(key,shownSources);
 const horizontal=Math.hypot(selected.point.x,selected.point.z);
 const targetY=Math.atan2(selected.point.x,selected.point.z);
 const targetX=Math.atan2(selected.point.y,horizontal);
-sphereProjectFocusKey=key;sphereProjectFocusSrc=selected.item.src;sphereProjectFocusTarget=1;sphereProjectFocusRotation={x:nearestAngle(rotation.x,targetX),y:nearestAngle(rotation.y,targetY)};velocity.x=0;velocity.y=0;targetVelocity.x=0;targetVelocity.y=0;document.documentElement.dataset.sphereFocusedProject=key;setProjectIndexActive(key);}
+sphereProjectFocusKey=key;sphereProjectFocusSrc=selected.item.src;sphereProjectFocusTarget=1;sphereProjectFocusRotation={x:nearestAngle(rotation.x,targetX),y:nearestAngle(rotation.y,targetY)};velocity.x=0;velocity.y=0;targetVelocity.x=0;targetVelocity.y=0;document.documentElement.dataset.sphereFocusedProject=key;document.documentElement.dataset.sphereFocusedSource=selected.item.src;document.documentElement.dataset.sphereProjectShownCount=String(shownSources.size);setProjectIndexActive(key);}
 function initialSphereSlot(index,count){const point=fibonacciPoint(index,count);
 const cosY=Math.cos(0.48);
 const sinY=Math.sin(0.48);
