@@ -708,6 +708,51 @@ input {
   z-index: 22;
 }
 
+.cv-cylinder-tabs {
+  position: fixed;
+  top: 38px;
+  left: 50%;
+  z-index: 23;
+  width: min(760px, calc(100vw - 300px));
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  background: rgba(7, 7, 7, 0.86);
+  transform: translateX(-50%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.cv-cylinder-tab {
+  position: relative;
+  min-width: 0;
+  padding: 0 12px;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 200ms ease, background 240ms ease;
+}
+
+.cv-cylinder-tab:last-child {
+  border-right: 0;
+}
+
+.cv-cylinder-tab:hover,
+.cv-cylinder-tab:focus-visible,
+.cv-cylinder-tab.is-active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
 .cv-room {
   position: absolute;
   inset: 0;
@@ -939,6 +984,17 @@ input {
   .top-nav {
     top: 20px;
     right: 20px;
+  }
+
+  .cv-cylinder-tabs {
+    top: 76px;
+    width: calc(100vw - 32px);
+    min-height: 40px;
+  }
+
+  .cv-cylinder-tab {
+    padding: 0 5px;
+    font-size: 8px;
   }
 
   .project-index {
