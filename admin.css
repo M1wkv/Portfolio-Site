@@ -539,6 +539,90 @@ small {
   grid-column: 1 / -1;
 }
 
+.project-gallery-manager {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  padding: 16px 0 4px;
+  border-top: 1px solid var(--line);
+}
+
+.project-gallery-manager-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.project-gallery-manager-head span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.project-gallery-manager-head b {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.project-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 10px;
+}
+
+.project-gallery-item {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #050505;
+}
+
+.project-gallery-item img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.project-gallery-item button {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.76);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.project-gallery-item button:hover,
+.project-gallery-item button:focus-visible {
+  border-color: #fff;
+  background: #000;
+  outline: none;
+}
+
+.project-gallery-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 20px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .project-details-grid {
   grid-column: 1 / -1;
   display: grid;
@@ -698,4 +782,9 @@ small {
     flex-direction: column;
     gap: 4px;
   }
+
+  .project-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
+
