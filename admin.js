@@ -61,14 +61,12 @@
   const addProjectButton = document.getElementById("addProjectButton");
   const projectsBackButton = document.getElementById("projectsBackButton");
   const portfolioModeText = document.getElementById("portfolioModeText");
-  const servicesList = document.getElementById("servicesList");
   const sphereSettingInputs = Array.from(form.querySelectorAll('input[type="range"][name^="settings.sphere."]'));
 
   const sectionLabels = {
     profile: ["Profile / Главный блок", "Главный блок"],
     cv: ["CV / Резюме", "Резюме"],
     portfolio: ["Portfolio / Кейсы", "Кейсы"],
-    services: ["Services / Услуги", "Услуги"],
     settings: ["Settings / SEO", "SEO и настройки"]
   };
 
@@ -476,30 +474,6 @@
     renderProjectEditor(content.portfolio.projects[activeIndex], activeIndex);
   }
 
-  function renderServices() {
-    servicesList.innerHTML = "";
-    content.services.forEach((service) => {
-      const card = document.createElement("article");
-      card.className = "service-card";
-      card.innerHTML = `
-        <div class="service-head"><strong>${escapeHtml(service.title)}</strong></div>
-        <textarea rows="3"></textarea>
-        <label><span>Active</span><input type="checkbox"></label>
-      `;
-      const text = card.querySelector("textarea");
-      const checkbox = card.querySelector('input[type="checkbox"]');
-      text.value = service.description || "";
-      checkbox.checked = !!service.enabled;
-      text.addEventListener("input", () => {
-        service.description = text.value;
-      });
-      checkbox.addEventListener("change", () => {
-        service.enabled = checkbox.checked;
-      });
-      servicesList.appendChild(card);
-    });
-  }
-
   async function uploadDataUrl(path, dataUrl) {
     if (!supabaseClient || !dataUrl || !dataUrl.startsWith("data:")) return dataUrl || "";
     const response = await fetch(dataUrl);
@@ -856,7 +830,6 @@
       activeProjectId = null;
       bindInputs();
       renderProjects();
-      renderServices();
       resetButton.textContent = "RESET DONE";
       setStatus("Reset local data done");
       window.setTimeout(() => {
@@ -898,7 +871,6 @@
     content = storedContent;
     bindInputs();
     renderProjects();
-    renderServices();
     if (!supabaseClient) setStatus("Ready locally");
   });
 })();
