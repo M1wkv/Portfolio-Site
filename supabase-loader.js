@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere-runtime.js?v=20260629-repair-1";
+    script.src = "sphere.js?v=20260628-optimize-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -220,3 +220,4 @@
   });
   window.setInterval(refreshIfContentChanged, 15000);
 })();
+
