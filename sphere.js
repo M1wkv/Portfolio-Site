@@ -15,6 +15,7 @@ const projectOpen=document.getElementById("projectOpen");
 const projectTitle=document.getElementById("projectTitle");
 const projectIndex=document.getElementById("projectIndex");
 const projectIndexList=document.getElementById("projectIndexList");
+const projectMenuToggle=document.getElementById("projectMenuToggle");
 const cvOpen=document.getElementById("cvOpen");
 const cvView=document.getElementById("cvView");
 const cvBack=document.getElementById("cvBack");
@@ -139,7 +140,8 @@ function getVisibleItems(){return mixSpatialItems(items.slice(0,Math.min(MAX_VIS
 function projectKey(item){return item?.projectId||item?.title||item?.src||"";}
 function setProjectIndexActive(key){projectIndexList?.querySelectorAll(".project-index-button").forEach((button)=>{button.classList.toggle("is-active",button.dataset.projectKey===key);});}
 function renderProjectIndex(){if(!projectIndex||!projectIndexList)return;
-const projects=new Map();(projectMediaItems.length?projectMediaItems:items).forEach((item)=>{const key=projectKey(item);if(key&&!projects.has(key)){projects.set(key,item.title||"Проект");}});projectIndexList.innerHTML="";projects.forEach((title,key)=>{const button=document.createElement("button");button.className="project-index-button";button.type="button";button.dataset.projectKey=key;button.textContent=title;button.addEventListener("click",()=>focusSphereProject(key));projectIndexList.appendChild(button);});projectIndex.hidden=!projects.size;setProjectIndexActive(sphereProjectFocusKey);}
+const projects=new Map();(projectMediaItems.length?projectMediaItems:items).forEach((item)=>{const key=projectKey(item);if(key&&!projects.has(key)){projects.set(key,item.title||"Проект");}});projectIndexList.innerHTML="";projects.forEach((title,key)=>{const button=document.createElement("button");button.className="project-index-button";button.type="button";button.dataset.projectKey=key;button.textContent=title;button.addEventListener("click",()=>{focusSphereProject(key);setProjectMenuOpen(false);});projectIndexList.appendChild(button);});projectIndex.hidden=!projects.size;setProjectIndexActive(sphereProjectFocusKey);}
+function setProjectMenuOpen(open){if(!projectIndex||!projectMenuToggle)return;const next=Boolean(open&&!projectIndex.hidden);projectIndex.classList.toggle("is-open",next);projectMenuToggle.classList.toggle("is-active",next);projectMenuToggle.setAttribute("aria-expanded",String(next));}
 function nearestAngle(current,target){return current+Math.atan2(Math.sin(target-current),Math.cos(target-current));}
 function clearSphereProjectFocus(){sphereProjectFocusTarget=0;sphereProjectFocusKey="";sphereProjectFocusSrc="";delete document.documentElement.dataset.sphereFocusedProject;delete document.documentElement.dataset.sphereFocusedSource;setProjectIndexActive("");}
 function focusSphereProject(key){if(viewMode!=="sphere")return;
@@ -223,69 +225,7 @@ const centerFocus=Math.max(0,1-Math.abs(rel)*2);
 const focusScale=1+centerFocus*0.5;
 const zoomScale=1+zoom*(centerFocus*0.12-(1-centerFocus)*0.28);
 const outerScale=(0.68+outerCurve*1.05)*(0.4+edgePresence*0.6)*focusScale*zoomScale;
-const focus=projectFocusProgress;return{item,index,x:innerX+(outerX-innerX)*focus,y:centerY+(height*0.5-centerY)*focus,z:innerZ+(outerZ-innerZ)*focus,depth:innerDepth+(outerDepth-innerDepth)*focus,mode:"ribbon",faceTurn:sidePush*(1-focus*0.42),visualScale:innerScale+(outerScale-innerScale)*focus,alphaBoost:1,centerFocus};});}
-function updateRibbonAutoscroll(now){if(viewMode!=="project"||dragging||now<ribbonAutoPausedUntil||projectFocusTarget>0||projectFocusProgress>0.05){ribbonAutoSpeed+=(0-ribbonAutoSpeed)*0.08;return false;}if(!ribbonAutoPhaseStartedAt){ribbonAutoPhaseStartedAt=now;}let elapsed=now-ribbonAutoPhaseStartedAt;
-const cycle=24000;if(elapsed>=cycle){const cycles=Math.floor(elapsed/cycle);ribbonAutoPhaseStartedAt+=cycles*cycle;elapsed=now-ribbonAutoPhaseStartedAt;if(cycles%2===1){ribbonAutoDirection*=-1;}}const cycleTime=elapsed;
-let targetSpeed;if(cycleTime<20000){const startEase=smoothstep(Math.min(1,cycleTime/1800));targetSpeed=ribbonAutoDirection*0.0022*startEase;}else if(cycleTime<21000){const kick=smoothstep((cycleTime-20000)/1000);targetSpeed=-ribbonAutoDirection*(0.024+kick*0.068);}else{const stop=1-smoothstep((cycleTime-21000)/3000);targetSpeed=-ribbonAutoDirection*0.024*stop;}const response=Math.abs(targetSpeed)>Math.abs(ribbonAutoSpeed)?0.34:0.075;ribbonAutoSpeed+=(targetSpeed-ribbonAutoSpeed)*response;ribbonTargetOffset+=ribbonAutoSpeed;return true;}
-function drawRibbonAtmosphere(progress){return progress;}
-function projectLabel(item,index){const rawTitle=(item.title||"").trim();if(rawTitle&&rawTitle.length<=28&&!rawTitle.includes("_")&&!/^work\s+\d+$/i.test(rawTitle)){return rawTitle.toUpperCase();}return `DESIGN CASE ${String(index + 1).padStart(2, "0")}`;}const defaultCvNodes=[{look:"center",yaw:0,pitch:0,eyebrow:"CV / ART DIRECTION / AI DESIGN",title:"Alexander",body:"Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.",type:"hero"},{look:"top",yaw:0,pitch:34,title:"Profile",body:"Visual direction, generative content, interface composition and cinematic digital cases."},{look:"bottom",yaw:0,pitch:-34,title:"Experience",body:"Portfolio systems, AI campaigns, social content packs, landing visuals and case studies."},{look:"left",yaw:-42,pitch:0,title:"Tools",body:"Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics."},{look:"right",yaw:42,pitch:0,title:"Contact",body:"Available for visual identity, AI art direction, portfolio sites and design case packaging."}];
-const bootstrapCvNodes=bootstrapData.cvNodes||window.PORTFOLIO_BOOTSTRAP?.cvNodes||[];
-let cvNodes=bootstrapCvNodes.length?normalizeCvNodes(bootstrapCvNodes):loadStoredCvNodes();function readJsonStorage(key,fallback){try{const value=localStorage.getItem(key);if(!value)return fallback;
-const parsed=JSON.parse(value);return parsed||fallback;}catch(error){return fallback;}}
-function readBootstrapData(){try{return JSON.parse(document.getElementById("sphereBootstrapData")?.textContent||"{}")||{};}catch(error){return{};}}
-function normalizeAssets(nextAssets){if(!Array.isArray(nextAssets))return defaultAssets.slice();return nextAssets.filter((asset)=>asset&&typeof asset.src==="string"&&asset.src.trim()).map((asset)=>({src:asset.src.trim(),title:typeof asset.title==="string"?asset.title.trim():"",projectId:typeof asset.projectId==="string"?asset.projectId:(typeof asset.project_id==="string"?asset.project_id:"")}));}
-function loadStoredAssets(){return normalizeAssets(readJsonStorage(STORAGE_ASSETS,defaultAssets));}async function loadStoredAssetsAsync(){try{const directAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);if(directAssets.length)return directAssets;
-const storedAssets=loadStoredAssets();if(storedAssets.length)return storedAssets;if(!window.PortfolioStorage)return storedAssets;return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS)||storedAssets);}catch(error){return loadStoredAssets();}}async function loadSupabaseAssets(){const client=window.createPortfolioSupabase?window.createPortfolioSupabase():null;if(!client)return[];
-const{data:projects,error:projectError}=await client.from("projects").select("id,title,cover_url,sort_order,status").eq("status","published").order("sort_order",{ascending:true}).order("created_at",{ascending:false});if(projectError||!Array.isArray(projects)||!projects.length)return[];
-const ids=projects.map((project)=>project.id);
-const{data:images}=await client.from("project_images").select("project_id,image_url,title,sort_order").in("project_id",ids).order("sort_order",{ascending:true}).order("created_at",{ascending:true});
-const byProject=new Map();(images||[]).forEach((image)=>{if(!byProject.has(image.project_id))byProject.set(image.project_id,[]);byProject.get(image.project_id).push(image);});
-const media=[];projects.forEach((project)=>{if(project.cover_url)media.push({src:project.cover_url,title:project.title||""});(byProject.get(project.id)||[]).forEach((image)=>{if(image.image_url)media.push({src:image.image_url,title:project.title||image.title||""});});});return normalizeAssets(media);}
-function normalizeCvNodes(nextNodes){const byLook=new Map(Array.isArray(nextNodes)?nextNodes.map((node)=>[node.look,node]):[]);return defaultCvNodes.map((defaultNode)=>{const stored=byLook.get(defaultNode.look)||{};return{...defaultNode,eyebrow:typeof stored.eyebrow==="string"?stored.eyebrow:defaultNode.eyebrow,title:typeof stored.title==="string"?stored.title:defaultNode.title,body:typeof stored.body==="string"?stored.body:defaultNode.body};});}
-function loadStoredCvNodes(){return normalizeCvNodes(readJsonStorage(STORAGE_CV,defaultCvNodes));}async function loadStoredCvNodesAsync(){try{const directNodes=bootstrapData.cvNodes||window.PORTFOLIO_BOOTSTRAP?.cvNodes||[];if(directNodes.length)return normalizeCvNodes(directNodes);if(!window.PortfolioStorage)return loadStoredCvNodes();return normalizeCvNodes(await window.PortfolioStorage.get(STORAGE_CV)||loadStoredCvNodes());}catch(error){return loadStoredCvNodes();}}async function loadSupabaseCvNodes(){const client=window.createPortfolioSupabase?window.createPortfolioSupabase():null;if(!client)return[];
-const[{data:profile},{data:cv},{data:services},{data:contacts}]=await Promise.all([client.from("profile").select("*").limit(1).maybeSingle(),client.from("cv_sections").select("*").order("sort_order",{ascending:true}),client.from("services").select("*").order("sort_order",{ascending:true}),client.from("contacts").select("*").limit(1).maybeSingle()]);if(!profile&&(!Array.isArray(cv)||!cv.length))return[];
-const serviceText=Array.isArray(services)?services.map((service)=>service.title).filter(Boolean).join(", "):"";
-const contactText=contacts?[contacts.telegram,contacts.email,contacts.phone].filter(Boolean).join(" / "):"";
-const cvText=Array.isArray(cv)?cv.map((section)=>[section.title,section.description].filter(Boolean).join(": ")).filter(Boolean).join(" "):"";
-const profileText=profile?.short_description||defaultCvNodes[0].body;return[{look:"center",yaw:0,pitch:0,eyebrow:profile?.role||defaultCvNodes[0].eyebrow,title:profile?.name||defaultCvNodes[0].title,body:profileText,type:"hero"},{look:"top",yaw:0,pitch:34,title:"Profile",body:profileText},{look:"bottom",yaw:0,pitch:-34,title:"CV",body:cvText||defaultCvNodes[2].body},{look:"left",yaw:-42,pitch:0,title:"Services",body:serviceText||defaultCvNodes[3].body},{look:"right",yaw:42,pitch:0,title:"Contact",body:contactText||defaultCvNodes[4].body}];}
-function cvDirection(yawDeg,pitchDeg){const yaw=yawDeg*Math.PI/180;
-const pitch=pitchDeg*Math.PI/180;return{x:Math.sin(yaw)*Math.cos(pitch),y:-Math.sin(pitch),z:Math.cos(yaw)*Math.cos(pitch)};}
-function cvCameraPoint(point){const cy=Math.cos(cvCamera.yaw*Math.PI/180);
-const sy=Math.sin(cvCamera.yaw*Math.PI/180);
-let x=point.x*cy-point.z*sy;
-let z=point.x*sy+point.z*cy;
-let y=point.y;
-const cx=Math.cos(cvCamera.pitch*Math.PI/180);
-const sx=Math.sin(cvCamera.pitch*Math.PI/180);
-const y2=y*cx+z*sx;
-const z2=-y*sx+z*cx;return{x,y:y2,z:z2};}
-function wrapText(text,maxWidth,font){ctx.font=font;
-const words=text.split(" ");
-const lines=[];
-let line="";words.forEach((word)=>{const next=line?`${line} ${word}`:word;if(ctx.measureText(next).width<=maxWidth||!line){line=next;}else{lines.push(line);line=word;}});if(line)lines.push(line);return lines;}
-function drawCvBlock(entry){const{node,x,y,z,scale,alpha,active}=entry;
-const isHero=node.type==="hero";
-const blockW=(isHero?620:360)*scale;
-const blockH=(isHero?270:210)*scale;
-const radius=Math.max(26,58*scale);ctx.save();ctx.translate(x,y);
-const turn=Math.max(-0.74,Math.min(0.74,entry.xNorm*0.52));
-const lift=Math.max(-0.4,Math.min(0.4,-entry.yNorm*0.3));
-const edgeCompress=Math.max(0.66,1-entry.edge*0.18);
-const verticalBend=1+entry.edge*0.06-Math.abs(lift)*0.18;ctx.transform(edgeCompress,lift,turn,verticalBend,0,0);ctx.globalAlpha=alpha;
-const gradient=ctx.createRadialGradient(0,0,0,0,0,Math.max(blockW,blockH)*0.72);gradient.addColorStop(0,active?"rgba(255,255,255,0.09)":"rgba(255,255,255,0.055)");gradient.addColorStop(0.6,"rgba(255,255,255,0.018)");gradient.addColorStop(1,"rgba(255,255,255,0.003)");ctx.fillStyle=gradient;ctx.beginPath();ctx.roundRect(-blockW/2,-blockH/2,blockW,blockH,radius);ctx.fill();ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#fff";if(isHero){ctx.globalAlpha=alpha*0.58;ctx.font=`${Math.max(9, 12 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.eyebrow,0,-blockH*0.27);ctx.globalAlpha=alpha;ctx.font=`700 ${Math.max(44, 96 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.title,0,-blockH*0.02);ctx.globalAlpha=alpha*0.78;
-const bodyFont=`${Math.max(13, 20 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;
-const lines=wrapText(node.body,blockW*0.72,bodyFont).slice(0,3);lines.forEach((line,index)=>ctx.fillText(line,0,blockH*0.24+index*25*scale));}else{ctx.globalAlpha=alpha*0.9;ctx.font=`700 ${Math.max(12, 18 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.title.toUpperCase(),0,-blockH*0.15);ctx.globalAlpha=alpha*0.74;
-const bodyFont=`${Math.max(12, 16 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;
-const lines=wrapText(node.body,blockW*0.7,bodyFont).slice(0,4);lines.forEach((line,index)=>ctx.fillText(line,0,blockH*0.08+index*22*scale));}ctx.restore();}
-function cvProjectSurfacePoint(yawDeg,pitchDeg,radius,centerX,centerY){const cameraPoint=cvCameraPoint(cvDirection(yawDeg,pitchDeg));
-const curvedX=Math.tanh(cameraPoint.x*1.14);
-const curvedY=Math.tanh(cameraPoint.y*1.04);
-const clampedZ=Math.max(-0.5,Math.min(1,cameraPoint.z));
-const edge=Math.max(0,Math.min(1,Math.hypot(curvedX,curvedY)));
-const insidePush=0.9+edge*0.36;
-const visibility=Math.max(0.28,Math.min(1,(clampedZ+0.46)/1.46));return{x:centerX+curvedX*radius*1.42*insidePush,y:centerY+curvedY*radius*1.08*insidePush,z:cameraPoint.z,edge,visibility};}
-function strokeCvSurfacePath(points,alpha,widthValue){let drawing=false;ctx.beginPath();points.forEach((point)=>{if(point.visibility<=0.03){drawing=false;return;}if(!drawing){ctx.moveTo(point.x,point.y);drawing=true;}else{ctx.lineTo(point.x,point.y);}});ctx.strokeStyle=`rgba(255,255,255,${alpha})`;ctx.lineWidth=widthValue;ctx.stroke();}
-function drawCvSphereSurface(radius,centerX,centerY){ctx.save();ctx.lineCap="round";ctx.lineJoin="round";[-50,-25,0,25,50].forEach((pitch)=>{const points=[];for(let yaw=-86;yaw<=86;yaw+=3){points.push(cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY));}strokeCvSurfacePath(points,pitch===0?0.062:0.042,pitch===0?1.2:0.9);});[-72,-36,0,36,72].forEach((yaw)=>{const points=[];for(let pitch=-58;pitch<=58;pitch+=3){points.push(cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY));}strokeCvSurfacePath(points,yaw===0?0.056:0.038,yaw===0?1.1:0.85);});for(let row=0;row<7;row++){const pitch=-48+row*16;for(let col=0;col<13;col++){const yaw=-78+col*13+(row%2?4:0);
+const focus=projectFocusProgress;return{item,index,x:innerX+(outerX-innerX)*focus,y:centerY+(height*0.5-centerY)*focus,z:innerZ+(outerZ-innerZ)*focus,depth:innerDepth+(outerDepth-innerDepth)*focus,mod…2802 tokens truncated…nterX,centerY){ctx.save();ctx.lineCap="round";ctx.lineJoin="round";[-50,-25,0,25,50].forEach((pitch)=>{const points=[];for(let yaw=-86;yaw<=86;yaw+=3){points.push(cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY));}strokeCvSurfacePath(points,pitch===0?0.062:0.042,pitch===0?1.2:0.9);});[-72,-36,0,36,72].forEach((yaw)=>{const points=[];for(let pitch=-58;pitch<=58;pitch+=3){points.push(cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY));}strokeCvSurfacePath(points,yaw===0?0.056:0.038,yaw===0?1.1:0.85);});for(let row=0;row<7;row++){const pitch=-48+row*16;for(let col=0;col<13;col++){const yaw=-78+col*13+(row%2?4:0);
 const point=cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY);if(point.visibility<=0.05)continue;
 const dotSize=0.7+point.edge*0.9;ctx.globalAlpha=0.06*point.visibility;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(point.x,point.y,dotSize,0,Math.PI*2);ctx.fill();}}ctx.restore();}
 function drawCvHemisphere(){cvCamera.yaw+=(cvTargetCamera.yaw-cvCamera.yaw)*0.065;cvCamera.pitch+=(cvTargetCamera.pitch-cvCamera.pitch)*0.065;
@@ -389,6 +329,8 @@ canvas.addEventListener("wheel",(event)=>{event.preventDefault();if(viewMode==="
 projectBack.addEventListener("click",()=>{if(projectFocusTarget>0||projectFocusProgress>0.05){toggleProjectMedia();return;}closeProject();});
 projectOpen.addEventListener("click",toggleProjectMedia);
 cvOpen.addEventListener("click",openCv);
+projectMenuToggle?.addEventListener("click",()=>setProjectMenuOpen(!projectIndex?.classList.contains("is-open")));
+canvas.addEventListener("pointerdown",()=>setProjectMenuOpen(false));
 cvBack.addEventListener("click",closeCv);
 cvView.addEventListener("wheel",handleCvWheel,{passive:false});
 [sizeRange,scaleRange,fisheyeRange].forEach((input)=>{input.addEventListener("input",updateUi);});
