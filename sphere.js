@@ -15,7 +15,6 @@ const projectOpen=document.getElementById("projectOpen");
 const projectTitle=document.getElementById("projectTitle");
 const projectIndex=document.getElementById("projectIndex");
 const projectIndexList=document.getElementById("projectIndexList");
-const projectMenuToggle=document.getElementById("projectMenuToggle");
 const cvOpen=document.getElementById("cvOpen");
 const cvView=document.getElementById("cvView");
 const cvBack=document.getElementById("cvBack");
@@ -140,8 +139,7 @@ function getVisibleItems(){return mixSpatialItems(items.slice(0,Math.min(MAX_VIS
 function projectKey(item){return item?.projectId||item?.title||item?.src||"";}
 function setProjectIndexActive(key){projectIndexList?.querySelectorAll(".project-index-button").forEach((button)=>{button.classList.toggle("is-active",button.dataset.projectKey===key);});}
 function renderProjectIndex(){if(!projectIndex||!projectIndexList)return;
-const projects=new Map();(projectMediaItems.length?projectMediaItems:items).forEach((item)=>{const key=projectKey(item);if(key&&!projects.has(key)){projects.set(key,item.title||"Проект");}});projectIndexList.innerHTML="";projects.forEach((title,key)=>{const button=document.createElement("button");button.className="project-index-button";button.type="button";button.dataset.projectKey=key;button.textContent=title;button.addEventListener("click",()=>{focusSphereProject(key);setProjectMenuOpen(false);});projectIndexList.appendChild(button);});projectIndex.hidden=!projects.size;setProjectIndexActive(sphereProjectFocusKey);}
-function setProjectMenuOpen(open){if(!projectIndex||!projectMenuToggle)return;const next=Boolean(open&&!projectIndex.hidden);projectIndex.classList.toggle("is-open",next);projectMenuToggle.classList.toggle("is-active",next);projectMenuToggle.setAttribute("aria-expanded",String(next));}
+const projects=new Map();(projectMediaItems.length?projectMediaItems:items).forEach((item)=>{const key=projectKey(item);if(key&&!projects.has(key)){projects.set(key,item.title||"Проект");}});projectIndexList.innerHTML="";projects.forEach((title,key)=>{const button=document.createElement("button");button.className="project-index-button";button.type="button";button.dataset.projectKey=key;button.textContent=title;button.addEventListener("click",()=>focusSphereProject(key));projectIndexList.appendChild(button);});projectIndex.hidden=!projects.size;setProjectIndexActive(sphereProjectFocusKey);}
 function nearestAngle(current,target){return current+Math.atan2(Math.sin(target-current),Math.cos(target-current));}
 function clearSphereProjectFocus(){sphereProjectFocusTarget=0;sphereProjectFocusKey="";sphereProjectFocusSrc="";delete document.documentElement.dataset.sphereFocusedProject;delete document.documentElement.dataset.sphereFocusedSource;setProjectIndexActive("");}
 function focusSphereProject(key){if(viewMode!=="sphere")return;
@@ -391,8 +389,6 @@ canvas.addEventListener("wheel",(event)=>{event.preventDefault();if(viewMode==="
 projectBack.addEventListener("click",()=>{if(projectFocusTarget>0||projectFocusProgress>0.05){toggleProjectMedia();return;}closeProject();});
 projectOpen.addEventListener("click",toggleProjectMedia);
 cvOpen.addEventListener("click",openCv);
-projectMenuToggle?.addEventListener("click",()=>setProjectMenuOpen(!projectIndex?.classList.contains("is-open")));
-canvas.addEventListener("pointerdown",()=>setProjectMenuOpen(false));
 cvBack.addEventListener("click",closeCv);
 cvView.addEventListener("wheel",handleCvWheel,{passive:false});
 [sizeRange,scaleRange,fisheyeRange].forEach((input)=>{input.addEventListener("input",updateUi);});
