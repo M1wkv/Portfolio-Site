@@ -4,6 +4,8 @@
   --line: rgba(255, 255, 255, 0.18);
   --glass: rgba(255, 255, 255, 0.055);
   --mono: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --glass-edge: rgba(255, 255, 255, 0.28);
+  --glass-fill: rgba(122, 128, 139, 0.2);
 }
 
 * {
@@ -50,39 +52,139 @@ input {
 
 .sphere-brand {
   position: fixed;
-  top: 39px;
-  left: 49px;
+  top: 30px;
+  left: 50%;
   z-index: 5;
+  width: min(880px, 54vw);
+  min-height: 58px;
+  padding: 13px 25px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: linear-gradient(116deg, rgba(255,255,255,.2), rgba(255,255,255,.07) 42%, rgba(255,255,255,.13));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.26), inset 0 -1px 0 rgba(0,0,0,.42), 0 16px 50px rgba(0,0,0,.26);
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
   font-size: 15px;
   line-height: 1.14;
   letter-spacing: -0.02em;
+  overflow: hidden;
+  transform: translateX(-50%);
 }
 
-.top-nav {
+.sphere-brand::after,
+.liquid-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(159deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 31%, rgba(255,255,255,.08) 68%, rgba(0,0,0,.16) 100%);
+  pointer-events: none;
+}
+
+.admin-nav-link {
   position: fixed;
-  top: 39px;
+  top: 30px;
   right: 49px;
-  z-index: 6;
-  display: flex;
-  gap: 10px;
+  z-index: 8;
+  height: 44px;
+  min-width: 88px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 8px;
+  background: rgba(93, 99, 110, .2);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.36), 0 10px 30px rgba(0,0,0,.3);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  overflow: hidden;
+}
+
+.glass-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 8;
+  width: min(860px, 58vw);
+  height: 62px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid var(--glass-edge);
+  border-radius: 8px;
+  background: linear-gradient(105deg, rgba(146,151,161,.24), rgba(76,82,94,.18) 50%, rgba(146,151,161,.22));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.32), inset 0 -1px 0 rgba(0,0,0,.48), 0 18px 55px rgba(0,0,0,.42);
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+  overflow: hidden;
+  transform: translateX(-50%);
+}
+
+.glass-dock::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,.34) 25%, rgba(255,255,255,.17) 75%, transparent);
+}
+
+.glass-dock-link {
+  position: relative;
+  z-index: 1;
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,.92);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 220ms ease, color 220ms ease;
+}
+
+.glass-dock-link:hover,
+.glass-dock-link:focus-visible,
+.glass-dock-link.is-active {
+  outline: none;
+  background: rgba(255,255,255,.11);
+  color: #fff;
 }
 
 .project-index {
   position: fixed;
-  top: 50%;
-  right: 0;
-  z-index: 6;
-  width: min(220px, 22vw);
-  padding: 18px 20px 20px;
-  border-left: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(12px);
-  transform: translateY(-50%);
-  transition: opacity 220ms ease, transform 320ms ease;
+  left: 50%;
+  bottom: 102px;
+  z-index: 7;
+  width: min(430px, 29vw);
+  max-height: min(44vh, 420px);
+  padding: 19px 22px 21px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 8px;
+  background: rgba(70, 75, 85, .22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 20px 60px rgba(0,0,0,.46);
+  backdrop-filter: blur(26px) saturate(150%);
+  -webkit-backdrop-filter: blur(26px) saturate(150%);
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-100%, 12px) scale(.97);
+  transform-origin: bottom center;
+  transition: opacity 220ms ease, visibility 220ms ease, transform 320ms cubic-bezier(.22,.78,.2,1);
 }
 
 .project-index[hidden] {
   display: none;
+}
+
+.project-index.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-100%, 0) scale(1);
 }
 
 .project-index-title {
@@ -138,7 +240,6 @@ input {
   width: 9px;
 }
 
-.top-nav-link,
 .cv-back {
   height: 42px;
   min-width: 82px;
@@ -161,7 +262,7 @@ input {
 .sphere-dials {
   position: fixed;
   left: 49px;
-  bottom: 39px;
+  bottom: 36px;
   z-index: 5;
   width: min(320px, calc(100vw - 98px));
   display: grid;
@@ -500,7 +601,8 @@ input {
 }
 
 .sphere-page.is-project .sphere-brand,
-.sphere-page.is-project .top-nav,
+.sphere-page.is-project .glass-dock,
+.sphere-page.is-project .admin-nav-link,
 .sphere-page.is-project .project-index,
 .sphere-page.is-project .sphere-dials,
 .sphere-page.is-project .sphere-bottom {
@@ -935,7 +1037,8 @@ input {
 }
 
 .sphere-page.is-cv .sphere-brand,
-.sphere-page.is-cv .top-nav,
+.sphere-page.is-cv .glass-dock,
+.sphere-page.is-cv .admin-nav-link,
 .sphere-page.is-cv .project-index,
 .sphere-page.is-cv .sphere-dials,
 .sphere-page.is-cv .sphere-bottom,
@@ -977,14 +1080,18 @@ input {
   }
 
   .sphere-brand {
-    top: 22px;
-    left: 20px;
+    top: 16px;
+    left: 50%;
+    width: calc(100vw - 150px);
+    min-height: 48px;
+    padding: 10px 14px;
+    font-size: 11px;
   }
 
-  .top-nav {
-    top: 20px;
-    right: 20px;
-  }
+  .admin-nav-link { top: 18px; right: 16px; height: 40px; min-width: 76px; }
+
+  .glass-dock { bottom: 14px; width: calc(100vw - 32px); height: 56px; }
+  .glass-dock-link { font-size: 12px; }
 
   .cv-cylinder-tabs {
     top: 76px;
@@ -998,14 +1105,17 @@ input {
   }
 
   .project-index {
-    top: 92px;
-    right: 0;
-    width: 154px;
-    max-height: calc(100vh - 210px);
+    top: auto;
+    left: 16px;
+    right: 16px;
+    bottom: 78px;
+    width: auto;
+    max-height: 42vh;
     padding: 14px 14px 16px;
-    overflow-y: auto;
-    transform: none;
+    transform: translateY(10px) scale(.98);
   }
+
+  .project-index.is-open { transform: translateY(0) scale(1); }
 
   .project-index-button {
     min-height: 31px;
@@ -1019,7 +1129,7 @@ input {
 
   .sphere-dials {
     left: 18px;
-    bottom: 18px;
+    bottom: 84px;
     transform-origin: left bottom;
   }
 
@@ -1104,4 +1214,3 @@ input {
     font-size: 16px;
   }
 }
-
