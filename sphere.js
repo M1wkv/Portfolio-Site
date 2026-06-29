@@ -101,11 +101,11 @@ function createMediaItems(nextAssets,trackDiagnostics,eager=true){const nextItem
 function loadItems(nextAssets){items=createMediaItems(nextAssets.slice(0,MAX_VISIBLE_ITEMS),true,true);projectMediaItems=createMediaItems(projectMediaAssets.length?projectMediaAssets:nextAssets,false,false);sphereProjectShownSources.clear();document.documentElement.dataset.sphereRuntimeItemCount=String(items.length);document.documentElement.dataset.projectMediaItemCount=String(projectMediaItems.length);document.documentElement.dataset.projectMediaLoadedCount="0";renderProjectIndex();updateUi();}
 function imageRatio(item){return item.loaded&&item.img.naturalHeight?item.img.naturalWidth/item.img.naturalHeight:0.74;}
 function ribbonSlot(item,ribbonRadius,maxAngle){const ratio=Math.max(0.45,Math.min(2.4,imageRatio(item)));
-const baseWidth=112*effectiveElementScale()*1.05*Math.sqrt(ratio);
-let slot=Math.max(0.12,Math.min(0.48,(baseWidth+Math.max(24,width*0.025))/Math.max(1,ribbonRadius)));for(let pass=0;pass<3;pass++){const side=Math.min(1,Math.abs(slot)/maxAngle);
-const visualScale=1-side*0.48;
+const baseWidth=112*effectiveElementScale()*1.92*Math.sqrt(ratio);
+let slot=Math.max(0.2,Math.min(0.7,(baseWidth+Math.max(48,width*0.045))/Math.max(1,ribbonRadius)));for(let pass=0;pass<3;pass++){const side=Math.min(1,Math.abs(slot)/maxAngle);
+const visualScale=1+side*2;
 const projectedWidth=baseWidth*visualScale*Math.max(0.42,1-Math.abs(Math.sin(slot))*0.38);
-const gap=Math.max(24,Math.min(42,width*0.025));slot=Math.max(0.12,Math.min(0.48,(projectedWidth+gap)/Math.max(1,ribbonRadius)));}return slot;}
+const gap=Math.max(54,Math.min(92,width*0.048));slot=Math.max(0.22,Math.min(0.82,(projectedWidth+gap)/Math.max(1,ribbonRadius)));}return slot;}
 function smoothstep(value){const x=Math.max(0,Math.min(1,value));return x*x*(3-2*x);}
 function projectActive(){return viewMode==="project"||transitionProgress>0.6;}
 function touchRibbon(delta){if(projectFocusTarget>0||projectFocusProgress>0.05)return;ribbonVelocity+=delta;ribbonLastInputAt=performance.now();ribbonAutoPausedUntil=ribbonLastInputAt+5000;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;}
@@ -194,8 +194,8 @@ const dimmed=Boolean(sphereProjectFocusKey&&projectKey(item)!==sphereProjectFocu
 return{item,index,x:width/2+point.x*radius*perspectiveScale,y:height/2+point.y*radius*perspectiveScale,z:point.z,depth,mode:"sphere",visualScale:1+(selected?0.15*sphereProjectFocusProgress:0),alphaBoost:dimmed?1-0.25*sphereProjectFocusProgress:1};});}
 function wrappedRelative(index,offset,total){let rel=index-offset;rel=((rel+total/2)%total+total)%total-total/2;return rel;}
 function getRibbonEntries(visibleItems){const total=visibleItems.length;
-const ribbonRadius=Math.min(width,1540);
-const maxAngle=1.38;
+const ribbonRadius=Math.min(width*1.18,1760);
+const maxAngle=1.28;
 const centerY=height*0.43;
 const offscreenStep=width*1.4;
 const slots=visibleItems.map((item)=>ribbonSlot(item,ribbonRadius,maxAngle));return visibleItems.map((item,index)=>{const rawAngle=ribbonAngle(index,total,slots);
@@ -209,10 +209,9 @@ const sidePush=Math.sin(angle);
 const edgeX=Math.sin(maxAngle)*ribbonRadius+outside*offscreenStep;
 const edgePresence=smoothstep(1-outside*0.34);
 const innerX=outside>0?width/2+Math.sign(rawAngle)*edgeX:width/2+sidePush*ribbonRadius;
-const viewportSide=Math.min(1,Math.abs(innerX-width/2)/Math.max(1,width*0.5));
 const innerDepth=0.28+Math.pow(side,0.92)*0.72;
 const edgeFade=Math.max(0,1-outside*0.72);
-const innerScale=(0.38+0.62*Math.exp(-viewportSide*5))*(0.34+edgePresence*0.66);
+const innerScale=(1+side*2)*(0.34+edgePresence*0.66);
 const zoom=projectZoomProgress;
 const outerRadius=Math.min(width*0.62,1040)*(1-zoom*0.14);
 const outerEdgeX=Math.sin(maxAngle)*outerRadius+outside*offscreenStep;
