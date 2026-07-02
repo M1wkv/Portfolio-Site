@@ -33,7 +33,7 @@ const STORAGE_ASSETS="portfolioSphere.assets";
 const STORAGE_CV="portfolioSphere.cvNodes";
 const bootstrapData=readBootstrapData();
 const sphereSettings=bootstrapData.sphereSettings||window.PORTFOLIO_BOOTSTRAP?.sphereSettings||{};
-const MAX_VISIBLE_ITEMS=Math.round(clampSetting(sphereSettings.itemCount,50,10,100));sizeRange.value=String(clampSetting(sphereSettings.size,0.6,0.1,1));scaleRange.value=String(clampSetting(sphereSettings.elementScale,0.6,0.1,1));fisheyeRange.value=String(clampSetting(sphereSettings.fisheye,0.15,0,1));document.documentElement.dataset.sphereMaxVisibleItems=String(MAX_VISIBLE_ITEMS);
+const MAX_VISIBLE_ITEMS=Math.round(clampSetting(sphereSettings.itemCount,50,10,100));sizeRange.value=String(clampSetting(sphereSettings.size,0.6,0.1,1));scaleRange.value=String(clampSetting(sphereSettings.elementScale,0.6,0.1,1));fisheyeRange.value=String(clampSetting(sphereSettings.fisheye,0.15,0,1));projectScaleRange.value=String(clampSetting(sphereSettings.projectScale,0.5,0.4,1.6));projectGapRange.value=String(clampSetting(sphereSettings.projectGap,0.5,0.5,2));projectWidthRange.value=String(clampSetting(sphereSettings.projectWidth,0.75,0.6,1.6));projectLengthRange.value=String(clampSetting(sphereSettings.projectLength,1.25,0.5,1.8));document.documentElement.dataset.sphereMaxVisibleItems=String(MAX_VISIBLE_ITEMS);
 const defaultAssets=window.PORTFOLIO_SUPABASE?[]:(window.SPHERE_ASSETS||[]).slice(0,100);
 const bootstrapAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);
 const bootstrapProjectAssets=normalizeAssets(bootstrapData.projectAssets||window.PORTFOLIO_BOOTSTRAP?.projectAssets||[]);
@@ -86,7 +86,7 @@ let cvWheelAccumulator=0;
 let cvWheelLastAt=0;
 let cvWheelLockedUntil=0;document.documentElement.dataset.sphereRuntimeStarted="true";
 const state={sphereSize:Number(sizeRange.value),elementScale:Number(scaleRange.value),fisheye:Number(fisheyeRange.value)};
-const projectState={itemScale:1,itemCount:50,gap:1,cylinderWidth:1,cylinderLength:1};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
+const projectState={itemScale:0.5,itemCount:50,gap:0.5,cylinderWidth:0.75,cylinderLength:1.25};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
 function resize(){dpr=Math.min(window.devicePixelRatio||1,2);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 function progress(input){return(Number(input.value)-Number(input.min))/(Number(input.max)-Number(input.min));}
 function updateUi(){state.sphereSize=Number(sizeRange.value);state.elementScale=Number(scaleRange.value);state.fisheye=Number(fisheyeRange.value);sizeDial?.style.setProperty("--progress",progress(sizeRange).toFixed(4));scaleDial?.style.setProperty("--progress",progress(scaleRange).toFixed(4));sizeValue.textContent=state.sphereSize>=1?"1.0":state.sphereSize.toFixed(1);scaleValue.textContent=state.elementScale.toFixed(2);if(fisheyeValue)fisheyeValue.textContent=state.fisheye.toFixed(2);}
