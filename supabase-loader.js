@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260702-project-motion-1";
+    script.src = "sphere.js?v=20260702-project-motion-removed-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
