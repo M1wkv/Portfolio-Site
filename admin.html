@@ -208,6 +208,26 @@
                     <span class="sphere-setting-head"><span>Вертикальное вращение</span><b data-sphere-value="settings.sphere.rotationY">-0.09</b></span>
                     <input name="settings.sphere.rotationY" type="range" min="-0.32" max="0.32" step="0.01" />
                   </label>
+                  <div class="settings-subsection-head wide">
+                    <span>Просмотр проектов</span>
+                    <p>Начальные параметры цилиндра при открытии кейса.</p>
+                  </div>
+                  <label>
+                    <span class="sphere-setting-head"><span>Размер элементов проекта</span><b data-sphere-value="settings.sphere.projectScale">0.50</b></span>
+                    <input name="settings.sphere.projectScale" type="range" min="0.4" max="1.6" step="0.01" />
+                  </label>
+                  <label>
+                    <span class="sphere-setting-head"><span>Расстояние между элементами</span><b data-sphere-value="settings.sphere.projectGap">0.50</b></span>
+                    <input name="settings.sphere.projectGap" type="range" min="0.5" max="2" step="0.01" />
+                  </label>
+                  <label>
+                    <span class="sphere-setting-head"><span>Ширина цилиндра</span><b data-sphere-value="settings.sphere.projectWidth">0.75</b></span>
+                    <input name="settings.sphere.projectWidth" type="range" min="0.6" max="1.6" step="0.01" />
+                  </label>
+                  <label>
+                    <span class="sphere-setting-head"><span>Длина цилиндра</span><b data-sphere-value="settings.sphere.projectLength">1.25</b></span>
+                    <input name="settings.sphere.projectLength" type="range" min="0.5" max="1.8" step="0.01" />
+                  </label>
                 </div>
               </div>
             </div>
@@ -220,7 +240,7 @@
     <script src="supabase-config.js?v=20260628-security-1"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="admin.js?v=20260628-security-1"></script>
+<script src="admin.js?v=20260702-project-settings-1"></script>
 <script src="admin-localization.js?v=20260627-safe-ru-2"></script>
   </body>
 </html>
