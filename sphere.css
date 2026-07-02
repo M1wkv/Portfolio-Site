@@ -48,36 +48,58 @@ input {
   cursor: grabbing;
 }
 
-.sphere-brand {
+.sphere-topbar {
   position: fixed;
-  top: 39px;
-  left: 49px;
-  z-index: 5;
-  font-size: 15px;
-  line-height: 1.14;
-  letter-spacing: -0.02em;
+  top: 24px;
+  left: 50%;
+  z-index: 6;
+  width: min(920px, calc(100vw - 220px));
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 34px;
+  transform: translateX(-50%);
 }
 
-.top-nav {
+.sphere-brand {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.admin-nav {
   position: fixed;
-  top: 39px;
+  top: 24px;
   right: 49px;
-  z-index: 6;
+  z-index: 7;
+}
+
+.sphere-footer-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: 7;
+  max-width: calc(100vw - 40px);
   display: flex;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  transform: translateX(-50%);
 }
 
 .project-index {
-  position: fixed;
-  top: 50%;
-  right: 0;
-  z-index: 6;
-  width: min(220px, 22vw);
-  padding: 18px 20px 20px;
-  border-left: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(12px);
-  transform: translateY(-50%);
+  position: static;
+  width: auto;
+  max-width: min(920px, calc(100vw - 180px));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+  transform: none;
   transition: opacity 220ms ease, transform 320ms ease;
 }
 
@@ -87,28 +109,32 @@ input {
 
 .project-index-title {
   display: block;
-  margin-bottom: 13px;
+  margin: 0 4px 0 0;
   color: rgba(255, 255, 255, 0.42);
   font-size: 10px;
   font-weight: 700;
 }
 
 .project-index-list {
-  display: grid;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
 }
 
 .project-index-button {
   position: relative;
-  width: 100%;
-  min-height: 34px;
-  padding: 7px 0 7px 14px;
+  width: auto;
+  min-height: 42px;
+  padding: 7px 12px;
   border: 0;
   background: transparent;
   color: rgba(255, 255, 255, 0.5);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.25;
-  text-align: left;
+  text-align: center;
+  white-space: nowrap;
   text-transform: uppercase;
   cursor: pointer;
   transition: color 180ms ease, transform 220ms ease;
@@ -118,7 +144,7 @@ input {
   content: "";
   position: absolute;
   top: 50%;
-  left: 0;
+  left: 5px;
   width: 5px;
   height: 1px;
   background: currentColor;
@@ -131,7 +157,7 @@ input {
 .project-index-button.is-active {
   color: #fff;
   outline: none;
-  transform: translateX(3px);
+  transform: translateY(-2px);
 }
 
 .project-index-button.is-active::before {
@@ -159,13 +185,11 @@ input {
 }
 
 .sphere-dials {
-  position: fixed;
-  left: 49px;
-  bottom: 39px;
-  z-index: 5;
-  width: min(320px, calc(100vw - 98px));
+  position: static;
+  width: 100%;
   display: grid;
-  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
 }
 
 .sphere-control {
@@ -499,10 +523,9 @@ input {
   line-height: 1;
 }
 
-.sphere-page.is-project .sphere-brand,
-.sphere-page.is-project .top-nav,
-.sphere-page.is-project .project-index,
-.sphere-page.is-project .sphere-dials,
+.sphere-page.is-project .sphere-topbar,
+.sphere-page.is-project .sphere-footer-nav,
+.sphere-page.is-project .admin-nav,
 .sphere-page.is-project .sphere-bottom {
   opacity: 0;
   pointer-events: none;
@@ -934,17 +957,16 @@ input {
   --cv-blur: 0px;
 }
 
-.sphere-page.is-cv .sphere-brand,
-.sphere-page.is-cv .top-nav,
-.sphere-page.is-cv .project-index,
-.sphere-page.is-cv .sphere-dials,
+.sphere-page.is-cv .sphere-topbar,
+.sphere-page.is-cv .sphere-footer-nav,
+.sphere-page.is-cv .admin-nav,
 .sphere-page.is-cv .sphere-bottom,
 .sphere-page.is-cv .project-view-ui {
   opacity: 0;
   pointer-events: none;
 }
 
-.sphere-page.is-cv .top-nav-link,
+.sphere-page.is-cv .admin-nav,
 .sphere-page.is-cv .project-back {
   visibility: hidden;
   pointer-events: none;
@@ -976,15 +998,32 @@ input {
     grid-template-columns: 1fr;
   }
 
-  .sphere-brand {
-    top: 22px;
-    left: 20px;
+  .sphere-topbar {
+    top: 14px;
+    width: calc(100vw - 112px);
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 12px;
   }
 
-  .top-nav {
-    top: 20px;
-    right: 20px;
+  .sphere-brand { font-size: 10px; }
+
+  .admin-nav {
+    top: 14px;
+    right: 14px;
+    min-width: 70px;
+    height: 36px;
+    padding: 0 12px;
+    font-size: 10px;
   }
+
+  .sphere-dials {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .sphere-control { gap: 5px; }
+  .sphere-control-head { gap: 5px; font-size: 8px; }
+  .sphere-control-head b { font-size: 9px; }
 
   .cv-cylinder-tabs {
     top: 76px;
@@ -998,30 +1037,36 @@ input {
   }
 
   .project-index {
-    top: 92px;
-    right: 0;
-    width: 154px;
-    max-height: calc(100vh - 210px);
-    padding: 14px 14px 16px;
-    overflow-y: auto;
-    transform: none;
+    width: auto;
+    max-width: none;
+    flex: 0 0 auto;
+    padding: 0;
+    overflow: visible;
   }
 
   .project-index-button {
-    min-height: 31px;
-    font-size: 10px;
+    min-height: 36px;
+    padding: 6px 9px;
+    font-size: 9px;
   }
 
-  .sphere-dials,
-  .sphere-bottom {
-    transform: scale(0.74);
+  .sphere-footer-nav {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
+    justify-content: flex-start;
+    gap: 10px;
+    overflow-x: auto;
+    transform: none;
+    scrollbar-width: none;
   }
 
-  .sphere-dials {
-    left: 18px;
-    bottom: 18px;
-    transform-origin: left bottom;
-  }
+  .sphere-footer-nav::-webkit-scrollbar { display: none; }
+
+  .sphere-footer-nav .top-nav-link { height: 36px; min-width: 76px; }
+
+  .sphere-bottom { transform: scale(0.74); }
 
   .sphere-bottom {
     right: 18px;
@@ -1104,4 +1149,3 @@ input {
     font-size: 16px;
   }
 }
-
