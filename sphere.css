@@ -411,6 +411,58 @@ input {
   -webkit-backdrop-filter: blur(18px);
 }
 
+.project-controls {
+  position: fixed;
+  top: 50%;
+  right: 24px;
+  z-index: 8;
+  width: 230px;
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  pointer-events: auto;
+  transform: translateY(-50%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.project-control {
+  display: grid;
+  gap: 9px;
+}
+
+.project-control > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.project-control b {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 10px;
+}
+
+.project-control input {
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  background: transparent;
+  cursor: ew-resize;
+  appearance: none;
+}
+
+.project-control input::-webkit-slider-runnable-track { height: 1px; background: rgba(255, 255, 255, 0.42); }
+.project-control input::-webkit-slider-thumb { width: 11px; height: 11px; margin-top: -5px; border: 0; border-radius: 50%; background: #fff; appearance: none; }
+.project-control input::-moz-range-track { height: 1px; background: rgba(255, 255, 255, 0.42); }
+.project-control input::-moz-range-thumb { width: 11px; height: 11px; border: 0; border-radius: 50%; background: #fff; }
+
 .project-heading {
   position: fixed;
   top: 34px;
@@ -1093,6 +1145,16 @@ input {
     top: 20px;
     left: 20px;
   }
+
+  .project-controls {
+    right: 12px;
+    width: 170px;
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .project-control > span,
+  .project-control b { font-size: 8px; }
 
   .project-heading {
     top: 24px;
