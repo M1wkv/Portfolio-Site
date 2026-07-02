@@ -40,7 +40,18 @@
       faviconUrl: "",
       language: "ru",
       analytics: "",
-      sphere: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 }
+      sphere: {
+        size: 0.6,
+        elementScale: 0.6,
+        itemCount: 50,
+        fisheye: 0.15,
+        rotationX: 0.14,
+        rotationY: -0.09,
+        projectScale: 0.5,
+        projectGap: 0.5,
+        projectWidth: 0.75,
+        projectLength: 1.25
+      }
     }
   };
 
