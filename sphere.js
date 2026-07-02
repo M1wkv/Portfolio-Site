@@ -137,17 +137,15 @@ const cardH=base/Math.sqrt(ratio);
 const alpha=mode==="ribbon"?alphaBoost:(0.22+depth*0.78)*alphaBoost;
 const dxFromCenter=x-width/2;
 const dyFromCenter=y-height/2;
-const horizontalEdge=Math.min(1,Math.abs(dxFromCenter)/Math.max(1,width*0.5));
-const motionStrength=mode==="ribbon"?smoothstep(horizontalEdge):0;
 const screenDistance=Math.min(1,Math.hypot(dxFromCenter,dyFromCenter)/Math.max(1,Math.min(width,height)*0.48));
 const distortion=mode==="sphere"?screenDistance*screenDistance*state.fisheye:0;
 const angle=Math.atan2(dyFromCenter,dxFromCenter);
 const radialScale=1+distortion*0.72;
 const tangentScale=Math.max(0.72,1-distortion*0.18);
-const hitW=cardW*Math.max(radialScale,tangentScale)*(1+motionStrength*0.1)+motionStrength*36;
+const hitW=cardW*Math.max(radialScale,tangentScale);
 const hitH=cardH*Math.max(radialScale,tangentScale);if(alpha>0.02)entry.hit={item,index:entry.index,x,y,z,w:hitW,h:hitH};else delete entry.hit;ctx.save();ctx.translate(x,y);if(mode==="ribbon"){const side=Math.max(-1,Math.min(1,(x-width/2)/Math.max(1,width*0.5)));
 const faceTurn=entry.faceTurn||0;
-const compress=Math.max(0.42,1-Math.abs(faceTurn)*0.38);ctx.transform(compress,0,0,1,0,0);}else{ctx.rotate(angle);ctx.scale(radialScale,tangentScale);ctx.rotate(-angle);}ctx.globalAlpha=alpha;if(item.loaded&&item.img.naturalWidth){if(motionStrength>0.001){const direction=Math.sign(dxFromCenter)||1;ctx.save();ctx.filter=`blur(${(motionStrength*3.2).toFixed(2)}px)`;for(let layer=8;layer>=1;layer--){const progress=layer/8;const stretch=1+motionStrength*progress*0.38;const offset=direction*motionStrength*progress*38;ctx.globalAlpha=alpha*motionStrength*(0.025+(1-progress)*0.035);ctx.drawImage(item.img,-cardW*stretch/2+offset,-cardH/2,cardW*stretch,cardH);}ctx.restore();}ctx.save();ctx.globalAlpha=alpha;ctx.scale(1+motionStrength*0.1,1);ctx.drawImage(item.img,-cardW/2,-cardH/2,cardW,cardH);ctx.restore();}else{const gradient=ctx.createLinearGradient(-cardW/2,-cardH/2,cardW/2,cardH/2);gradient.addColorStop(0,"rgba(255,255,255,0.18)");gradient.addColorStop(1,"rgba(255,255,255,0.04)");ctx.fillStyle=gradient;ctx.fillRect(-cardW/2,-cardH/2,cardW,cardH);}ctx.restore();}
+const compress=Math.max(0.42,1-Math.abs(faceTurn)*0.38);ctx.transform(compress,0,0,1,0,0);}else{ctx.rotate(angle);ctx.scale(radialScale,tangentScale);ctx.rotate(-angle);}ctx.globalAlpha=alpha;if(item.loaded&&item.img.naturalWidth){ctx.drawImage(item.img,-cardW/2,-cardH/2,cardW,cardH);}else{const gradient=ctx.createLinearGradient(-cardW/2,-cardH/2,cardW/2,cardH/2);gradient.addColorStop(0,"rgba(255,255,255,0.18)");gradient.addColorStop(1,"rgba(255,255,255,0.04)");ctx.fillStyle=gradient;ctx.fillRect(-cardW/2,-cardH/2,cardW,cardH);}ctx.restore();}
 function getVisibleItems(){return mixSpatialItems(items.slice(0,Math.min(MAX_VISIBLE_ITEMS,items.length)));}
 function projectKey(item){return item?.projectId||item?.title||item?.src||"";}
 function setProjectIndexActive(key){projectIndexList?.querySelectorAll(".project-index-button").forEach((button)=>{button.classList.toggle("is-active",button.dataset.projectKey===key);});}
