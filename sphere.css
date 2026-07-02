@@ -58,6 +58,11 @@ input {
   grid-template-columns: max-content minmax(0, 1fr);
   align-items: center;
   gap: 34px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transform: translateX(-50%);
 }
 
@@ -67,6 +72,8 @@ input {
   line-height: 1;
   white-space: nowrap;
 }
+
+.sphere-brand span { display: block; }
 
 .admin-nav {
   position: fixed;
@@ -85,6 +92,11 @@ input {
   align-items: center;
   justify-content: center;
   gap: 18px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transform: translateX(-50%);
 }
 
