@@ -1000,9 +1000,12 @@ input {
 
   .sphere-topbar {
     top: 14px;
-    width: calc(100vw - 112px);
+    left: 12px;
+    right: 96px;
+    width: auto;
     grid-template-columns: max-content minmax(0, 1fr);
     gap: 12px;
+    transform: none;
   }
 
   .sphere-brand { font-size: 10px; }
