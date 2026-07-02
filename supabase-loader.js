@@ -142,7 +142,7 @@
   }
 
   async function loadSphereSettings() {
-    const defaults = { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 };
+    const defaults = { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25 };
     if (!client) return { values: defaults, signature: "" };
     const { data, error } = await client.from("site_settings").select("analytics,updated_at").limit(1).maybeSingle();
     if (error) throw error;
@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260702-project-view-1";
+    script.src = "sphere.js?v=20260702-project-settings-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -209,7 +209,7 @@
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
-    setBootstrapPayload({ assets: [], projectAssets: [], cvNodes: [], sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09 } });
+    setBootstrapPayload({ assets: [], projectAssets: [], cvNodes: [], sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
