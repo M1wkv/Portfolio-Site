@@ -13,6 +13,12 @@ const projectViewUi=document.getElementById("projectViewUi");
 const projectBack=document.getElementById("projectBack");
 const projectOpen=document.getElementById("projectOpen");
 const projectTitle=document.getElementById("projectTitle");
+const projectScaleRange=document.getElementById("projectScaleRange");
+const projectCountRange=document.getElementById("projectCountRange");
+const projectGapRange=document.getElementById("projectGapRange");
+const projectScaleValue=document.getElementById("projectScaleValue");
+const projectCountValue=document.getElementById("projectCountValue");
+const projectGapValue=document.getElementById("projectGapValue");
 const projectIndex=document.getElementById("projectIndex");
 const projectIndexList=document.getElementById("projectIndexList");
 const cvOpen=document.getElementById("cvOpen");
@@ -76,10 +82,12 @@ let cvCylinderTarget=0;
 let cvWheelAccumulator=0;
 let cvWheelLastAt=0;
 let cvWheelLockedUntil=0;document.documentElement.dataset.sphereRuntimeStarted="true";
-const state={sphereSize:Number(sizeRange.value),elementScale:Number(scaleRange.value),fisheye:Number(fisheyeRange.value)};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
+const state={sphereSize:Number(sizeRange.value),elementScale:Number(scaleRange.value),fisheye:Number(fisheyeRange.value)};
+const projectState={itemScale:1,itemCount:50,gap:1};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
 function resize(){dpr=Math.min(window.devicePixelRatio||1,2);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 function progress(input){return(Number(input.value)-Number(input.min))/(Number(input.max)-Number(input.min));}
 function updateUi(){state.sphereSize=Number(sizeRange.value);state.elementScale=Number(scaleRange.value);state.fisheye=Number(fisheyeRange.value);sizeDial?.style.setProperty("--progress",progress(sizeRange).toFixed(4));scaleDial?.style.setProperty("--progress",progress(scaleRange).toFixed(4));sizeValue.textContent=state.sphereSize>=1?"1.0":state.sphereSize.toFixed(1);scaleValue.textContent=state.elementScale.toFixed(2);if(fisheyeValue)fisheyeValue.textContent=state.fisheye.toFixed(2);}
+function updateProjectUi(){projectState.itemScale=Number(projectScaleRange.value);projectState.itemCount=Math.round(Number(projectCountRange.value));projectState.gap=Number(projectGapRange.value);projectScaleValue.textContent=projectState.itemScale.toFixed(2);projectCountValue.textContent=String(projectState.itemCount);projectGapValue.textContent=projectState.gap.toFixed(2);}
 function effectiveElementScale(){return 0.2+state.elementScale*2.8;}
 function fibonacciPoint(index,total){const offset=2/total;
 const increment=Math.PI*(3-Math.sqrt(5));
@@ -105,7 +113,7 @@ const baseWidth=112*effectiveElementScale()*1.92*Math.sqrt(ratio);
 let slot=Math.max(0.2,Math.min(0.7,(baseWidth+Math.max(48,width*0.045))/Math.max(1,ribbonRadius)));for(let pass=0;pass<3;pass++){const side=Math.min(1,Math.abs(slot)/maxAngle);
 const visualScale=1+side*2;
 const projectedWidth=baseWidth*visualScale*Math.max(0.42,1-Math.abs(Math.sin(slot))*0.38);
-const gap=Math.max(54,Math.min(92,width*0.048));slot=Math.max(0.22,Math.min(0.82,(projectedWidth+gap)/Math.max(1,ribbonRadius)));}return slot;}
+const gap=Math.max(54,Math.min(92,width*0.048));slot=Math.max(0.22,Math.min(0.82,(projectedWidth+gap)/Math.max(1,ribbonRadius)));}return slot*projectState.gap;}
 function smoothstep(value){const x=Math.max(0,Math.min(1,value));return x*x*(3-2*x);}
 function projectActive(){return viewMode==="project"||transitionProgress>0.6;}
 function touchRibbon(delta){if(projectFocusTarget>0||projectFocusProgress>0.05)return;ribbonVelocity+=delta;ribbonLastInputAt=performance.now();ribbonAutoPausedUntil=ribbonLastInputAt+5000;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;}
@@ -118,12 +126,12 @@ const to=(from+1)%total;angle+=(slots[from]+slots[to])*0.5;}}else if(rel<0){for(
 const to=(from-1+total)%total;angle-=(slots[from]+slots[to])*0.5;}}return angle;}
 function drawCard(entry){const{item,x,y,z,depth,mode="sphere",alphaBoost=1}=entry;
 const nearScale=mode==="ribbon"?1.85+depth*0.15:0.58+depth*0.88;
-const visualScale=entry.visualScale||1;
+const visualScale=(entry.visualScale||1)*(mode==="ribbon"?projectState.itemScale:1);
 const ratio=imageRatio(item);
 const base=112*effectiveElementScale()*nearScale*visualScale;
 const cardW=base*Math.sqrt(ratio);
 const cardH=base/Math.sqrt(ratio);
-const alpha=mode==="ribbon"?1:(0.22+depth*0.78)*alphaBoost;
+const alpha=mode==="ribbon"?alphaBoost:(0.22+depth*0.78)*alphaBoost;
 const dxFromCenter=x-width/2;
 const dyFromCenter=y-height/2;
 const screenDistance=Math.min(1,Math.hypot(dxFromCenter,dyFromCenter)/Math.max(1,Math.min(width,height)*0.48));
@@ -132,7 +140,7 @@ const angle=Math.atan2(dyFromCenter,dxFromCenter);
 const radialScale=1+distortion*0.72;
 const tangentScale=Math.max(0.72,1-distortion*0.18);
 const hitW=cardW*Math.max(radialScale,tangentScale);
-const hitH=cardH*Math.max(radialScale,tangentScale);entry.hit={item,index:entry.index,x,y,z,w:hitW,h:hitH};ctx.save();ctx.translate(x,y);if(mode==="ribbon"){const side=Math.max(-1,Math.min(1,(x-width/2)/Math.max(1,width*0.5)));
+const hitH=cardH*Math.max(radialScale,tangentScale);if(alpha>0.02)entry.hit={item,index:entry.index,x,y,z,w:hitW,h:hitH};else delete entry.hit;ctx.save();ctx.translate(x,y);if(mode==="ribbon"){const side=Math.max(-1,Math.min(1,(x-width/2)/Math.max(1,width*0.5)));
 const faceTurn=entry.faceTurn||0;
 const compress=Math.max(0.42,1-Math.abs(faceTurn)*0.38);ctx.transform(compress,0,0,1,0,0);}else{ctx.rotate(angle);ctx.scale(radialScale,tangentScale);ctx.rotate(-angle);}ctx.globalAlpha=alpha;if(item.loaded&&item.img.naturalWidth){ctx.drawImage(item.img,-cardW/2,-cardH/2,cardW,cardH);}else{const gradient=ctx.createLinearGradient(-cardW/2,-cardH/2,cardW/2,cardH/2);gradient.addColorStop(0,"rgba(255,255,255,0.18)");gradient.addColorStop(1,"rgba(255,255,255,0.04)");ctx.fillStyle=gradient;ctx.fillRect(-cardW/2,-cardH/2,cardW,cardH);}ctx.restore();}
 function getVisibleItems(){return mixSpatialItems(items.slice(0,Math.min(MAX_VISIBLE_ITEMS,items.length)));}
@@ -203,6 +211,7 @@ const outside=Math.max(0,Math.abs(rawAngle)-maxAngle);
 const angle=Math.max(-maxAngle,Math.min(maxAngle,rawAngle));
 const side=Math.min(1,Math.abs(rawAngle)/maxAngle);
 const rel=wrappedRelative(index,ribbonOffset,total);
+const visibleByCount=Math.abs(rel)<=Math.max(0,(projectState.itemCount-1)/2);
 const centerFade=Math.min(1,Math.abs(rel)/11);
 const innerZ=side-outside*0.08;
 const sidePush=Math.sin(angle);
@@ -223,7 +232,7 @@ const centerFocus=Math.max(0,1-Math.abs(rel)*2);
 const focusScale=1+centerFocus*0.5;
 const zoomScale=1+zoom*(centerFocus*0.12-(1-centerFocus)*0.28);
 const outerScale=(0.68+outerCurve*1.05)*(0.4+edgePresence*0.6)*focusScale*zoomScale;
-const focus=projectFocusProgress;return{item,index,x:innerX+(outerX-innerX)*focus,y:centerY+(height*0.5-centerY)*focus,z:innerZ+(outerZ-innerZ)*focus,depth:innerDepth+(outerDepth-innerDepth)*focus,mode:"ribbon",faceTurn:sidePush*(1-focus*0.42),visualScale:innerScale+(outerScale-innerScale)*focus,alphaBoost:1,centerFocus};});}
+const focus=projectFocusProgress;return{item,index,x:innerX+(outerX-innerX)*focus,y:centerY+(height*0.5-centerY)*focus,z:innerZ+(outerZ-innerZ)*focus,depth:innerDepth+(outerDepth-innerDepth)*focus,mode:"ribbon",faceTurn:sidePush*(1-focus*0.42),visualScale:innerScale+(outerScale-innerScale)*focus,alphaBoost:visibleByCount?1:0,centerFocus};});}
 function updateRibbonAutoscroll(now){if(viewMode!=="project"||dragging||now<ribbonAutoPausedUntil||projectFocusTarget>0||projectFocusProgress>0.05){ribbonAutoSpeed+=(0-ribbonAutoSpeed)*0.08;return false;}if(!ribbonAutoPhaseStartedAt){ribbonAutoPhaseStartedAt=now;}let elapsed=now-ribbonAutoPhaseStartedAt;
 const cycle=24000;if(elapsed>=cycle){const cycles=Math.floor(elapsed/cycle);ribbonAutoPhaseStartedAt+=cycles*cycle;elapsed=now-ribbonAutoPhaseStartedAt;if(cycles%2===1){ribbonAutoDirection*=-1;}}const cycleTime=elapsed;
 let targetSpeed;if(cycleTime<20000){const startEase=smoothstep(Math.min(1,cycleTime/1800));targetSpeed=ribbonAutoDirection*0.0022*startEase;}else if(cycleTime<21000){const kick=smoothstep((cycleTime-20000)/1000);targetSpeed=-ribbonAutoDirection*(0.024+kick*0.068);}else{const stop=1-smoothstep((cycleTime-21000)/3000);targetSpeed=-ribbonAutoDirection*0.024*stop;}const response=Math.abs(targetSpeed)>Math.abs(ribbonAutoSpeed)?0.34:0.075;ribbonAutoSpeed+=(targetSpeed-ribbonAutoSpeed)*response;ribbonTargetOffset+=ribbonAutoSpeed;return true;}
@@ -318,12 +327,13 @@ const visibleItems=getRenderItems();
 const sphereEntries=getSphereEntries(visibleItems);
 const ribbonEntries=getRibbonEntries(visibleItems);
 const eased=transitionProgress*transitionProgress*(3-2*transitionProgress);
-const entries=sphereEntries.map((sphereEntry,index)=>{const ribbonEntry=ribbonEntries[index];const sphereScale=sphereEntry.visualScale||1;const sphereAlpha=sphereEntry.alphaBoost||1;return{item:sphereEntry.item,index,x:sphereEntry.x+(ribbonEntry.x-sphereEntry.x)*eased,y:sphereEntry.y+(ribbonEntry.y-sphereEntry.y)*eased,z:sphereEntry.z+(ribbonEntry.z-sphereEntry.z)*eased,depth:sphereEntry.depth+(ribbonEntry.depth-sphereEntry.depth)*eased,mode:eased>0.55?"ribbon":"sphere",faceTurn:(ribbonEntry.faceTurn||0)*eased,visualScale:sphereScale+((ribbonEntry.visualScale||1)-sphereScale)*eased,alphaBoost:sphereAlpha+((ribbonEntry.alphaBoost||1)-sphereAlpha)*eased,centerFocus:(ribbonEntry.centerFocus||0)*eased};}).sort((a,b)=>a.z-b.z);if(viewMode==="project"&&projectFocusProgress<0.05){const nearest=entries.reduce((current,entry)=>(!current||Math.abs(entry.x-width/2)<Math.abs(current.x-width/2)?entry:current),null);if(nearest){projectOpen.style.left=`${nearest.x}px`;projectOpen.style.top=`${nearest.y}px`;}}drawRibbonAtmosphere(eased);hitTargets=[];
+const entries=sphereEntries.map((sphereEntry,index)=>{const ribbonEntry=ribbonEntries[index];const sphereScale=sphereEntry.visualScale||1;const sphereAlpha=sphereEntry.alphaBoost??1;return{item:sphereEntry.item,index,x:sphereEntry.x+(ribbonEntry.x-sphereEntry.x)*eased,y:sphereEntry.y+(ribbonEntry.y-sphereEntry.y)*eased,z:sphereEntry.z+(ribbonEntry.z-sphereEntry.z)*eased,depth:sphereEntry.depth+(ribbonEntry.depth-sphereEntry.depth)*eased,mode:eased>0.55?"ribbon":"sphere",faceTurn:(ribbonEntry.faceTurn||0)*eased,visualScale:sphereScale+((ribbonEntry.visualScale||1)-sphereScale)*eased,alphaBoost:sphereAlpha+((ribbonEntry.alphaBoost??1)-sphereAlpha)*eased,centerFocus:(ribbonEntry.centerFocus||0)*eased};}).sort((a,b)=>a.z-b.z);if(viewMode==="project"&&projectFocusProgress<0.05){const nearest=entries.reduce((current,entry)=>(!current||Math.abs(entry.x-width/2)<Math.abs(current.x-width/2)?entry:current),null);if(nearest){projectOpen.style.left=`${nearest.x}px`;projectOpen.style.top=`${nearest.y}px`;}}drawRibbonAtmosphere(eased);hitTargets=[];
 const focusedEntries=projectFocusProgress>0.01?entries.filter((entry)=>entry.centerFocus>0.5):[];
 const backgroundEntries=focusedEntries.length?entries.filter((entry)=>entry.centerFocus<=0.5):entries;backgroundEntries.forEach((entry)=>{drawCard(entry);if(entry.hit)hitTargets.push(entry.hit);});if(focusedEntries.length){ctx.save();ctx.globalAlpha=0.5*projectFocusProgress;ctx.fillStyle="#000";ctx.fillRect(0,0,width,height);ctx.restore();focusedEntries.forEach((entry)=>{drawCard(entry);if(entry.hit)hitTargets.push(entry.hit);});}requestAnimationFrame(render);}
 function findHit(clientX,clientY){return hitTargets.filter((target)=>(Math.abs(clientX-target.x)<=target.w/2&&Math.abs(clientY-target.y)<=target.h/2)).sort((a,b)=>b.z-a.z)[0];}
 function openProject(item){clearSphereProjectFocus();activeProjectKey=projectKey(item);
 const projectItems=getProjectItems();
+projectCountRange.max=String(Math.max(1,projectItems.length));projectCountRange.value=String(Math.max(1,projectItems.length));updateProjectUi();
 const index=Math.max(0,projectItems.findIndex((candidate)=>candidate.src===item.src));document.documentElement.dataset.activeProjectItemCount=String(projectItems.length);ribbonTargetOffset=index;ribbonOffset=index;ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+5000;projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=1;viewMode="project";spherePage.classList.add("is-project");projectTitle.textContent=projectLabel(item,index);projectViewUi.hidden=false;projectViewUi.classList.remove("is-media-open");projectOpen.textContent="OPEN";}
 function toggleProjectMedia(){if(viewMode!=="project")return;
 const opening=projectFocusTarget<0.5;projectFocusTarget=opening?1:0;projectZoomTarget=0;if(opening)projectZoomProgress=0;projectViewUi.classList.toggle("is-media-open",opening);projectOpen.textContent=opening?"CLOSE":"OPEN";ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+(opening?600000:5000);if(opening){projectOpen.style.left="50%";projectOpen.style.top="";
@@ -392,4 +402,5 @@ cvOpen.addEventListener("click",openCv);
 cvBack.addEventListener("click",closeCv);
 cvView.addEventListener("wheel",handleCvWheel,{passive:false});
 [sizeRange,scaleRange,fisheyeRange].forEach((input)=>{input.addEventListener("input",updateUi);});
-window.addEventListener("resize",resize);resize();updateUi();loadItems(assets);renderCvCylinderTabs();Promise.all([loadStoredAssetsAsync(),loadStoredCvNodesAsync()]).then(([nextAssets,nextCvNodes])=>{assets=nextAssets;cvNodes=nextCvNodes;loadItems(assets);renderCvCylinderTabs();setCvLook(cvLook);});render();})();
+[projectScaleRange,projectCountRange,projectGapRange].forEach((input)=>{input.addEventListener("input",updateProjectUi);});
+window.addEventListener("resize",resize);resize();updateUi();updateProjectUi();loadItems(assets);renderCvCylinderTabs();Promise.all([loadStoredAssetsAsync(),loadStoredCvNodesAsync()]).then(([nextAssets,nextCvNodes])=>{assets=nextAssets;cvNodes=nextCvNodes;loadItems(assets);renderCvCylinderTabs();setCvLook(cvLook);});render();})();
