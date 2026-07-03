@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260703-nav-polish-2";
+    script.src = "sphere.js?v=20260703-nav-polish-3";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
