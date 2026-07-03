@@ -205,6 +205,10 @@ input {
   font-size: 12px;
 }
 
+#sphereSizeValue.is-max {
+  color: #fff;
+}
+
 .sphere-line-range {
   width: 100%;
   height: 18px;
