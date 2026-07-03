@@ -196,7 +196,114 @@ const slots=[];
 const bandSize=Math.max(queues.length,queues.length*2);for(let start=0;start<depthSortedSlots.length;start+=bandSize){slots.push(...depthSortedSlots.slice(start,start+bandSize).sort((a,b)=>a.angle-b.angle));}const mixed=new Array(sourceItems.length);anchorSlots.forEach((slot,index)=>{const group=queues[index%queues.length];mixed[slot.index]=group.items.shift();});
 let slotIndex=0;
 let cycle=0;while(slotIndex<slots.length&&queues.some((group)=>group.items.length)){const active=queues.filter((group)=>group.items.length);
-const start=cycle%active.length;for(let offset=0;offset<active.length&&slotIndex<slots.length;offset++){const gr…3740 tokens truncated…nt.x,point.y);drawing=true;}else{ctx.lineTo(point.x,point.y);}});ctx.strokeStyle=`rgba(255,255,255,${alpha})`;ctx.lineWidth=widthValue;ctx.stroke();}
+const start=cycle%active.length;for(let offset=0;offset<active.length&&slotIndex<slots.length;offset++){const group=active[(start+offset)%active.length];mixed[slots[slotIndex].index]=group.items.shift();slotIndex+=1;}cycle+=1;}return mixed.filter(Boolean);}
+function getProjectItems(){if(!activeProjectKey)return getVisibleItems();
+const matchingItems=projectMediaItems.filter((item)=>projectKey(item)===activeProjectKey);matchingItems.forEach(startMediaItemLoad);document.documentElement.dataset.projectMediaLoadedCount=String(matchingItems.filter((item)=>item.loadStarted).length);return matchingItems.length?matchingItems:getVisibleItems();}
+function getProjectRenderItems(){const source=getProjectItems();if(!source.length)return source;const target=Math.max(1,projectState.itemCount);if(target<=source.length)return source;return Array.from({length:target},(_,index)=>source[index%source.length]);}
+function getRenderItems(){return projectActive()?getProjectRenderItems():getVisibleItems();}
+function getSphereEntries(visibleItems){const count=visibleItems.length;
+const introElapsed=Math.min(1,(performance.now()-introStart)/720);
+const introScale=0.18+(1-Math.pow(1-introElapsed,3))*0.82;
+const radius=Math.min(width,height)*(0.22+state.sphereSize*0.38)*introScale;
+const perspective=radius*3.4;return visibleItems.map((item,index)=>{const point=rotate(fibonacciPoint(index,count));
+const depth=(point.z+1)/2;
+const perspectiveScale=perspective/(perspective-point.z*radius);
+const selected=Boolean(sphereProjectFocusSrc&&item.src===sphereProjectFocusSrc);
+const dimmed=Boolean(sphereProjectFocusKey&&projectKey(item)!==sphereProjectFocusKey);
+return{item,index,x:width/2+point.x*radius*perspectiveScale,y:height/2+point.y*radius*perspectiveScale,z:point.z,depth,mode:"sphere",visualScale:1+(selected?0.15*sphereProjectFocusProgress:0),alphaBoost:dimmed?1-0.25*sphereProjectFocusProgress:1};});}
+function wrappedRelative(index,offset,total){let rel=index-offset;rel=((rel+total/2)%total+total)%total-total/2;return rel;}
+function getRibbonEntries(visibleItems){const total=visibleItems.length;
+const ribbonRadius=Math.min(width*1.18,1760)*projectState.cylinderWidth;
+const maxAngle=1.28;
+const centerY=height*0.43;
+const offscreenStep=width*1.4;
+const slots=visibleItems.map((item)=>ribbonSlot(item,ribbonRadius,maxAngle));return visibleItems.map((item,index)=>{const rawAngle=ribbonAngle(index,total,slots);
+const outside=Math.max(0,Math.abs(rawAngle)-maxAngle);
+const angle=Math.max(-maxAngle,Math.min(maxAngle,rawAngle));
+const side=Math.min(1,Math.abs(rawAngle)/maxAngle);
+const rel=wrappedRelative(index,ribbonOffset,total);
+const visibleByCount=Math.abs(rel)<=Math.max(0,(projectState.itemCount-1)/2);
+const centerFade=Math.min(1,Math.abs(rel)/11);
+const innerZ=(side-outside*0.08)*projectState.cylinderLength;
+const sidePush=Math.sin(angle);
+const edgeX=Math.sin(maxAngle)*ribbonRadius+outside*offscreenStep;
+const edgePresence=smoothstep(1-outside*0.34);
+const innerX=outside>0?width/2+Math.sign(rawAngle)*edgeX:width/2+sidePush*ribbonRadius;
+const innerDepth=Math.min(1,0.28+Math.pow(side,0.92)*0.72*projectState.cylinderLength);
+const edgeFade=Math.max(0,1-outside*0.72);
+const innerScale=(1+side*2*projectState.cylinderLength)*(0.34+edgePresence*0.66);
+const zoom=projectZoomProgress;
+const outerRadius=Math.min(width*0.62,1040)*(1-zoom*0.14)*projectState.cylinderWidth;
+const outerEdgeX=Math.sin(maxAngle)*outerRadius+outside*offscreenStep;
+const outerX=outside>0?width/2+Math.sign(rawAngle)*outerEdgeX:width/2+sidePush*outerRadius;
+const outerCurve=Math.max(0,Math.cos(angle));
+const outerZ=(outerCurve-side*0.76-outside*0.1)*projectState.cylinderLength;
+const outerDepth=0.38+outerCurve*0.62;
+const centerFocus=Math.max(0,1-Math.abs(rel)*2);
+const expandedOuterScale=(0.68+outerCurve*1.05)*(0.4+edgePresence*0.6);
+const outerScale=centerFocus>0.5?innerScale:expandedOuterScale;
+const focus=projectFocusProgress;return{item,index,x:innerX+(outerX-innerX)*focus,y:centerY+(height*0.5-centerY)*focus,z:innerZ+(outerZ-innerZ)*focus,depth:innerDepth+(outerDepth-innerDepth)*focus,mode:"ribbon",faceTurn:sidePush*(1-focus*0.42),visualScale:innerScale+(outerScale-innerScale)*focus,alphaBoost:visibleByCount?1:0,centerFocus};});}
+function updateRibbonAutoscroll(now){if(viewMode!=="project"||dragging||now<ribbonAutoPausedUntil||projectFocusTarget>0||projectFocusProgress>0.05){ribbonAutoSpeed+=(0-ribbonAutoSpeed)*0.08;return false;}if(!ribbonAutoPhaseStartedAt){ribbonAutoPhaseStartedAt=now;}let elapsed=now-ribbonAutoPhaseStartedAt;
+const cycle=24000;if(elapsed>=cycle){const cycles=Math.floor(elapsed/cycle);ribbonAutoPhaseStartedAt+=cycles*cycle;elapsed=now-ribbonAutoPhaseStartedAt;if(cycles%2===1){ribbonAutoDirection*=-1;}}const cycleTime=elapsed;
+let targetSpeed;if(cycleTime<20000){const startEase=smoothstep(Math.min(1,cycleTime/1800));targetSpeed=ribbonAutoDirection*0.0022*startEase;}else if(cycleTime<21000){const kick=smoothstep((cycleTime-20000)/1000);targetSpeed=-ribbonAutoDirection*(0.024+kick*0.068);}else{const stop=1-smoothstep((cycleTime-21000)/3000);targetSpeed=-ribbonAutoDirection*0.024*stop;}const response=Math.abs(targetSpeed)>Math.abs(ribbonAutoSpeed)?0.34:0.075;ribbonAutoSpeed+=(targetSpeed-ribbonAutoSpeed)*response;ribbonTargetOffset+=ribbonAutoSpeed;return true;}
+function drawRibbonAtmosphere(progress){return progress;}
+function projectLabel(item,index){const rawTitle=(item.title||"").trim();if(rawTitle&&rawTitle.length<=28&&!rawTitle.includes("_")&&!/^work\s+\d+$/i.test(rawTitle)){return rawTitle.toUpperCase();}return `DESIGN CASE ${String(index + 1).padStart(2, "0")}`;}const defaultCvNodes=[{look:"center",yaw:0,pitch:0,eyebrow:"CV / ART DIRECTION / AI DESIGN",title:"Alexander",body:"Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.",type:"hero"},{look:"top",yaw:0,pitch:34,title:"Profile",body:"Visual direction, generative content, interface composition and cinematic digital cases."},{look:"bottom",yaw:0,pitch:-34,title:"Experience",body:"Portfolio systems, AI campaigns, social content packs, landing visuals and case studies."},{look:"left",yaw:-42,pitch:0,title:"Tools",body:"Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics."},{look:"right",yaw:42,pitch:0,title:"Contact",body:"Available for visual identity, AI art direction, portfolio sites and design case packaging."}];
+const bootstrapCvNodes=bootstrapData.cvNodes||window.PORTFOLIO_BOOTSTRAP?.cvNodes||[];
+let cvNodes=bootstrapCvNodes.length?normalizeCvNodes(bootstrapCvNodes):loadStoredCvNodes();function readJsonStorage(key,fallback){try{const value=localStorage.getItem(key);if(!value)return fallback;
+const parsed=JSON.parse(value);return parsed||fallback;}catch(error){return fallback;}}
+function readBootstrapData(){try{return JSON.parse(document.getElementById("sphereBootstrapData")?.textContent||"{}")||{};}catch(error){return{};}}
+function normalizeAssets(nextAssets){if(!Array.isArray(nextAssets))return defaultAssets.slice();return nextAssets.filter((asset)=>asset&&typeof asset.src==="string"&&asset.src.trim()).map((asset)=>({src:asset.src.trim(),title:typeof asset.title==="string"?asset.title.trim():"",projectId:typeof asset.projectId==="string"?asset.projectId:(typeof asset.project_id==="string"?asset.project_id:"")}));}
+function loadStoredAssets(){return normalizeAssets(readJsonStorage(STORAGE_ASSETS,defaultAssets));}async function loadStoredAssetsAsync(){try{const directAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);if(directAssets.length)return directAssets;
+const storedAssets=loadStoredAssets();if(storedAssets.length)return storedAssets;if(!window.PortfolioStorage)return storedAssets;return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS)||storedAssets);}catch(error){return loadStoredAssets();}}async function loadSupabaseAssets(){const client=window.createPortfolioSupabase?window.createPortfolioSupabase():null;if(!client)return[];
+const{data:projects,error:projectError}=await client.from("projects").select("id,title,cover_url,sort_order,status").eq("status","published").order("sort_order",{ascending:true}).order("created_at",{ascending:false});if(projectError||!Array.isArray(projects)||!projects.length)return[];
+const ids=projects.map((project)=>project.id);
+const{data:images}=await client.from("project_images").select("project_id,image_url,title,sort_order").in("project_id",ids).order("sort_order",{ascending:true}).order("created_at",{ascending:true});
+const byProject=new Map();(images||[]).forEach((image)=>{if(!byProject.has(image.project_id))byProject.set(image.project_id,[]);byProject.get(image.project_id).push(image);});
+const media=[];projects.forEach((project)=>{if(project.cover_url)media.push({src:project.cover_url,title:project.title||""});(byProject.get(project.id)||[]).forEach((image)=>{if(image.image_url)media.push({src:image.image_url,title:project.title||image.title||""});});});return normalizeAssets(media);}
+function normalizeCvNodes(nextNodes){const byLook=new Map(Array.isArray(nextNodes)?nextNodes.map((node)=>[node.look,node]):[]);return defaultCvNodes.map((defaultNode)=>{const stored=byLook.get(defaultNode.look)||{};return{...defaultNode,eyebrow:typeof stored.eyebrow==="string"?stored.eyebrow:defaultNode.eyebrow,title:typeof stored.title==="string"?stored.title:defaultNode.title,body:typeof stored.body==="string"?stored.body:defaultNode.body};});}
+function loadStoredCvNodes(){return normalizeCvNodes(readJsonStorage(STORAGE_CV,defaultCvNodes));}async function loadStoredCvNodesAsync(){try{const directNodes=bootstrapData.cvNodes||window.PORTFOLIO_BOOTSTRAP?.cvNodes||[];if(directNodes.length)return normalizeCvNodes(directNodes);if(!window.PortfolioStorage)return loadStoredCvNodes();return normalizeCvNodes(await window.PortfolioStorage.get(STORAGE_CV)||loadStoredCvNodes());}catch(error){return loadStoredCvNodes();}}async function loadSupabaseCvNodes(){const client=window.createPortfolioSupabase?window.createPortfolioSupabase():null;if(!client)return[];
+const[{data:profile},{data:cv},{data:services},{data:contacts}]=await Promise.all([client.from("profile").select("*").limit(1).maybeSingle(),client.from("cv_sections").select("*").order("sort_order",{ascending:true}),client.from("services").select("*").order("sort_order",{ascending:true}),client.from("contacts").select("*").limit(1).maybeSingle()]);if(!profile&&(!Array.isArray(cv)||!cv.length))return[];
+const serviceText=Array.isArray(services)?services.map((service)=>service.title).filter(Boolean).join(", "):"";
+const contactText=contacts?[contacts.telegram,contacts.email,contacts.phone].filter(Boolean).join(" / "):"";
+const cvText=Array.isArray(cv)?cv.map((section)=>[section.title,section.description].filter(Boolean).join(": ")).filter(Boolean).join(" "):"";
+const profileText=profile?.short_description||defaultCvNodes[0].body;return[{look:"center",yaw:0,pitch:0,eyebrow:profile?.role||defaultCvNodes[0].eyebrow,title:profile?.name||defaultCvNodes[0].title,body:profileText,type:"hero"},{look:"top",yaw:0,pitch:34,title:"Profile",body:profileText},{look:"bottom",yaw:0,pitch:-34,title:"CV",body:cvText||defaultCvNodes[2].body},{look:"left",yaw:-42,pitch:0,title:"Services",body:serviceText||defaultCvNodes[3].body},{look:"right",yaw:42,pitch:0,title:"Contact",body:contactText||defaultCvNodes[4].body}];}
+function cvDirection(yawDeg,pitchDeg){const yaw=yawDeg*Math.PI/180;
+const pitch=pitchDeg*Math.PI/180;return{x:Math.sin(yaw)*Math.cos(pitch),y:-Math.sin(pitch),z:Math.cos(yaw)*Math.cos(pitch)};}
+function cvCameraPoint(point){const cy=Math.cos(cvCamera.yaw*Math.PI/180);
+const sy=Math.sin(cvCamera.yaw*Math.PI/180);
+let x=point.x*cy-point.z*sy;
+let z=point.x*sy+point.z*cy;
+let y=point.y;
+const cx=Math.cos(cvCamera.pitch*Math.PI/180);
+const sx=Math.sin(cvCamera.pitch*Math.PI/180);
+const y2=y*cx+z*sx;
+const z2=-y*sx+z*cx;return{x,y:y2,z:z2};}
+function wrapText(text,maxWidth,font){ctx.font=font;
+const words=text.split(" ");
+const lines=[];
+let line="";words.forEach((word)=>{const next=line?`${line} ${word}`:word;if(ctx.measureText(next).width<=maxWidth||!line){line=next;}else{lines.push(line);line=word;}});if(line)lines.push(line);return lines;}
+function drawCvBlock(entry){const{node,x,y,z,scale,alpha,active}=entry;
+const isHero=node.type==="hero";
+const blockW=(isHero?620:360)*scale;
+const blockH=(isHero?270:210)*scale;
+const radius=Math.max(26,58*scale);ctx.save();ctx.translate(x,y);
+const turn=Math.max(-0.74,Math.min(0.74,entry.xNorm*0.52));
+const lift=Math.max(-0.4,Math.min(0.4,-entry.yNorm*0.3));
+const edgeCompress=Math.max(0.66,1-entry.edge*0.18);
+const verticalBend=1+entry.edge*0.06-Math.abs(lift)*0.18;ctx.transform(edgeCompress,lift,turn,verticalBend,0,0);ctx.globalAlpha=alpha;
+const gradient=ctx.createRadialGradient(0,0,0,0,0,Math.max(blockW,blockH)*0.72);gradient.addColorStop(0,active?"rgba(255,255,255,0.09)":"rgba(255,255,255,0.055)");gradient.addColorStop(0.6,"rgba(255,255,255,0.018)");gradient.addColorStop(1,"rgba(255,255,255,0.003)");ctx.fillStyle=gradient;ctx.beginPath();ctx.roundRect(-blockW/2,-blockH/2,blockW,blockH,radius);ctx.fill();ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#fff";if(isHero){ctx.globalAlpha=alpha*0.58;ctx.font=`${Math.max(9, 12 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.eyebrow,0,-blockH*0.27);ctx.globalAlpha=alpha;ctx.font=`700 ${Math.max(44, 96 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.title,0,-blockH*0.02);ctx.globalAlpha=alpha*0.78;
+const bodyFont=`${Math.max(13, 20 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;
+const lines=wrapText(node.body,blockW*0.72,bodyFont).slice(0,3);lines.forEach((line,index)=>ctx.fillText(line,0,blockH*0.24+index*25*scale));}else{ctx.globalAlpha=alpha*0.9;ctx.font=`700 ${Math.max(12, 18 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.title.toUpperCase(),0,-blockH*0.15);ctx.globalAlpha=alpha*0.74;
+const bodyFont=`${Math.max(12, 16 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;
+const lines=wrapText(node.body,blockW*0.7,bodyFont).slice(0,4);lines.forEach((line,index)=>ctx.fillText(line,0,blockH*0.08+index*22*scale));}ctx.restore();}
+function cvProjectSurfacePoint(yawDeg,pitchDeg,radius,centerX,centerY){const cameraPoint=cvCameraPoint(cvDirection(yawDeg,pitchDeg));
+const curvedX=Math.tanh(cameraPoint.x*1.14);
+const curvedY=Math.tanh(cameraPoint.y*1.04);
+const clampedZ=Math.max(-0.5,Math.min(1,cameraPoint.z));
+const edge=Math.max(0,Math.min(1,Math.hypot(curvedX,curvedY)));
+const insidePush=0.9+edge*0.36;
+const visibility=Math.max(0.28,Math.min(1,(clampedZ+0.46)/1.46));return{x:centerX+curvedX*radius*1.42*insidePush,y:centerY+curvedY*radius*1.08*insidePush,z:cameraPoint.z,edge,visibility};}
+function strokeCvSurfacePath(points,alpha,widthValue){let drawing=false;ctx.beginPath();points.forEach((point)=>{if(point.visibility<=0.03){drawing=false;return;}if(!drawing){ctx.moveTo(point.x,point.y);drawing=true;}else{ctx.lineTo(point.x,point.y);}});ctx.strokeStyle=`rgba(255,255,255,${alpha})`;ctx.lineWidth=widthValue;ctx.stroke();}
 function drawCvSphereSurface(radius,centerX,centerY){ctx.save();ctx.lineCap="round";ctx.lineJoin="round";[-50,-25,0,25,50].forEach((pitch)=>{const points=[];for(let yaw=-86;yaw<=86;yaw+=3){points.push(cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY));}strokeCvSurfacePath(points,pitch===0?0.062:0.042,pitch===0?1.2:0.9);});[-72,-36,0,36,72].forEach((yaw)=>{const points=[];for(let pitch=-58;pitch<=58;pitch+=3){points.push(cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY));}strokeCvSurfacePath(points,yaw===0?0.056:0.038,yaw===0?1.1:0.85);});for(let row=0;row<7;row++){const pitch=-48+row*16;for(let col=0;col<13;col++){const yaw=-78+col*13+(row%2?4:0);
 const point=cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY);if(point.visibility<=0.05)continue;
 const dotSize=0.7+point.edge*0.9;ctx.globalAlpha=0.06*point.visibility;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(point.x,point.y,dotSize,0,Math.PI*2);ctx.fill();}}ctx.restore();}
@@ -306,4 +413,3 @@ cvView.addEventListener("wheel",handleCvWheel,{passive:false});
 [sizeRange,scaleRange,fisheyeRange].forEach((input)=>{input.addEventListener("input",updateUi);});
 [projectScaleRange,projectCountRange,projectGapRange,projectWidthRange,projectLengthRange].forEach((input)=>{input.addEventListener("input",updateProjectUi);});
 window.addEventListener("resize",resize);resize();updateUi();updateProjectUi();initializeGlassControls();loadItems(assets);renderCvCylinderTabs();Promise.all([loadStoredAssetsAsync(),loadStoredCvNodesAsync()]).then(([nextAssets,nextCvNodes])=>{assets=nextAssets;cvNodes=nextCvNodes;loadItems(assets);renderCvCylinderTabs();setCvLook(cvLook);});render();})();
-
