@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260703-glass-frost-1";
+    script.src = "sphere.js?v=20260703-glass-frost-2";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
