@@ -220,4 +220,3 @@
   });
   window.setInterval(refreshIfContentChanged, 15000);
 })();
-
