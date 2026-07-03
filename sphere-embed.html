@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Сфера портфолио</title>
-    <link rel="stylesheet" href="sphere.css?v=20260703-nav-polish-2" />
+    <link rel="stylesheet" href="sphere.css?v=20260703-glass-controls-1" />
   </head>
   <body>
     <main class="sphere-page">
@@ -26,6 +26,16 @@
       </header>
 
       <a class="top-nav-link admin-nav" href="admin.html">АДМИН</a>
+
+      <aside class="glass-controls" id="glassControls" aria-label="Настройки стекла">
+        <strong>СТЕКЛО</strong>
+        <label><span>ПРЕЛОМЛЕНИЕ <b data-glass-value="refraction">40</b></span><input data-glass-setting="refraction" type="range" min="0" max="100" step="1" value="40" /></label>
+        <label><span>ГЛУБИНА <b data-glass-value="depth">100</b></span><input data-glass-setting="depth" type="range" min="0" max="100" step="1" value="100" /></label>
+        <label><span>ДИСПЕРСИЯ <b data-glass-value="dispersion">100</b></span><input data-glass-setting="dispersion" type="range" min="0" max="100" step="1" value="100" /></label>
+        <label><span>МОРОЗНЫЙ ЭФФЕКТ <b data-glass-value="frost">5</b></span><input data-glass-setting="frost" type="range" min="0" max="100" step="1" value="5" /></label>
+        <label><span>РАЗБРОС <b data-glass-value="splay">94</b></span><input data-glass-setting="splay" type="range" min="0" max="100" step="1" value="94" /></label>
+        <label><span>ПРОЗРАЧНОСТЬ <b data-glass-value="opacity">75</b></span><input data-glass-setting="opacity" type="range" min="0" max="100" step="1" value="75" /></label>
+      </aside>
 
       <footer class="sphere-footer-nav">
         <button class="top-nav-link" id="cvOpen" type="button">РЕЗЮМЕ</button>
@@ -128,6 +138,7 @@
     <script src="sphere-assets.js"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="supabase-loader.js?v=20260703-nav-polish-3"></script>
+<script src="supabase-loader.js?v=20260703-glass-controls-1"></script>
   </body>
 </html>
+
