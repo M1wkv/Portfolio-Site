@@ -72,7 +72,7 @@ input {
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, var(--glass-border-alpha));
   background: rgba(0, 0, 0, var(--glass-opacity));
-  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha)), inset var(--glass-dispersion-offset) 0 10px rgba(255, 80, 80, var(--glass-dispersion-alpha)), inset calc(var(--glass-dispersion-offset) * -1) 0 10px rgba(80, 150, 255, var(--glass-dispersion-alpha));
+  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha));
   backdrop-filter: blur(var(--glass-blur)) saturate(135%);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
   isolation: isolate;
@@ -110,7 +110,7 @@ input {
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, var(--glass-border-alpha));
   background: rgba(0, 0, 0, var(--glass-opacity));
-  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha)), inset var(--glass-dispersion-offset) 0 10px rgba(255, 80, 80, var(--glass-dispersion-alpha)), inset calc(var(--glass-dispersion-offset) * -1) 0 10px rgba(80, 150, 255, var(--glass-dispersion-alpha));
+  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha));
   backdrop-filter: blur(var(--glass-blur)) saturate(135%);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
   isolation: isolate;
