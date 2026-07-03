@@ -3,6 +3,15 @@
   --muted: rgba(255, 255, 255, 0.32);
   --line: rgba(255, 255, 255, 0.18);
   --glass: rgba(255, 255, 255, 0.055);
+  --glass-opacity: 0.75;
+  --glass-blur: 1.4px;
+  --glass-border-alpha: 0.2;
+  --glass-depth-y: 12px;
+  --glass-depth-blur: 44px;
+  --glass-depth-alpha: 0.24;
+  --glass-dispersion-offset: 3.5px;
+  --glass-dispersion-alpha: 0.12;
+  --glass-splay: 0.94;
   --mono: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
@@ -60,9 +69,13 @@ input {
   gap: 34px;
   padding: 12px 16px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, var(--glass-border-alpha));
+  background: rgba(0, 0, 0, var(--glass-opacity));
+  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha)), inset var(--glass-dispersion-offset) 0 10px rgba(255, 80, 80, var(--glass-dispersion-alpha)), inset calc(var(--glass-dispersion-offset) * -1) 0 10px rgba(80, 150, 255, var(--glass-dispersion-alpha));
+  backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  isolation: isolate;
+  overflow: hidden;
   transform: translateX(-50%);
 }
 
@@ -94,11 +107,89 @@ input {
   gap: 18px;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, var(--glass-border-alpha));
+  background: rgba(0, 0, 0, var(--glass-opacity));
+  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha)), inset var(--glass-dispersion-offset) 0 10px rgba(255, 80, 80, var(--glass-dispersion-alpha)), inset calc(var(--glass-dispersion-offset) * -1) 0 10px rgba(80, 150, 255, var(--glass-dispersion-alpha));
+  backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  isolation: isolate;
+  overflow: hidden;
   transform: translateX(-50%);
 }
+
+.sphere-topbar::before,
+.sphere-footer-nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.18), transparent 34%, rgba(255, 255, 255, 0.05) 68%, transparent);
+  opacity: var(--glass-splay);
+  pointer-events: none;
+}
+
+.sphere-topbar > *,
+.sphere-footer-nav > * {
+  position: relative;
+  z-index: 1;
+}
+
+.glass-controls {
+  position: fixed;
+  top: 50%;
+  right: 24px;
+  z-index: 7;
+  width: 214px;
+  display: grid;
+  gap: 13px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transform: translateY(-50%);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.glass-controls > strong {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.glass-controls label {
+  display: grid;
+  gap: 7px;
+}
+
+.glass-controls label > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.glass-controls b {
+  color: #fff;
+  font-size: inherit;
+}
+
+.glass-controls input {
+  width: 100%;
+  height: 14px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  appearance: none;
+  cursor: ew-resize;
+}
+
+.glass-controls input::-webkit-slider-runnable-track { height: 1px; background: rgba(255, 255, 255, 0.36); }
+.glass-controls input::-webkit-slider-thumb { width: 10px; height: 10px; margin-top: -4.5px; border: 0; border-radius: 50%; background: #fff; appearance: none; }
+.glass-controls input::-moz-range-track { height: 1px; background: rgba(255, 255, 255, 0.36); }
+.glass-controls input::-moz-range-thumb { width: 10px; height: 10px; border: 0; border-radius: 50%; background: #fff; }
 
 .project-index {
   position: static;
@@ -531,6 +622,7 @@ input {
 
 .sphere-page.is-project .sphere-topbar,
 .sphere-page.is-project .sphere-footer-nav,
+.sphere-page.is-project .glass-controls,
 .sphere-page.is-project .admin-nav,
 .sphere-page.is-project .sphere-bottom {
   opacity: 0;
@@ -965,6 +1057,7 @@ input {
 
 .sphere-page.is-cv .sphere-topbar,
 .sphere-page.is-cv .sphere-footer-nav,
+.sphere-page.is-cv .glass-controls,
 .sphere-page.is-cv .admin-nav,
 .sphere-page.is-cv .sphere-bottom,
 .sphere-page.is-cv .project-view-ui {
@@ -1075,6 +1168,15 @@ input {
 
   .sphere-footer-nav .top-nav-link { height: 36px; min-width: 76px; }
 
+  .glass-controls {
+    top: 118px;
+    right: 12px;
+    width: 174px;
+    gap: 9px;
+    padding: 12px;
+    transform: none;
+  }
+
   .sphere-bottom { transform: scale(0.74); }
 
   .sphere-bottom {
@@ -1168,3 +1270,4 @@ input {
     font-size: 16px;
   }
 }
+
