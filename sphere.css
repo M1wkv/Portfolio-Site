@@ -13,6 +13,7 @@
   --glass-dispersion-alpha: 0.12;
   --glass-splay: 0.94;
   --glass-refraction-mix: 0.4;
+  --glass-frost-scale: 1.006;
   --mono: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
@@ -73,8 +74,8 @@ input {
   border: 1px solid rgba(255, 255, 255, var(--glass-border-alpha));
   background: rgba(0, 0, 0, var(--glass-opacity));
   box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha));
-  backdrop-filter: blur(var(--glass-blur)) saturate(135%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  backdrop-filter: saturate(135%);
+  -webkit-backdrop-filter: saturate(135%);
   isolation: isolate;
   overflow: hidden;
   transform: translateX(-50%);
@@ -111,8 +112,8 @@ input {
   border: 1px solid rgba(255, 255, 255, var(--glass-border-alpha));
   background: rgba(0, 0, 0, var(--glass-opacity));
   box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha));
-  backdrop-filter: blur(var(--glass-blur)) saturate(135%);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(135%);
+  backdrop-filter: saturate(135%);
+  -webkit-backdrop-filter: saturate(135%);
   isolation: isolate;
   overflow: hidden;
   transform: translateX(-50%);
@@ -143,6 +144,8 @@ input {
   width: 100%;
   height: 100%;
   opacity: var(--glass-refraction-mix);
+  filter: blur(var(--glass-blur));
+  transform: scale(var(--glass-frost-scale));
   pointer-events: none;
 }
 
