@@ -3,17 +3,17 @@
   --muted: rgba(255, 255, 255, 0.32);
   --line: rgba(255, 255, 255, 0.18);
   --glass: rgba(255, 255, 255, 0.055);
-  --glass-opacity: 0.045;
-  --glass-blur: 1.7px;
-  --glass-border-alpha: 0.166;
-  --glass-depth-y: 3px;
-  --glass-depth-blur: 21px;
-  --glass-depth-alpha: 0.04;
+  --glass-opacity: 0.75;
+  --glass-blur: 1.4px;
+  --glass-border-alpha: 0.2;
+  --glass-depth-y: 12px;
+  --glass-depth-blur: 44px;
+  --glass-depth-alpha: 0.24;
   --glass-dispersion-offset: 3.5px;
   --glass-dispersion-alpha: 0.12;
-  --glass-splay: 0.72;
-  --glass-refraction-mix: 0.9;
-  --glass-frost-scale: 1.007;
+  --glass-splay: 0.94;
+  --glass-refraction-mix: 0.4;
+  --glass-frost-scale: 1.006;
   --mono: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
@@ -72,8 +72,8 @@ input {
   padding: 12px 16px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, var(--glass-border-alpha));
-  background: rgba(255, 255, 255, var(--glass-opacity));
-  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha)), inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, var(--glass-opacity));
+  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha));
   backdrop-filter: saturate(135%);
   -webkit-backdrop-filter: saturate(135%);
   isolation: isolate;
@@ -110,8 +110,8 @@ input {
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, var(--glass-border-alpha));
-  background: rgba(255, 255, 255, var(--glass-opacity));
-  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha)), inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, var(--glass-opacity));
+  box-shadow: 0 var(--glass-depth-y) var(--glass-depth-blur) rgba(0, 0, 0, var(--glass-depth-alpha));
   backdrop-filter: saturate(135%);
   -webkit-backdrop-filter: saturate(135%);
   isolation: isolate;
