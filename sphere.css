@@ -12,7 +12,6 @@
   --glass-dispersion-offset: 3.5px;
   --glass-dispersion-alpha: 0.12;
   --glass-splay: 0.94;
-  --glass-refraction-mix: 0.4;
   --glass-frost-scale: 1.006;
   --water-tint: 0.225;
   --water-blur: 1.2px;
@@ -78,6 +77,8 @@ input {
   isolation: isolate;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: transparent;
+  backdrop-filter: blur(var(--water-blur));
+  -webkit-backdrop-filter: blur(var(--water-blur));
   box-shadow: none;
   transform: translateX(-50%);
 }
@@ -114,6 +115,8 @@ input {
   isolation: isolate;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: transparent;
+  backdrop-filter: blur(var(--water-blur));
+  -webkit-backdrop-filter: blur(var(--water-blur));
   box-shadow: none;
   transform: translateX(-50%);
 }
@@ -133,19 +136,6 @@ input {
 .sphere-footer-nav > * {
   position: relative;
   z-index: 2;
-}
-
-.sphere-topbar > .glass-refraction-canvas,
-.sphere-footer-nav > .glass-refraction-canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 1;
-  filter: blur(var(--water-blur));
-  transform: scale(var(--water-scale));
-  pointer-events: none;
 }
 
 .glass-controls {
@@ -1284,4 +1274,3 @@ input {
     font-size: 16px;
   }
 }
-
