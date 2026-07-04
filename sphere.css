@@ -77,8 +77,7 @@ input {
   isolation: isolate;
   border: 0;
   background: transparent;
-  backdrop-filter: blur(var(--water-blur));
-  -webkit-backdrop-filter: blur(var(--water-blur));
+  outline: 0;
   box-shadow: none;
   transform: translateX(-50%);
 }
@@ -115,8 +114,7 @@ input {
   isolation: isolate;
   border: 0;
   background: transparent;
-  backdrop-filter: blur(var(--water-blur));
-  -webkit-backdrop-filter: blur(var(--water-blur));
+  outline: 0;
   box-shadow: none;
   transform: translateX(-50%);
 }
@@ -125,9 +123,13 @@ input {
 .sphere-footer-nav::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -8px;
   z-index: 1;
   background: rgba(0, 0, 0, var(--water-tint));
+  backdrop-filter: blur(var(--water-blur));
+  -webkit-backdrop-filter: blur(var(--water-blur));
+  border: 0;
+  outline: 0;
   box-shadow: none;
   pointer-events: none;
 }
