@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260705-glass-smooth-1";
+    script.src = "sphere.js?v=20260705-glass-smooth-2";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
