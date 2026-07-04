@@ -12,7 +12,7 @@
     <link rel="canonical" href="https://m1wkv.github.io/Portfolio-Site/" />
     <link rel="preconnect" href="https://xidxcafcdfmoxxvnjjkl.supabase.co" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="sphere.css?v=20260705-no-glass-2" />
+    <link rel="stylesheet" href="sphere.css?v=20260705-water-effects-1" />
   </head>
   <body>
     <main class="sphere-page">
@@ -34,6 +34,13 @@
       </header>
 
       <a class="top-nav-link admin-nav" href="admin.html">АДМИН</a>
+
+      <aside class="glass-controls" id="glassControls" aria-label="Настройки эффектов">
+        <strong>ЭФФЕКТЫ</strong>
+        <label><span>ПРОЗРАЧНОСТЬ <b data-water-value="transparency">75</b></span><input data-water-setting="transparency" type="range" min="0" max="100" step="1" value="75" /></label>
+        <label><span>МОРОЗНЫЙ ЭФФЕКТ <b data-water-value="frost">5</b></span><input data-water-setting="frost" type="range" min="0" max="100" step="1" value="5" /></label>
+        <label><span>ПРЕЛОМЛЕНИЕ <b data-water-value="refraction">55</b></span><input data-water-setting="refraction" type="range" min="0" max="100" step="1" value="55" /></label>
+      </aside>
 
       <footer class="sphere-footer-nav">
         <button class="top-nav-link" id="cvOpen" type="button">РЕЗЮМЕ</button>
@@ -98,6 +105,7 @@
     <script src="sphere-assets.js"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="supabase-loader.js?v=20260705-no-glass-2"></script>
+<script src="supabase-loader.js?v=20260705-water-effects-1"></script>
   </body>
 </html>
+
