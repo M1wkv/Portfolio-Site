@@ -218,9 +218,7 @@ const maxAngle=1.28;
 const centerY=height*0.43;
 const offscreenStep=width*1.4;
 const slots=visibleItems.map((item)=>ribbonSlot(item,ribbonRadius,maxAngle));
-const centeredIndex=((Math.round(ribbonOffset)%total)+total)%total;
-const centralGapReduction=slots[centeredIndex]*0.7;const entries=visibleItems.map((item,index)=>{const baseAngle=ribbonAngle(index,total,slots);
-const rawAngle=Math.sign(baseAngle)*Math.max(0,Math.abs(baseAngle)-centralGapReduction);
+const entries=visibleItems.map((item,index)=>{const rawAngle=ribbonAngle(index,total,slots);
 const outside=Math.max(0,Math.abs(rawAngle)-maxAngle);
 const angle=Math.max(-maxAngle,Math.min(maxAngle,rawAngle));
 const side=Math.min(1,Math.abs(rawAngle)/maxAngle);
@@ -250,7 +248,7 @@ const centerX=width/2;
 const centerEntry=entries.reduce((closest,entry)=>Math.abs(entry.x-centerX)<Math.abs(closest.x-centerX)?entry:closest,entries[0]);
 const projectedWidth=(entry)=>{const ratio=Math.max(0.45,Math.min(2.4,imageRatio(entry.item)));const nearScale=1.85+entry.depth*0.15;const base=112*effectiveElementScale()*nearScale*entry.visualScale*projectState.itemScale;return base*Math.sqrt(ratio);};
 const centerHalf=projectedWidth(centerEntry)/2;
-[-1,1].forEach((sideDirection)=>{const candidates=entries.filter((entry)=>entry!==centerEntry&&entry.alphaBoost>0&&(entry.x-centerEntry.x)*sideDirection>0);if(!candidates.length)return;const neighbor=candidates.reduce((closest,entry)=>Math.abs(entry.x-centerEntry.x)<Math.abs(closest.x-centerEntry.x)?entry:closest,candidates[0]);const currentGap=Math.abs(neighbor.x-centerEntry.x)-centerHalf-projectedWidth(neighbor)/2;if(currentGap<=0)return;const shift=currentGap*0.7;entries.forEach((entry)=>{if((entry.x-centerEntry.x)*sideDirection>0)entry.x-=sideDirection*shift;});});return entries;}
+[-1,1].forEach((sideDirection)=>{const candidates=entries.filter((entry)=>entry!==centerEntry&&entry.alphaBoost>0&&(entry.x-centerEntry.x)*sideDirection>0);if(!candidates.length)return;const neighbor=candidates.reduce((closest,entry)=>Math.abs(entry.x-centerEntry.x)<Math.abs(closest.x-centerEntry.x)?entry:closest,candidates[0]);const currentGap=Math.abs(neighbor.x-centerEntry.x)-centerHalf-projectedWidth(neighbor)/2;if(currentGap<=0)return;const desiredGap=Math.max(24,currentGap*0.3);const shift=Math.max(0,currentGap-desiredGap);entries.forEach((entry)=>{if((entry.x-centerEntry.x)*sideDirection>0)entry.x-=sideDirection*shift;});});return entries;}
 function updateRibbonAutoscroll(now){if(viewMode!=="project"||dragging||now<ribbonAutoPausedUntil||projectFocusTarget>0||projectFocusProgress>0.05){ribbonAutoSpeed+=(0-ribbonAutoSpeed)*0.08;return false;}if(!ribbonAutoPhaseStartedAt){ribbonAutoPhaseStartedAt=now;}let elapsed=now-ribbonAutoPhaseStartedAt;
 const cycle=24000;if(elapsed>=cycle){const cycles=Math.floor(elapsed/cycle);ribbonAutoPhaseStartedAt+=cycles*cycle;elapsed=now-ribbonAutoPhaseStartedAt;if(cycles%2===1){ribbonAutoDirection*=-1;}}const cycleTime=elapsed;
 let targetSpeed;if(cycleTime<20000){const startEase=smoothstep(Math.min(1,cycleTime/1800));targetSpeed=ribbonAutoDirection*0.0022*startEase;}else if(cycleTime<21000){const kick=smoothstep((cycleTime-20000)/1000);targetSpeed=-ribbonAutoDirection*(0.024+kick*0.068);}else{const stop=1-smoothstep((cycleTime-21000)/3000);targetSpeed=-ribbonAutoDirection*0.024*stop;}const response=Math.abs(targetSpeed)>Math.abs(ribbonAutoSpeed)?0.34:0.075;ribbonAutoSpeed+=(targetSpeed-ribbonAutoSpeed)*response;ribbonTargetOffset+=ribbonAutoSpeed;return true;}
