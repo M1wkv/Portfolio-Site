@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260708-center-gap-4-revert";
+    script.src = "sphere.js?v=20260708-spacing-original";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
