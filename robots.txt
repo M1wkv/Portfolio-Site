@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /Portfolio-Site/admin.html
+Disallow: /Portfolio-Site/sphere-embed.html
+
+Sitemap: https://m1wkv.github.io/Portfolio-Site/sitemap.xml
+
