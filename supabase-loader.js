@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260710-cv-cube-readable-1";
+    script.src = "sphere.js?v=20260710-cv-cube-type-warp-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
