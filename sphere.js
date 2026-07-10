@@ -42,7 +42,7 @@ const STORAGE_WATER="portfolioSphere.waterEffects.v1";
 const bootstrapData=readBootstrapData();
 const sphereSettings=bootstrapData.sphereSettings||window.PORTFOLIO_BOOTSTRAP?.sphereSettings||{};
 const MAX_VISIBLE_ITEMS=Math.round(clampSetting(sphereSettings.itemCount,50,10,100));sizeRange.value=String(clampSetting(sphereSettings.size,0.6,0.1,1));scaleRange.value=String(clampSetting(sphereSettings.elementScale,0.6,0.1,1));fisheyeRange.value=String(clampSetting(sphereSettings.fisheye,0.15,0,1));projectScaleRange.value=String(clampSetting(sphereSettings.projectScale,0.5,0.4,1.6));projectGapRange.value=String(clampSetting(sphereSettings.projectGap,0.5,0.5,2));projectWidthRange.value=String(clampSetting(sphereSettings.projectWidth,0.75,0.6,1.6));projectLengthRange.value=String(clampSetting(sphereSettings.projectLength,1.25,0.5,1.8));document.documentElement.dataset.sphereMaxVisibleItems=String(MAX_VISIBLE_ITEMS);
-const defaultAssets=window.PORTFOLIO_SUPABASE?[]:(window.SPHERE_ASSETS||[]).slice(0,100);
+const defaultAssets=(window.SPHERE_ASSETS||[]).slice(0,100);
 const bootstrapAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);
 const bootstrapProjectAssets=normalizeAssets(bootstrapData.projectAssets||window.PORTFOLIO_BOOTSTRAP?.projectAssets||[]);
 let assets=bootstrapAssets.length?bootstrapAssets:loadStoredAssets();
