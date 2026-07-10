@@ -151,4 +151,3 @@ create policy admin_delete_portfolio_files on storage.objects
   );
 
 commit;
-

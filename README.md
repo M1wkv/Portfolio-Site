@@ -24,4 +24,3 @@ Run `supabase-security.sql` in Supabase SQL Editor before treating the admin and
 ## Deployment
 
 The root files are the GitHub Pages source. The `deploy` directory mirrors deployable files for compatibility with the existing workflow.
-

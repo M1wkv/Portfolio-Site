@@ -896,4 +896,3 @@
     if (!supabaseClient) setStatus("Ready locally");
   });
 })();
-

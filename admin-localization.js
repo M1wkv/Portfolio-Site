@@ -92,4 +92,3 @@
     if (syncAttempts >= 20) window.clearInterval(syncTimer);
   }, 250);
 })();
-

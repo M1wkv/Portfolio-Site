@@ -22,4 +22,3 @@ If the Supabase admin user changes, update the UID in:
 - `supabase-security.sql`
 
 Then run the SQL migration again.
-

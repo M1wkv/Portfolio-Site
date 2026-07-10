@@ -344,4 +344,3 @@ window.addEventListener("resize", resize);
 loadImages();
 resize();
 render();
-
