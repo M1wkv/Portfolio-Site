@@ -12,7 +12,7 @@
     <link rel="canonical" href="https://m1wkv.github.io/Portfolio-Site/" />
     <link rel="preconnect" href="https://xidxcafcdfmoxxvnjjkl.supabase.co" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="sphere.css?v=20260705-frost-restored-9" />
+    <link rel="stylesheet" href="sphere.css?v=20260710-cv-sphere-cube-1" />
   </head>
   <body>
     <main class="sphere-page">
@@ -94,7 +94,20 @@
 
       <section class="cv-view" id="cvView" hidden>
         <button class="cv-back" id="cvBack" type="button">НАЗАД</button>
-        <nav class="cv-cylinder-tabs" id="cvCylinderTabs" aria-label="Разделы резюме"></nav>
+        <nav class="cv-sections" aria-label="CV sections">
+          <button class="cv-section-button is-active" type="button" data-cv-face="center">Главное</button>
+          <button class="cv-section-button" type="button" data-cv-face="left">Профиль</button>
+          <button class="cv-section-button" type="button" data-cv-face="right">Резюме</button>
+          <button class="cv-section-button" type="button" data-cv-face="top">Услуги</button>
+          <button class="cv-section-button" type="button" data-cv-face="bottom">Контакты</button>
+          <button class="cv-section-button" type="button" data-cv-face="back">+1</button>
+        </nav>
+        <aside class="cv-scene-controls" aria-label="Настройки сцены CV">
+          <strong>Сцена</strong>
+          <label><span>Размер сферы <b id="cvSphereSizeValue">0.72</b></span><input id="cvSphereSizeRange" type="range" min="0.35" max="1" step="0.01" value="0.72" /></label>
+          <label><span>Размытие <b id="cvOverlayBlurValue">18</b></span><input id="cvOverlayBlurRange" type="range" min="0" max="40" step="1" value="18" /></label>
+          <label><span>Затемнение <b id="cvOverlayDimValue">45</b></span><input id="cvOverlayDimRange" type="range" min="0" max="85" step="1" value="45" /></label>
+        </aside>
       </section>
 
     </main>
@@ -104,6 +117,7 @@
     <script src="sphere-assets.js"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="supabase-loader.js?v=20260708-spacing-original"></script>
+<script src="supabase-loader.js?v=20260710-cv-sphere-cube-1"></script>
   </body>
 </html>
+
