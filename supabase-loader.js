@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260710-cv-sphere-cube-1";
+    script.src = "sphere.js?v=20260710-fallback-assets-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -202,6 +202,8 @@
   try {
     const [bundle, cvNodes, sphereSettings] = await Promise.all([loadAssetBundle(), loadCvNodes(), loadSphereSettings()]);
     bundle.assets = selectBalancedAssets(bundle.projectGroups, sphereSettings.values.itemCount);
+    if (!bundle.assets.length) bundle.assets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
+    if (!bundle.projectAssets.length) bundle.projectAssets = bundle.assets;
     activeContentSignature = `${bundle.signature}|${sphereSettings.signature}`;
     setBootstrapPayload({ assets: bundle.assets, projectAssets: bundle.projectAssets, cvNodes, sphereSettings: sphereSettings.values });
     if (bundle.assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(bundle.assets));
@@ -209,7 +211,8 @@
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
-    setBootstrapPayload({ assets: [], projectAssets: [], cvNodes: [], sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25 } });
+    const fallbackAssets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
+    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, cvNodes: [], sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
