@@ -28,7 +28,13 @@ const waterInputs=Array.from(document.querySelectorAll("[data-water-setting]"));
 const cvOpen=document.getElementById("cvOpen");
 const cvView=document.getElementById("cvView");
 const cvBack=document.getElementById("cvBack");
-const cvCylinderTabs=document.getElementById("cvCylinderTabs");
+const cvSectionButtons=Array.from(document.querySelectorAll("[data-cv-face]"));
+const cvSphereSizeRange=document.getElementById("cvSphereSizeRange");
+const cvOverlayBlurRange=document.getElementById("cvOverlayBlurRange");
+const cvOverlayDimRange=document.getElementById("cvOverlayDimRange");
+const cvSphereSizeValue=document.getElementById("cvSphereSizeValue");
+const cvOverlayBlurValue=document.getElementById("cvOverlayBlurValue");
+const cvOverlayDimValue=document.getElementById("cvOverlayDimValue");
 const cvPanels=Array.from(document.querySelectorAll(".cv-panel"));
 const STORAGE_ASSETS="portfolioSphere.assets";
 const STORAGE_CV="portfolioSphere.cvNodes";
@@ -82,11 +88,16 @@ const sphereProjectShownSources=new Map();
 let cvLook="center";
 let cvCamera={yaw:0,pitch:0};
 let cvTargetCamera={yaw:0,pitch:0};
-let cvCylinderOffset=0;
-let cvCylinderTarget=0;
 let cvWheelAccumulator=0;
 let cvWheelLastAt=0;
-let cvWheelLockedUntil=0;document.documentElement.dataset.sphereRuntimeStarted="true";
+let cvWheelLockedUntil=0;
+let cvBoxYaw=0;
+let cvBoxPitch=0;
+let cvBoxVelocity={yaw:0.0022,pitch:0.0011};document.documentElement.dataset.sphereRuntimeStarted="true";
+let cvActiveFace="center";
+let cvTargetBox={yaw:0,pitch:0};
+let cvSphereRotation={x:-0.18,y:0.36};
+const cvSceneState={sphereSize:0.72,blur:18,dim:45};
 const state={sphereSize:Number(sizeRange.value),elementScale:Number(scaleRange.value),fisheye:Number(fisheyeRange.value)};
 const projectState={itemScale:0.5,itemCount:50,gap:0.5,cylinderWidth:0.75,cylinderLength:1.25};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
 const waterDefaults={transparency:75,frost:5};
@@ -196,141 +207,18 @@ const slots=[];
 const bandSize=Math.max(queues.length,queues.length*2);for(let start=0;start<depthSortedSlots.length;start+=bandSize){slots.push(...depthSortedSlots.slice(start,start+bandSize).sort((a,b)=>a.angle-b.angle));}const mixed=new Array(sourceItems.length);anchorSlots.forEach((slot,index)=>{const group=queues[index%queues.length];mixed[slot.index]=group.items.shift();});
 let slotIndex=0;
 let cycle=0;while(slotIndex<slots.length&&queues.some((group)=>group.items.length)){const active=queues.filter((group)=>group.items.length);
-const start=cycle%active.length;for(let offset=0;offset<active.length&&slotIndex<slots.length;offset++){const group=active[(start+offset)%active.length];mixed[slots[slotIndex].index]=group.items.shift();slotIndex+=1;}cycle+=1;}return mixed.filter(Boolean);}
-function getProjectItems(){if(!activeProjectKey)return getVisibleItems();
-const matchingItems=projectMediaItems.filter((item)=>projectKey(item)===activeProjectKey);matchingItems.forEach(startMediaItemLoad);document.documentElement.dataset.projectMediaLoadedCount=String(matchingItems.filter((item)=>item.loadStarted).length);return matchingItems.length?matchingItems:getVisibleItems();}
-function getProjectRenderItems(){const source=getProjectItems();if(!source.length)return source;const target=Math.max(1,projectState.itemCount);if(target<=source.length)return source;return Array.from({length:target},(_,index)=>source[index%source.length]);}
-function getRenderItems(){return projectActive()?getProjectRenderItems():getVisibleItems();}
-function getSphereEntries(visibleItems){const count=visibleItems.length;
-const introElapsed=Math.min(1,(performance.now()-introStart)/720);
-const introScale=0.18+(1-Math.pow(1-introElapsed,3))*0.82;
-const radius=Math.min(width,height)*(0.22+state.sphereSize*0.38)*introScale;
-const perspective=radius*3.4;return visibleItems.map((item,index)=>{const point=rotate(fibonacciPoint(index,count));
-const depth=(point.z+1)/2;
-const perspectiveScale=perspective/(perspective-point.z*radius);
-const selected=Boolean(sphereProjectFocusSrc&&item.src===sphereProjectFocusSrc);
-const dimmed=Boolean(sphereProjectFocusKey&&projectKey(item)!==sphereProjectFocusKey);
-return{item,index,x:width/2+point.x*radius*perspectiveScale,y:height/2+point.y*radius*perspectiveScale,z:point.z,depth,mode:"sphere",visualScale:1+(selected?0.15*sphereProjectFocusProgress:0),alphaBoost:dimmed?1-0.25*sphereProjectFocusProgress:1};});}
-function wrappedRelative(index,offset,total){let rel=index-offset;rel=((rel+total/2)%total+total)%total-total/2;return rel;}
-function getRibbonEntries(visibleItems){const total=visibleItems.length;
-const ribbonRadius=Math.min(width*1.18,1760)*projectState.cylinderWidth;
-const maxAngle=1.28;
-const centerY=height*0.43;
-const offscreenStep=width*1.4;
-const slots=visibleItems.map((item)=>ribbonSlot(item,ribbonRadius,maxAngle));return visibleItems.map((item,index)=>{const rawAngle=ribbonAngle(index,total,slots);
-const outside=Math.max(0,Math.abs(rawAngle)-maxAngle);
-const angle=Math.max(-maxAngle,Math.min(maxAngle,rawAngle));
-const side=Math.min(1,Math.abs(rawAngle)/maxAngle);
-const rel=wrappedRelative(index,ribbonOffset,total);
-const visibleByCount=Math.abs(rel)<=Math.max(0,(projectState.itemCount-1)/2);
-const centerFade=Math.min(1,Math.abs(rel)/11);
-const innerZ=(side-outside*0.08)*projectState.cylinderLength;
-const sidePush=Math.sin(angle);
-const edgeX=Math.sin(maxAngle)*ribbonRadius+outside*offscreenStep;
-const edgePresence=smoothstep(1-outside*0.34);
-const innerX=outside>0?width/2+Math.sign(rawAngle)*edgeX:width/2+sidePush*ribbonRadius;
-const innerDepth=Math.min(1,0.28+Math.pow(side,0.92)*0.72*projectState.cylinderLength);
-const edgeFade=Math.max(0,1-outside*0.72);
-const innerScale=(1+side*2*projectState.cylinderLength)*(0.34+edgePresence*0.66);
-const zoom=projectZoomProgress;
-const outerRadius=Math.min(width*0.62,1040)*(1-zoom*0.14)*projectState.cylinderWidth;
-const outerEdgeX=Math.sin(maxAngle)*outerRadius+outside*offscreenStep;
-const outerX=outside>0?width/2+Math.sign(rawAngle)*outerEdgeX:width/2+sidePush*outerRadius;
-const outerCurve=Math.max(0,Math.cos(angle));
-const outerZ=(outerCurve-side*0.76-outside*0.1)*projectState.cylinderLength;
-const outerDepth=0.38+outerCurve*0.62;
-const centerFocus=Math.max(0,1-Math.abs(rel)*2);
-const expandedOuterScale=(0.68+outerCurve*1.05)*(0.4+edgePresence*0.6);
-const outerScale=centerFocus>0.5?innerScale:expandedOuterScale;
-const focus=projectFocusProgress;return{item,index,x:innerX+(outerX-innerX)*focus,y:centerY+(height*0.5-centerY)*focus,z:innerZ+(outerZ-innerZ)*focus,depth:innerDepth+(outerDepth-innerDepth)*focus,mode:"ribbon",faceTurn:sidePush*(1-focus*0.42),visualScale:innerScale+(outerScale-innerScale)*focus,alphaBoost:visibleByCount?1:0,centerFocus};});}
-function updateRibbonAutoscroll(now){if(viewMode!=="project"||dragging||now<ribbonAutoPausedUntil||projectFocusTarget>0||projectFocusProgress>0.05){ribbonAutoSpeed+=(0-ribbonAutoSpeed)*0.08;return false;}if(!ribbonAutoPhaseStartedAt){ribbonAutoPhaseStartedAt=now;}let elapsed=now-ribbonAutoPhaseStartedAt;
-const cycle=24000;if(elapsed>=cycle){const cycles=Math.floor(elapsed/cycle);ribbonAutoPhaseStartedAt+=cycles*cycle;elapsed=now-ribbonAutoPhaseStartedAt;if(cycles%2===1){ribbonAutoDirection*=-1;}}const cycleTime=elapsed;
-let targetSpeed;if(cycleTime<20000){const startEase=smoothstep(Math.min(1,cycleTime/1800));targetSpeed=ribbonAutoDirection*0.0022*startEase;}else if(cycleTime<21000){const kick=smoothstep((cycleTime-20000)/1000);targetSpeed=-ribbonAutoDirection*(0.024+kick*0.068);}else{const stop=1-smoothstep((cycleTime-21000)/3000);targetSpeed=-ribbonAutoDirection*0.024*stop;}const response=Math.abs(targetSpeed)>Math.abs(ribbonAutoSpeed)?0.34:0.075;ribbonAutoSpeed+=(targetSpeed-ribbonAutoSpeed)*response;ribbonTargetOffset+=ribbonAutoSpeed;return true;}
-function drawRibbonAtmosphere(progress){return progress;}
-function projectLabel(item,index){const rawTitle=(item.title||"").trim();if(rawTitle&&rawTitle.length<=28&&!rawTitle.includes("_")&&!/^work\s+\d+$/i.test(rawTitle)){return rawTitle.toUpperCase();}return `DESIGN CASE ${String(index + 1).padStart(2, "0")}`;}const defaultCvNodes=[{look:"center",yaw:0,pitch:0,eyebrow:"CV / ART DIRECTION / AI DESIGN",title:"Alexander",body:"Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.",type:"hero"},{look:"top",yaw:0,pitch:34,title:"Profile",body:"Visual direction, generative content, interface composition and cinematic digital cases."},{look:"bottom",yaw:0,pitch:-34,title:"Experience",body:"Portfolio systems, AI campaigns, social content packs, landing visuals and case studies."},{look:"left",yaw:-42,pitch:0,title:"Tools",body:"Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics."},{look:"right",yaw:42,pitch:0,title:"Contact",body:"Available for visual identity, AI art direction, portfolio sites and design case packaging."}];
-const bootstrapCvNodes=bootstrapData.cvNodes||window.PORTFOLIO_BOOTSTRAP?.cvNodes||[];
-let cvNodes=bootstrapCvNodes.length?normalizeCvNodes(bootstrapCvNodes):loadStoredCvNodes();function readJsonStorage(key,fallback){try{const value=localStorage.getItem(key);if(!value)return fallback;
-const parsed=JSON.parse(value);return parsed||fallback;}catch(error){return fallback;}}
-function readBootstrapData(){try{return JSON.parse(document.getElementById("sphereBootstrapData")?.textContent||"{}")||{};}catch(error){return{};}}
-function normalizeAssets(nextAssets){if(!Array.isArray(nextAssets))return defaultAssets.slice();return nextAssets.filter((asset)=>asset&&typeof asset.src==="string"&&asset.src.trim()).map((asset)=>({src:asset.src.trim(),title:typeof asset.title==="string"?asset.title.trim():"",projectId:typeof asset.projectId==="string"?asset.projectId:(typeof asset.project_id==="string"?asset.project_id:"")}));}
-function loadStoredAssets(){return normalizeAssets(readJsonStorage(STORAGE_ASSETS,defaultAssets));}async function loadStoredAssetsAsync(){try{const directAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);if(directAssets.length)return directAssets;
-const storedAssets=loadStoredAssets();if(storedAssets.length)return storedAssets;if(!window.PortfolioStorage)return storedAssets;return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS)||storedAssets);}catch(error){return loadStoredAssets();}}async function loadSupabaseAssets(){const client=window.createPortfolioSupabase?window.createPortfolioSupabase():null;if(!client)return[];
-const{data:projects,error:projectError}=await client.from("projects").select("id,title,cover_url,sort_order,status").eq("status","published").order("sort_order",{ascending:true}).order("created_at",{ascending:false});if(projectError||!Array.isArray(projects)||!projects.length)return[];
-const ids=projects.map((project)=>project.id);
-const{data:images}=await client.from("project_images").select("project_id,image_url,title,sort_order").in("project_id",ids).order("sort_order",{ascending:true}).order("created_at",{ascending:true});
-const byProject=new Map();(images||[]).forEach((image)=>{if(!byProject.has(image.project_id))byProject.set(image.project_id,[]);byProject.get(image.project_id).push(image);});
-const media=[];projects.forEach((project)=>{if(project.cover_url)media.push({src:project.cover_url,title:project.title||""});(byProject.get(project.id)||[]).forEach((image)=>{if(image.image_url)media.push({src:image.image_url,title:project.title||image.title||""});});});return normalizeAssets(media);}
-function normalizeCvNodes(nextNodes){const byLook=new Map(Array.isArray(nextNodes)?nextNodes.map((node)=>[node.look,node]):[]);return defaultCvNodes.map((defaultNode)=>{const stored=byLook.get(defaultNode.look)||{};return{...defaultNode,eyebrow:typeof stored.eyebrow==="string"?stored.eyebrow:defaultNode.eyebrow,title:typeof stored.title==="string"?stored.title:defaultNode.title,body:typeof stored.body==="string"?stored.body:defaultNode.body};});}
-function loadStoredCvNodes(){return normalizeCvNodes(readJsonStorage(STORAGE_CV,defaultCvNodes));}async function loadStoredCvNodesAsync(){try{const directNodes=bootstrapData.cvNodes||window.PORTFOLIO_BOOTSTRAP?.cvNodes||[];if(directNodes.length)return normalizeCvNodes(directNodes);if(!window.PortfolioStorage)return loadStoredCvNodes();return normalizeCvNodes(await window.PortfolioStorage.get(STORAGE_CV)||loadStoredCvNodes());}catch(error){return loadStoredCvNodes();}}async function loadSupabaseCvNodes(){const client=window.createPortfolioSupabase?window.createPortfolioSupabase():null;if(!client)return[];
-const[{data:profile},{data:cv},{data:services},{data:contacts}]=await Promise.all([client.from("profile").select("*").limit(1).maybeSingle(),client.from("cv_sections").select("*").order("sort_order",{ascending:true}),client.from("services").select("*").order("sort_order",{ascending:true}),client.from("contacts").select("*").limit(1).maybeSingle()]);if(!profile&&(!Array.isArray(cv)||!cv.length))return[];
-const serviceText=Array.isArray(services)?services.map((service)=>service.title).filter(Boolean).join(", "):"";
-const contactText=contacts?[contacts.telegram,contacts.email,contacts.phone].filter(Boolean).join(" / "):"";
-const cvText=Array.isArray(cv)?cv.map((section)=>[section.title,section.description].filter(Boolean).join(": ")).filter(Boolean).join(" "):"";
-const profileText=profile?.short_description||defaultCvNodes[0].body;return[{look:"center",yaw:0,pitch:0,eyebrow:profile?.role||defaultCvNodes[0].eyebrow,title:profile?.name||defaultCvNodes[0].title,body:profileText,type:"hero"},{look:"top",yaw:0,pitch:34,title:"Profile",body:profileText},{look:"bottom",yaw:0,pitch:-34,title:"CV",body:cvText||defaultCvNodes[2].body},{look:"left",yaw:-42,pitch:0,title:"Services",body:serviceText||defaultCvNodes[3].body},{look:"right",yaw:42,pitch:0,title:"Contact",body:contactText||defaultCvNodes[4].body}];}
-function cvDirection(yawDeg,pitchDeg){const yaw=yawDeg*Math.PI/180;
-const pitch=pitchDeg*Math.PI/180;return{x:Math.sin(yaw)*Math.cos(pitch),y:-Math.sin(pitch),z:Math.cos(yaw)*Math.cos(pitch)};}
-function cvCameraPoint(point){const cy=Math.cos(cvCamera.yaw*Math.PI/180);
-const sy=Math.sin(cvCamera.yaw*Math.PI/180);
-let x=point.x*cy-point.z*sy;
-let z=point.x*sy+point.z*cy;
-let y=point.y;
-const cx=Math.cos(cvCamera.pitch*Math.PI/180);
-const sx=Math.sin(cvCamera.pitch*Math.PI/180);
-const y2=y*cx+z*sx;
-const z2=-y*sx+z*cx;return{x,y:y2,z:z2};}
-function wrapText(text,maxWidth,font){ctx.font=font;
-const words=text.split(" ");
-const lines=[];
-let line="";words.forEach((word)=>{const next=line?`${line} ${word}`:word;if(ctx.measureText(next).width<=maxWidth||!line){line=next;}else{lines.push(line);line=word;}});if(line)lines.push(line);return lines;}
-function drawCvBlock(entry){const{node,x,y,z,scale,alpha,active}=entry;
-const isHero=node.type==="hero";
-const blockW=(isHero?620:360)*scale;
-const blockH=(isHero?270:210)*scale;
-const radius=Math.max(26,58*scale);ctx.save();ctx.translate(x,y);
-const turn=Math.max(-0.74,Math.min(0.74,entry.xNorm*0.52));
-const lift=Math.max(-0.4,Math.min(0.4,-entry.yNorm*0.3));
-const edgeCompress=Math.max(0.66,1-entry.edge*0.18);
-const verticalBend=1+entry.edge*0.06-Math.abs(lift)*0.18;ctx.transform(edgeCompress,lift,turn,verticalBend,0,0);ctx.globalAlpha=alpha;
-const gradient=ctx.createRadialGradient(0,0,0,0,0,Math.max(blockW,blockH)*0.72);gradient.addColorStop(0,active?"rgba(255,255,255,0.09)":"rgba(255,255,255,0.055)");gradient.addColorStop(0.6,"rgba(255,255,255,0.018)");gradient.addColorStop(1,"rgba(255,255,255,0.003)");ctx.fillStyle=gradient;ctx.beginPath();ctx.roundRect(-blockW/2,-blockH/2,blockW,blockH,radius);ctx.fill();ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#fff";if(isHero){ctx.globalAlpha=alpha*0.58;ctx.font=`${Math.max(9, 12 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.eyebrow,0,-blockH*0.27);ctx.globalAlpha=alpha;ctx.font=`700 ${Math.max(44, 96 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.title,0,-blockH*0.02);ctx.globalAlpha=alpha*0.78;
-const bodyFont=`${Math.max(13, 20 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;
-const lines=wrapText(node.body,blockW*0.72,bodyFont).slice(0,3);lines.forEach((line,index)=>ctx.fillText(line,0,blockH*0.24+index*25*scale));}else{ctx.globalAlpha=alpha*0.9;ctx.font=`700 ${Math.max(12, 18 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.title.toUpperCase(),0,-blockH*0.15);ctx.globalAlpha=alpha*0.74;
-const bodyFont=`${Math.max(12, 16 * scale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;
-const lines=wrapText(node.body,blockW*0.7,bodyFont).slice(0,4);lines.forEach((line,index)=>ctx.fillText(line,0,blockH*0.08+index*22*scale));}ctx.restore();}
-function cvProjectSurfacePoint(yawDeg,pitchDeg,radius,centerX,centerY){const cameraPoint=cvCameraPoint(cvDirection(yawDeg,pitchDeg));
-const curvedX=Math.tanh(cameraPoint.x*1.14);
-const curvedY=Math.tanh(cameraPoint.y*1.04);
-const clampedZ=Math.max(-0.5,Math.min(1,cameraPoint.z));
-const edge=Math.max(0,Math.min(1,Math.hypot(curvedX,curvedY)));
-const insidePush=0.9+edge*0.36;
-const visibility=Math.max(0.28,Math.min(1,(clampedZ+0.46)/1.46));return{x:centerX+curvedX*radius*1.42*insidePush,y:centerY+curvedY*radius*1.08*insidePush,z:cameraPoint.z,edge,visibility};}
-function strokeCvSurfacePath(points,alpha,widthValue){let drawing=false;ctx.beginPath();points.forEach((point)=>{if(point.visibility<=0.03){drawing=false;return;}if(!drawing){ctx.moveTo(point.x,point.y);drawing=true;}else{ctx.lineTo(point.x,point.y);}});ctx.strokeStyle=`rgba(255,255,255,${alpha})`;ctx.lineWidth=widthValue;ctx.stroke();}
-function drawCvSphereSurface(radius,centerX,centerY){ctx.save();ctx.lineCap="round";ctx.lineJoin="round";[-50,-25,0,25,50].forEach((pitch)=>{const points=[];for(let yaw=-86;yaw<=86;yaw+=3){points.push(cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY));}strokeCvSurfacePath(points,pitch===0?0.062:0.042,pitch===0?1.2:0.9);});[-72,-36,0,36,72].forEach((yaw)=>{const points=[];for(let pitch=-58;pitch<=58;pitch+=3){points.push(cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY));}strokeCvSurfacePath(points,yaw===0?0.056:0.038,yaw===0?1.1:0.85);});for(let row=0;row<7;row++){const pitch=-48+row*16;for(let col=0;col<13;col++){const yaw=-78+col*13+(row%2?4:0);
-const point=cvProjectSurfacePoint(yaw,pitch,radius,centerX,centerY);if(point.visibility<=0.05)continue;
-const dotSize=0.7+point.edge*0.9;ctx.globalAlpha=0.06*point.visibility;ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(point.x,point.y,dotSize,0,Math.PI*2);ctx.fill();}}ctx.restore();}
-function drawCvHemisphere(){cvCamera.yaw+=(cvTargetCamera.yaw-cvCamera.yaw)*0.065;cvCamera.pitch+=(cvTargetCamera.pitch-cvCamera.pitch)*0.065;
-const radius=Math.min(width,height)*0.4;
-const centerX=width/2;
-const centerY=height/2;ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,width,height);
-const domeGradient=ctx.createRadialGradient(centerX,centerY,radius*0.08,centerX,centerY,radius*1.42);domeGradient.addColorStop(0,"rgba(0,0,0,0.12)");domeGradient.addColorStop(0.42,"rgba(255,255,255,0.012)");domeGradient.addColorStop(0.7,"rgba(255,255,255,0.052)");domeGradient.addColorStop(1,"rgba(0,0,0,0)");ctx.fillStyle=domeGradient;ctx.beginPath();ctx.ellipse(centerX,centerY,radius*1.82,radius*1.18,0,0,Math.PI*2);ctx.fill();drawCvSphereSurface(radius,centerX,centerY);
-const entries=cvNodes.map((node)=>{const surfacePoint=cvProjectSurfacePoint(node.yaw,node.pitch,radius,centerX,centerY);
-const z=Math.max(0.05,surfacePoint.z);
-const edge=surfacePoint.edge;
-const perspective=0.82+edge*0.42;
-const active=node.look===cvLook;
-const baseScale=node.type==="hero"?(active?0.52:0.42):0.82;
-const scale=baseScale*perspective*(active?1.08:0.9);
-const alpha=node.type==="hero"?(active?0.84:0.54):(active?1:Math.max(0.36,0.58+edge*0.16));return{node,x:surfacePoint.x,y:surfacePoint.y,z,edge,scale,alpha,active,xNorm:(surfacePoint.x-centerX)/Math.max(1,radius),yNorm:(surfacePoint.y-centerY)/Math.max(1,radius)};}).sort((a,b)=>{const aHero=a.node.type==="hero";
-const bHero=b.node.type==="hero";if(aHero!==bHero)return aHero?-1:1;return a.active===b.active?a.edge-b.edge:a.active?1:-1;});entries.forEach(drawCvBlock);ctx.restore();}
-function cvModulo(value,total){return((value%total)+total)%total;}
-function cvCylinderLabel(node){return({center:"ГЛАВНОЕ",top:"ПРОФИЛЬ",bottom:"РЕЗЮМЕ",left:"УСЛУГИ",right:"КОНТАКТЫ"})[node.look]||node.title||"РАЗДЕЛ";}
-function updateCvCylinderTabs(){const activeIndex=cvModulo(Math.round(cvCylinderTarget),Math.max(1,cvNodes.length));cvCylinderTabs?.querySelectorAll(".cv-cylinder-tab").forEach((button,index)=>{button.classList.toggle("is-active",index===activeIndex);button.setAttribute("aria-pressed",index===activeIndex?"true":"false");});document.documentElement.dataset.cvCylinderIndex=String(activeIndex);}
-function renderCvCylinderTabs(){if(!cvCylinderTabs)return;cvCylinderTabs.innerHTML="";cvNodes.forEach((node,index)=>{const button=document.createElement("button");button.className="cv-cylinder-tab";button.type="button";button.textContent=cvCylinderLabel(node);button.addEventListener("click",()=>setCvCylinderIndex(index));cvCylinderTabs.appendChild(button);});updateCvCylinderTabs();}
-function setCvCylinderIndex(index){const total=cvNodes.length;if(!total)return;const targetIndex=cvModulo(index,total);const current=Math.round(cvCylinderTarget);const currentIndex=cvModulo(current,total);let delta=targetIndex-currentIndex;if(delta>total/2)delta-=total;if(delta<-total/2)delta+=total;cvCylinderTarget=current+delta;cvLook=cvNodes[targetIndex].look;updateCvCylinderTabs();}
-function stepCvCylinder(direction){if(!cvNodes.length)return;cvCylinderTarget=Math.round(cvCylinderTarget)+(direction>0?1:-1);const activeIndex=cvModulo(Math.round(cvCylinderTarget),cvNodes.length);cvLook=cvNodes[activeIndex].look;updateCvCylinderTabs();}
-function handleCvWheel(event){if(viewMode!=="cv")return;event.preventDefault();const now=performance.now();if(now-cvWheelLastAt>180)cvWheelAccumulator=0;cvWheelLastAt=now;cvWheelAccumulator+=event.deltaY;if(now<cvWheelLockedUntil||Math.abs(cvWheelAccumulator)<18)return;stepCvCylinder(cvWheelAccumulator>0?1:-1);cvWheelAccumulator=0;cvWheelLockedUntil=now+430;}
-function drawCvCylinderCard(entry){const{node,index,x,y,z,depth,active}=entry;const mobile=width<700;const baseW=Math.min(mobile?width*0.84:width*0.64,860);const baseH=Math.min(mobile?210:260,height*0.36);const scale=0.56+depth*0.44;const verticalScale=0.42+depth*0.58;const alpha=0.1+depth*0.9;ctx.save();ctx.translate(x,y);ctx.scale(scale,scale*verticalScale);ctx.globalAlpha=alpha;ctx.fillStyle=active?"rgba(255,255,255,0.085)":"rgba(255,255,255,0.035)";ctx.beginPath();ctx.roundRect(-baseW/2,-baseH/2,baseW,baseH,6);ctx.fill();ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#fff";const label=cvCylinderLabel(node);ctx.globalAlpha=alpha*(active?0.58:0.38);ctx.font=`700 ${mobile?9:11}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(`${String(index+1).padStart(2,"0")} / ${label}`,0,-baseH*0.3);ctx.globalAlpha=alpha*(active?1:0.7);const titleSize=node.type==="hero"?(mobile?42:68):(mobile?28:42);ctx.font=`700 ${titleSize}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.title,0,-baseH*0.08);ctx.globalAlpha=alpha*(active?0.76:0.46);const bodySize=mobile?14:17;const bodyFont=`${bodySize}px Helvetica Neue, Helvetica, Arial, sans-serif`;const lines=wrapText(node.body,baseW*(mobile?0.78:0.7),bodyFont).slice(0,mobile?4:3);lines.forEach((line,lineIndex)=>ctx.fillText(line,0,baseH*0.19+lineIndex*(mobile?20:24)));ctx.restore();}
-function drawCvCylinder(){cvCylinderOffset+=(cvCylinderTarget-cvCylinderOffset)*0.09;if(Math.abs(cvCylinderTarget-cvCylinderOffset)<0.001)cvCylinderOffset=cvCylinderTarget;ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,width,height);const total=cvNodes.length;if(!total){ctx.restore();return;}const mobile=width<700;const centerX=width/2;const centerY=height*(mobile?0.59:0.56);const radiusY=Math.min(height*(mobile?0.34:0.36),310);const step=(Math.PI*2)/total;const activeIndex=cvModulo(Math.round(cvCylinderTarget),total);const entries=cvNodes.map((node,index)=>{const relative=wrappedRelative(index,cvCylinderOffset,total);const angle=relative*step;const z=Math.cos(angle);const depth=(z+1)/2;return{node,index,x:centerX,y:centerY+Math.sin(angle)*radiusY,z,depth,active:index===activeIndex};}).sort((a,b)=>a.z-b.z);entries.forEach(drawCvCylinderCard);ctx.restore();}
-function render(){ctx.clearRect(0,0,width,height);if(viewMode==="cv"){drawCvCylinder();requestAnimationFrame(render);return;}transitionProgress+=(transitionTarget-transitionProgress)*0.075;projectFocusProgress+=(projectFocusTarget-projectFocusProgress)*0.065;projectZoomProgress+=(projectZoomTarget-projectZoomProgress)*0.08;sphereProjectFocusProgress+=(sphereProjectFocusTarget-sphereProjectFocusProgress)*0.08;if(Math.abs(projectFocusTarget-projectFocusProgress)<0.002){projectFocusProgress=projectFocusTarget;}if(Math.abs(projectZoomTarget-projectZoomProgress)<0.002){projectZoomProgress=projectZoomTarget;}if(Math.abs(sphereProjectFocusTarget-sphereProjectFocusProgress)<0.002){sphereProjectFocusProgress=sphereProjectFocusTarget;}if(Math.abs(transitionTarget-transitionProgress)<0.002){transitionProgress=transitionTarget;}if(projectActive()){const now=performance.now();
+const start=cycle%active.length;for(let offset=0;offset<active.length&&slotIndex<slots.length;offset++){co…5484 tokens truncated…":"rgba(0,0,0,0.92)";ctx.fill();const shade=ctx.createLinearGradient(points[0].x,points[0].y,points[2].x,points[2].y);shade.addColorStop(0,"rgba(255,255,255,0.08)");shade.addColorStop(0.48,"rgba(255,255,255,0.015)");shade.addColorStop(1,"rgba(0,0,0,0.36)");ctx.fillStyle=shade;ctx.fill();ctx.strokeStyle=active?"rgba(255,255,255,0.42)":"rgba(255,255,255,0.2)";ctx.lineWidth=active?1.35:0.85;ctx.stroke();ctx.restore();
+const center=points.reduce((acc,point)=>({x:acc.x+point.x/points.length,y:acc.y+point.y/points.length,scale:acc.scale+point.scale/points.length}),{x:0,y:0,scale:0});
+const node=face.node;
+const mobile=width<700;
+const faceWidth=Math.hypot(points[1].x-points[0].x,points[1].y-points[0].y);
+const textScale=Math.max(0.52,Math.min(1.22,center.scale*1.22))*(active?1.08:0.92);
+ctx.save();ctx.translate(center.x,center.y);ctx.globalAlpha=(active?0.96:0.52)*facing;ctx.fillStyle="#fff";ctx.textAlign="center";ctx.textBaseline="middle";ctx.font=`700 ${Math.max(9,(mobile?9:11)*textScale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(cvBoxLabel(node),0,-58*textScale);ctx.font=`700 ${Math.max(20,(node.type==="hero"?(mobile?40:58):(mobile?28:40))*textScale)}px Helvetica Neue, Helvetica, Arial, sans-serif`;ctx.fillText(node.title,0,-12*textScale);ctx.globalAlpha=(active?0.74:0.38)*facing;const bodySize=Math.max(11,(mobile?13:15)*textScale);const bodyFont=`${bodySize}px Helvetica Neue, Helvetica, Arial, sans-serif`;const lines=wrapText(node.body,Math.max(140,faceWidth*0.54),bodyFont).slice(0,mobile?3:4);ctx.font=bodyFont;lines.forEach((line,index)=>ctx.fillText(line,0,34*textScale+index*bodySize*1.45));ctx.restore();}
+function drawCvRectangularCube(){ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,width,height);const sourceNodes=cvNodes.length?cvNodes:defaultCvNodes;cvBoxVelocity.yaw*=0.992;cvBoxVelocity.pitch*=0.992;cvBoxVelocity.yaw+=0.000012;cvBoxVelocity.pitch+=0.000005;cvBoxVelocity.yaw=Math.max(-0.035,Math.min(0.035,cvBoxVelocity.yaw));cvBoxVelocity.pitch=Math.max(-0.026,Math.min(0.026,cvBoxVelocity.pitch));cvBoxYaw+=cvBoxVelocity.yaw;cvBoxPitch+=cvBoxVelocity.pitch;cvBoxPitch=Math.max(-1.18,Math.min(1.18,cvBoxPitch));const mobile=width<700;const centerX=width/2;const centerY=height*(mobile?0.58:0.56);const boxScale=Math.min(mobile?width*0.88:width*0.54,height*0.72);const halfW=boxScale*0.5;const halfH=boxScale*(mobile?0.34:0.3);const halfD=boxScale*0.36;const focal=mobile?560:740;const cameraZ=mobile?880:980;const vertices={ntl:{x:-halfW,y:-halfH,z:halfD},ntr:{x:halfW,y:-halfH,z:halfD},nbr:{x:halfW,y:halfH,z:halfD},nbl:{x:-halfW,y:halfH,z:halfD},ftl:{x:-halfW,y:-halfH,z:-halfD},ftr:{x:halfW,y:-halfH,z:-halfD},fbr:{x:halfW,y:halfH,z:-halfD},fbl:{x:-halfW,y:halfH,z:-halfD}};
+Object.keys(vertices).forEach((key)=>{vertices[key]=cvRotateBoxPoint(vertices[key],cvBoxYaw,cvBoxPitch);});
+const faces=[{look:"center",node:cvBoxNodeForLook("center",sourceNodes),points:[vertices.ntl,vertices.ntr,vertices.nbr,vertices.nbl],depthBias:120},{look:"right",node:cvBoxNodeForLook("right",sourceNodes),points:[vertices.ntr,vertices.ftr,vertices.fbr,vertices.nbr],depthBias:30},{look:"left",node:cvBoxNodeForLook("left",sourceNodes),points:[vertices.ftl,vertices.ntl,vertices.nbl,vertices.fbl],depthBias:30},{look:"top",node:cvBoxNodeForLook("top",sourceNodes),points:[vertices.ftl,vertices.ftr,vertices.ntr,vertices.ntl],depthBias:10},{look:"bottom",node:cvBoxNodeForLook("bottom",sourceNodes),points:[vertices.nbl,vertices.nbr,vertices.fbr,vertices.fbl],depthBias:10},{look:"back",node:cvBoxNodeForLook("right",sourceNodes),points:[vertices.ftr,vertices.ftl,vertices.fbl,vertices.fbr],depthBias:-80}];
+faces.forEach((face)=>{face.avgZ=face.points.reduce((sum,point)=>sum+point.z,0)/face.points.length;});const maxZ=Math.max(...faces.map((face)=>face.avgZ));faces.forEach((face)=>{face.active=face.avgZ===maxZ;});faces.sort((a,b)=>a.avgZ-b.avgZ).forEach((face)=>drawCvBoxFace(face,centerX,centerY,focal,cameraZ));ctx.restore();}
+function render(){ctx.clearRect(0,0,width,height);if(viewMode==="cv"){drawCvRectangularCube();requestAnimationFrame(render);return;}transitionProgress+=(transitionTarget-transitionProgress)*0.075;projectFocusProgress+=(projectFocusTarget-projectFocusProgress)*0.065;projectZoomProgress+=(projectZoomTarget-projectZoomProgress)*0.08;sphereProjectFocusProgress+=(sphereProjectFocusTarget-sphereProjectFocusProgress)*0.08;if(Math.abs(projectFocusTarget-projectFocusProgress)<0.002){projectFocusProgress=projectFocusTarget;}if(Math.abs(projectZoomTarget-projectZoomProgress)<0.002){projectZoomProgress=projectZoomTarget;}if(Math.abs(sphereProjectFocusTarget-sphereProjectFocusProgress)<0.002){sphereProjectFocusProgress=sphereProjectFocusTarget;}if(Math.abs(transitionTarget-transitionProgress)<0.002){transitionProgress=transitionTarget;}if(projectActive()){const now=performance.now();
 const autoMoving=updateRibbonAutoscroll(now);ribbonTargetOffset+=ribbonVelocity;ribbonVelocity*=dragging?0.72:0.9;if(Math.abs(ribbonVelocity)<0.0005){ribbonVelocity=0;}const idleTime=now-ribbonLastInputAt;if(!autoMoving&&!dragging&&idleTime>260&&Math.abs(ribbonVelocity)<0.018){const snapIndex=Math.round(ribbonTargetOffset);ribbonTargetOffset+=(snapIndex-ribbonTargetOffset)*0.12;if(Math.abs(snapIndex-ribbonTargetOffset)<0.001){ribbonTargetOffset=snapIndex;}syncCenteredProjectTitle();}else if(autoMoving){syncCenteredProjectTitle();}}ribbonOffset+=(ribbonTargetOffset-ribbonOffset)*0.075;
 const hoverFactor=hovering?0.42:1.18;if(sphereProjectFocusTarget>0||sphereProjectFocusProgress>0.002){rotation.x+=(sphereProjectFocusRotation.x-rotation.x)*0.085;rotation.y+=(sphereProjectFocusRotation.y-rotation.y)*0.085;velocity.x*=0.8;velocity.y*=0.8;targetVelocity.x*=0.8;targetVelocity.y*=0.8;}else{targetVelocity.x+=direction.y*0.000006;targetVelocity.y+=direction.x*0.000006;targetVelocity.x*=0.998;targetVelocity.y*=0.998;targetVelocity.x=Math.max(-0.02,Math.min(0.02,targetVelocity.x));targetVelocity.y=Math.max(-0.02,Math.min(0.02,targetVelocity.y));velocity.x+=(targetVelocity.x-velocity.x)*0.055;velocity.y+=(targetVelocity.y-velocity.y)*0.055;rotation.x+=velocity.x*2.18*hoverFactor;rotation.y+=velocity.y*2.18*hoverFactor;}
 const visibleItems=getRenderItems();
@@ -340,6 +228,8 @@ const eased=transitionProgress*transitionProgress*(3-2*transitionProgress);
 const entries=sphereEntries.map((sphereEntry,index)=>{const ribbonEntry=ribbonEntries[index];const sphereScale=sphereEntry.visualScale||1;const sphereAlpha=sphereEntry.alphaBoost??1;return{item:sphereEntry.item,index,x:sphereEntry.x+(ribbonEntry.x-sphereEntry.x)*eased,y:sphereEntry.y+(ribbonEntry.y-sphereEntry.y)*eased,z:sphereEntry.z+(ribbonEntry.z-sphereEntry.z)*eased,depth:sphereEntry.depth+(ribbonEntry.depth-sphereEntry.depth)*eased,mode:eased>0.55?"ribbon":"sphere",faceTurn:(ribbonEntry.faceTurn||0)*eased,visualScale:sphereScale+((ribbonEntry.visualScale||1)-sphereScale)*eased,alphaBoost:sphereAlpha+((ribbonEntry.alphaBoost??1)-sphereAlpha)*eased,centerFocus:(ribbonEntry.centerFocus||0)*eased};}).sort((a,b)=>a.z-b.z);drawRibbonAtmosphere(eased);hitTargets=[];
 const focusedEntries=projectFocusProgress>0.01?entries.filter((entry)=>entry.centerFocus>0.5):[];
 const backgroundEntries=focusedEntries.length?entries.filter((entry)=>entry.centerFocus<=0.5):entries;backgroundEntries.forEach((entry)=>{drawCard(entry);if(entry.hit)hitTargets.push(entry.hit);});if(focusedEntries.length){ctx.save();ctx.globalAlpha=0.5*projectFocusProgress;ctx.fillStyle="#000";ctx.fillRect(0,0,width,height);ctx.restore();focusedEntries.forEach((entry)=>{drawCard(entry);if(entry.hit)hitTargets.push(entry.hit);});}requestAnimationFrame(render);}
+function drawCvRectangularCube(){ctx.save();ctx.fillStyle="#000";ctx.fillRect(0,0,width,height);drawCvBackgroundSphere();const sourceNodes=cvNodes.length?cvNodes:defaultCvNodes;const targetYaw=cvNearestAngle(cvBoxYaw,cvTargetBox.yaw);cvBoxYaw+=(targetYaw-cvBoxYaw)*0.055;cvBoxPitch+=(cvTargetBox.pitch-cvBoxPitch)*0.055;if(!dragging&&Math.abs(targetYaw-cvBoxYaw)<0.035&&Math.abs(cvTargetBox.pitch-cvBoxPitch)<0.035){cvBoxYaw+=Math.sin(performance.now()*0.00042)*0.00034;cvBoxPitch+=Math.cos(performance.now()*0.00037)*0.00016;}if(dragging){cvBoxYaw+=cvBoxVelocity.yaw;cvBoxPitch+=cvBoxVelocity.pitch;cvBoxVelocity.yaw*=0.94;cvBoxVelocity.pitch*=0.94;}cvBoxPitch=Math.max(-1.18,Math.min(1.18,cvBoxPitch));const mobile=width<700;const centerX=width/2;const centerY=height*(mobile?0.58:0.56);const boxScale=Math.min(mobile?width*0.88:width*0.54,height*0.72);const halfW=boxScale*0.5;const halfH=boxScale*(mobile?0.34:0.3);const halfD=boxScale*0.36;const focal=mobile?560:740;const cameraZ=mobile?880:980;const v={ntl:{x:-halfW,y:-halfH,z:halfD},ntr:{x:halfW,y:-halfH,z:halfD},nbr:{x:halfW,y:halfH,z:halfD},nbl:{x:-halfW,y:halfH,z:halfD},ftl:{x:-halfW,y:-halfH,z:-halfD},ftr:{x:halfW,y:-halfH,z:-halfD},fbr:{x:halfW,y:halfH,z:-halfD},fbl:{x:-halfW,y:halfH,z:-halfD}};Object.keys(v).forEach((key)=>{v[key]=cvRotateBoxPoint(v[key],cvBoxYaw,cvBoxPitch);});const faces=[{look:"center",node:cvBoxNodeForLook("center",sourceNodes),points:[v.ntl,v.ntr,v.nbr,v.nbl],depthBias:120},{look:"right",node:cvBoxNodeForLook("right",sourceNodes),points:[v.ntr,v.ftr,v.fbr,v.nbr],depthBias:30},{look:"left",node:cvBoxNodeForLook("left",sourceNodes),points:[v.ftl,v.ntl,v.nbl,v.fbl],depthBias:30},{look:"top",node:cvBoxNodeForLook("top",sourceNodes),points:[v.ftl,v.ftr,v.ntr,v.ntl],depthBias:10},{look:"bottom",node:cvBoxNodeForLook("bottom",sourceNodes),points:[v.nbl,v.nbr,v.fbr,v.fbl],depthBias:10},{look:"back",node:cvBoxNodeForLook("right",sourceNodes),points:[v.ftr,v.ftl,v.fbl,v.fbr],depthBias:-80}];faces.forEach((face)=>{face.avgZ=face.points.reduce((sum,point)=>sum+point.z,0)/face.points.length;face.active=face.look===cvActiveFace;});faces.sort((a,b)=>a.avgZ-b.avgZ).forEach((face)=>drawCvBoxFace(face,centerX,centerY,focal,cameraZ));ctx.restore();}
+function cvBoxLabel(node){return cvFaceLabels[node.look]||node.title||"Раздел";}
 function findHit(clientX,clientY){return hitTargets.filter((target)=>(Math.abs(clientX-target.x)<=target.w/2&&Math.abs(clientY-target.y)<=target.h/2)).sort((a,b)=>b.z-a.z)[0];}
 function openProject(item){clearSphereProjectFocus();activeProjectKey=projectKey(item);
 const projectItems=getProjectItems();
@@ -354,9 +244,8 @@ function syncCenteredProjectTitle(){if(viewMode!=="project")return;
 const visibleItems=getProjectItems();if(!visibleItems.length)return;
 const index=((Math.round(ribbonTargetOffset)%visibleItems.length)+visibleItems.length)%visibleItems.length;projectTitle.textContent=projectLabel(visibleItems[index],index);}
 function closeProject(){document.documentElement.dataset.activeProjectItemCount="0";projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=0;viewMode="sphere";activeProjectKey="";spherePage.classList.remove("is-project");projectViewUi.hidden=true;projectViewUi.classList.remove("is-media-open");}
-function openCv(){closeProject();viewMode="cv";transitionTarget=0;transitionProgress=0;cvCylinderOffset=0;cvCylinderTarget=0;cvWheelAccumulator=0;cvWheelLockedUntil=0;spherePage.classList.add("is-cv");cvView.hidden=false;renderCvCylinderTabs();setCvCylinderIndex(0);}
+function openCv(){closeProject();viewMode="cv";transitionTarget=0;transitionProgress=0;cvWheelAccumulator=0;cvWheelLockedUntil=0;cvBoxYaw=-0.38;cvBoxPitch=0.22;cvBoxVelocity={yaw:0,pitch:0};setCvFace("center",false);updateCvSceneUi();spherePage.classList.add("is-cv");cvView.hidden=false;}
 function closeCv(){viewMode="sphere";cvWheelAccumulator=0;spherePage.classList.remove("is-cv");cvView.hidden=true;}
-function setCvLook(nextLook){const index=cvNodes.findIndex((node)=>node.look===nextLook);setCvCylinderIndex(index>=0?index:0);}
 function renderCvCamera(look){const deg=Math.PI/180;
 const horizontalLook=58;
 const verticalLook=44;
@@ -398,11 +287,11 @@ const facePitch=Math.max(-68,Math.min(68,pitchDelta*1.16));
 const layer=Math.round(3000-depth+(active&&panel.dataset.look!=="center"?90:0));panel.style.setProperty("--cv-x",`${screenX.toFixed(2)}px`);panel.style.setProperty("--cv-y",`${screenY.toFixed(2)}px`);panel.style.setProperty("--cv-scale",baseScale.toFixed(3));panel.style.setProperty("--cv-ry",`${faceYaw.toFixed(2)}deg`);panel.style.setProperty("--cv-rx",`${facePitch.toFixed(2)}deg`);panel.style.setProperty("--cv-opacity",opacity.toFixed(3));panel.style.setProperty("--cv-blur",`${blur.toFixed(2)}px`);panel.style.setProperty("--cv-z",String(layer));});}
 function cvLookFromPoint(clientX,clientY){const widthRatio=clientX/Math.max(1,window.innerWidth);
 const heightRatio=clientY/Math.max(1,window.innerHeight);if(heightRatio<0.28)return "top";if(heightRatio>0.72)return "bottom";if(widthRatio<0.32)return "left";if(widthRatio>0.68)return "right";return "center";}
-canvas.addEventListener("pointerdown",(event)=>{if(projectFocusTarget>0||projectFocusProgress>0.05){pointerStart.x=event.clientX;pointerStart.y=event.clientY;pointerMoved=false;return;}if(viewMode==="sphere"&&sphereProjectFocusTarget>0){clearSphereProjectFocus();}dragging=true;hovering=true;pointer.x=event.clientX;pointer.y=event.clientY;pointerStart.x=event.clientX;pointerStart.y=event.clientY;pointerMoved=false;canvas.setPointerCapture(event.pointerId);});
+canvas.addEventListener("pointerdown",(event)=>{if(viewMode==="cv"){dragging=true;hovering=true;pointer.x=event.clientX;pointer.y=event.clientY;pointerStart.x=event.clientX;pointerStart.y=event.clientY;pointerMoved=false;canvas.setPointerCapture(event.pointerId);return;}if(projectFocusTarget>0||projectFocusProgress>0.05){pointerStart.x=event.clientX;pointerStart.y=event.clientY;pointerMoved=false;return;}if(viewMode==="sphere"&&sphereProjectFocusTarget>0){clearSphereProjectFocus();}dragging=true;hovering=true;pointer.x=event.clientX;pointer.y=event.clientY;pointerStart.x=event.clientX;pointerStart.y=event.clientY;pointerMoved=false;canvas.setPointerCapture(event.pointerId);});
 canvas.addEventListener("pointermove",(event)=>{if(!dragging)return;
 const dx=event.clientX-pointer.x;
-const dy=event.clientY-pointer.y;if(Math.hypot(event.clientX-pointerStart.x,event.clientY-pointerStart.y)>6){pointerMoved=true;}if(viewMode==="project"||transitionProgress>0.6){touchRibbon(-dx*0.0028);pointer.x=event.clientX;pointer.y=event.clientY;return;}rotation.y+=dx*0.005;rotation.x+=dy*0.005;targetVelocity.y+=dx*0.000022;targetVelocity.x+=dy*0.000022;pointer.x=event.clientX;pointer.y=event.clientY;});
-canvas.addEventListener("pointerup",(event)=>{if(projectFocusTarget>0||projectFocusProgress>0.05){toggleProjectMedia();return;}dragging=false;if(canvas.hasPointerCapture(event.pointerId)){canvas.releasePointerCapture(event.pointerId);}if(!pointerMoved&&(viewMode==="project"||transitionProgress>0.6)){const hit=findHit(event.clientX,event.clientY);if(hit){const items=getProjectItems();const centered=((Math.round(ribbonTargetOffset)%items.length)+items.length)%items.length;const selected=((hit.index%items.length)+items.length)%items.length;if(selected===centered){toggleProjectMedia();}else{centerProjectItem(hit.item,hit.index);}}return;}if(!pointerMoved&&transitionProgress<0.2){const hit=findHit(event.clientX,event.clientY);if(hit)openProject(hit.item);}});
+const dy=event.clientY-pointer.y;if(Math.hypot(event.clientX-pointerStart.x,event.clientY-pointerStart.y)>6){pointerMoved=true;}if(viewMode==="cv"){cvBoxYaw+=dx*0.006;cvBoxPitch+=dy*0.006;cvBoxVelocity.yaw=dx*0.00045;cvBoxVelocity.pitch=dy*0.00045;pointer.x=event.clientX;pointer.y=event.clientY;return;}if(viewMode==="project"||transitionProgress>0.6){touchRibbon(-dx*0.0028);pointer.x=event.clientX;pointer.y=event.clientY;return;}rotation.y+=dx*0.005;rotation.x+=dy*0.005;targetVelocity.y+=dx*0.000022;targetVelocity.x+=dy*0.000022;pointer.x=event.clientX;pointer.y=event.clientY;});
+canvas.addEventListener("pointerup",(event)=>{if(viewMode==="cv"){dragging=false;if(canvas.hasPointerCapture(event.pointerId)){canvas.releasePointerCapture(event.pointerId);}return;}if(projectFocusTarget>0||projectFocusProgress>0.05){toggleProjectMedia();return;}dragging=false;if(canvas.hasPointerCapture(event.pointerId)){canvas.releasePointerCapture(event.pointerId);}if(!pointerMoved&&(viewMode==="project"||transitionProgress>0.6)){const hit=findHit(event.clientX,event.clientY);if(hit){const items=getProjectItems();const centered=((Math.round(ribbonTargetOffset)%items.length)+items.length)%items.length;const selected=((hit.index%items.length)+items.length)%items.length;if(selected===centered){toggleProjectMedia();}else{centerProjectItem(hit.item,hit.index);}}return;}if(!pointerMoved&&transitionProgress<0.2){const hit=findHit(event.clientX,event.clientY);if(hit)openProject(hit.item);}});
 canvas.addEventListener("pointerenter",()=>{hovering=true;});
 canvas.addEventListener("pointerleave",()=>{hovering=false;dragging=false;});
 canvas.addEventListener("wheel",(event)=>{event.preventDefault();if(viewMode==="cv"){handleCvWheel(event);return;}if(projectFocusTarget>0||projectFocusProgress>0.05)return;if(viewMode==="project"||transitionProgress>0.6){touchRibbon(event.deltaY*0.0012);return;}const nextValue=Number(sizeRange.value)-event.deltaY*0.0009;sizeRange.value=String(Math.max(Number(sizeRange.min),Math.min(Number(sizeRange.max),nextValue)));updateUi();},{passive:false});
@@ -410,6 +299,10 @@ projectBack.addEventListener("click",()=>{if(projectFocusTarget>0||projectFocusP
 cvOpen.addEventListener("click",openCv);
 cvBack.addEventListener("click",closeCv);
 cvView.addEventListener("wheel",handleCvWheel,{passive:false});
+cvSectionButtons.forEach((button)=>button.addEventListener("click",()=>setCvFace(button.dataset.cvFace)));
+[cvSphereSizeRange,cvOverlayBlurRange,cvOverlayDimRange].forEach((input)=>input?.addEventListener("input",updateCvSceneUi));
+canvas.addEventListener("pointermove",()=>{if(viewMode==="cv"&&dragging){cvTargetBox={yaw:cvBoxYaw,pitch:cvBoxPitch};}});
 [sizeRange,scaleRange,fisheyeRange].forEach((input)=>{input.addEventListener("input",updateUi);});
 [projectScaleRange,projectCountRange,projectGapRange,projectWidthRange,projectLengthRange].forEach((input)=>{input.addEventListener("input",updateProjectUi);});
-window.addEventListener("resize",resize);resize();updateUi();updateProjectUi();initializeWaterEffects();loadItems(assets);renderCvCylinderTabs();Promise.all([loadStoredAssetsAsync(),loadStoredCvNodesAsync()]).then(([nextAssets,nextCvNodes])=>{assets=nextAssets;cvNodes=nextCvNodes;loadItems(assets);renderCvCylinderTabs();setCvLook(cvLook);});render();})();
+window.addEventListener("resize",resize);resize();updateUi();updateProjectUi();initializeWaterEffects();loadItems(assets);Promise.all([loadStoredAssetsAsync(),loadStoredCvNodesAsync()]).then(([nextAssets,nextCvNodes])=>{assets=nextAssets;cvNodes=nextCvNodes;loadItems(assets);});render();})();
+
