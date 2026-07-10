@@ -1,4 +1,3 @@
-
 (() => {
   const translations = new Map([
     ["OPEN", "ОТКРЫТЬ"],

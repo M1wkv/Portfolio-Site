@@ -1,4 +1,3 @@
-
 (() => {
   const locale = window.PortfolioLocale;
   if (!locale) return;
