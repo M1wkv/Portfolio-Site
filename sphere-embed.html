@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Сфера портфолио</title>
-    <link rel="stylesheet" href="sphere.css?v=20260712-nav-type-1" />
+    <link rel="stylesheet" href="sphere.css?v=20260712-idle-panels-1" />
   </head>
   <body>
     <main class="sphere-page">
@@ -40,6 +40,13 @@
         <label><span>ПРОЗРАЧНОСТЬ <b data-water-value="transparency">50</b></span><input data-water-setting="transparency" type="range" min="0" max="100" step="1" value="50" /></label>
         <label><span>ЗАТЕМНЕНИЕ <b data-water-value="darkening">50</b></span><input data-water-setting="darkening" type="range" min="0" max="100" step="1" value="50" /></label>
         <label><span>МОРОЗНОСТЬ <b data-water-value="frost">5</b></span><input data-water-setting="frost" type="range" min="0" max="100" step="1" value="5" /></label>
+      </aside>
+
+      <aside class="idle-controls" id="idleControls" aria-label="Настройки неактивных плашек">
+        <strong>ПОКОЙ ПЛАШЕК</strong>
+        <label><span>ПРОЗРАЧНОСТЬ <b data-idle-value="transparency">70</b></span><input data-idle-setting="transparency" type="range" min="0" max="100" step="1" value="70" /></label>
+        <label><span>ЗАТЕМНЕНИЕ <b data-idle-value="darkening">70</b></span><input data-idle-setting="darkening" type="range" min="0" max="100" step="1" value="70" /></label>
+        <label><span>МОРОЗНОСТЬ <b data-idle-value="frost">10</b></span><input data-idle-setting="frost" type="range" min="0" max="100" step="1" value="10" /></label>
       </aside>
 
       <input id="fisheyeRange" type="hidden" value="0.15" />
