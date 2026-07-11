@@ -501,22 +501,41 @@
   async function uploadDataUrl(path, dataUrl) {
     if (!supabaseClient || !dataUrl || !dataUrl.startsWith("data:")) return dataUrl || "";
     const blob = dataUrlToBlob(dataUrl);
-    let uploadError;
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      try {
-        const { error } = await supabaseClient.storage.from(bucketName).upload(path, blob, {
-          cacheControl: "3600",
-          upsert: true,
-          contentType: blob.type || "application/octet-stream"
-        });
-        if (error) throw error;
-        return supabaseClient.storage.from(bucketName).getPublicUrl(path).data.publicUrl;
-      } catch (error) {
-        uploadError = error;
-        if (attempt === 0) await new Promise((resolve) => window.setTimeout(resolve, 500));
-      }
+    const config = window.PORTFOLIO_SUPABASE || {};
+    const accessToken = session?.access_token;
+    if (!config.url || !config.publishableKey || !accessToken) {
+      throw new Error("Нет активной сессии для загрузки изображения");
     }
-    throw new Error(`Не удалось загрузить файл в Storage: ${uploadError?.message || "проверьте подключение к Supabase"}`);
+
+    const encodedPath = path.split("/").map((part) => encodeURIComponent(part)).join("/");
+    const uploadUrl = `${config.url}/storage/v1/object/${encodeURIComponent(bucketName)}/${encodedPath}`;
+    await new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest();
+      request.open("POST", uploadUrl, true);
+      request.setRequestHeader("apikey", config.publishableKey);
+      request.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+      request.setRequestHeader("x-upsert", "true");
+      request.setRequestHeader("cache-control", "3600");
+      request.setRequestHeader("Content-Type", blob.type || "application/octet-stream");
+      request.onload = () => {
+        if (request.status >= 200 && request.status < 300) {
+          resolve();
+          return;
+        }
+        let responseMessage = request.responseText || request.statusText || "неизвестная ошибка";
+        try {
+          responseMessage = JSON.parse(request.responseText).message || responseMessage;
+        } catch (error) {
+          // The Storage response may be plain text.
+        }
+        reject(new Error(`Storage вернул ${request.status}: ${responseMessage}`));
+      };
+      request.onerror = () => reject(new Error("Браузер не смог соединиться с Supabase Storage"));
+      request.ontimeout = () => reject(new Error("Превышено время ожидания ответа от Supabase Storage"));
+      request.timeout = 60000;
+      request.send(blob);
+    });
+    return supabaseClient.storage.from(bucketName).getPublicUrl(path).data.publicUrl;
   }
 
   function storagePath(folder, fileName) {
@@ -619,14 +638,25 @@
   async function saveSupabaseContent() {
     if (!supabaseClient || !session) return;
 
-    saveStage = "обновление сессии Supabase";
-    const { data: refreshedSession, error: refreshError } = await supabaseClient.auth.refreshSession();
-    if (refreshError || !refreshedSession.session) {
+    saveStage = "проверка сессии Supabase";
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError || !sessionData.session) {
       session = null;
       renderAuthPanel();
       throw new Error("Сессия закончилась. Войдите в админ-панель заново.");
     }
-    session = refreshedSession.session;
+    session = sessionData.session;
+    const expiresSoon = Number(session.expires_at || 0) * 1000 < Date.now() + 60000;
+    if (expiresSoon) {
+      saveStage = "обновление сессии Supabase";
+      const { data: refreshedSession, error: refreshError } = await supabaseClient.auth.refreshSession();
+      if (refreshError || !refreshedSession.session) {
+        session = null;
+        renderAuthPanel();
+        throw new Error("Сессия закончилась. Войдите в админ-панель заново.");
+      }
+      session = refreshedSession.session;
+    }
 
     saveStage = "загрузка фотографии профиля";
     const photoUrl = content.profile.photo?.startsWith("data:")
