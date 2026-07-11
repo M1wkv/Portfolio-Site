@@ -486,17 +486,36 @@
     renderProjectEditor(content.portfolio.projects[activeIndex], activeIndex);
   }
 
+  function dataUrlToBlob(dataUrl) {
+    const match = /^data:([^;,]+)?(;base64)?,(.*)$/s.exec(dataUrl);
+    if (!match) throw new Error("Неверный формат загружаемого файла");
+    const mimeType = match[1] || "application/octet-stream";
+    const payload = match[3] || "";
+    const binary = match[2] ? atob(payload) : decodeURIComponent(payload);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+    return new Blob([bytes], { type: mimeType });
+  }
+
   async function uploadDataUrl(path, dataUrl) {
     if (!supabaseClient || !dataUrl || !dataUrl.startsWith("data:")) return dataUrl || "";
-    const response = await fetch(dataUrl);
-    const blob = await response.blob();
-    const { error } = await supabaseClient.storage.from(bucketName).upload(path, blob, {
-      cacheControl: "3600",
-      upsert: true,
-      contentType: blob.type || "application/octet-stream"
-    });
-    if (error) throw error;
-    return supabaseClient.storage.from(bucketName).getPublicUrl(path).data.publicUrl;
+    const blob = dataUrlToBlob(dataUrl);
+    let uploadError;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const { error } = await supabaseClient.storage.from(bucketName).upload(path, blob, {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: blob.type || "application/octet-stream"
+        });
+        if (error) throw error;
+        return supabaseClient.storage.from(bucketName).getPublicUrl(path).data.publicUrl;
+      } catch (error) {
+        uploadError = error;
+        if (attempt === 0) await new Promise((resolve) => window.setTimeout(resolve, 500));
+      }
+    }
+    throw new Error(`Не удалось загрузить файл в Storage: ${uploadError?.message || "проверьте подключение к Supabase"}`);
   }
 
   function storagePath(folder, fileName) {
