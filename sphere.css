@@ -101,11 +101,18 @@
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .project-index-list {
+  width: 100%;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
   gap: 0;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   white-space: nowrap;
 }
