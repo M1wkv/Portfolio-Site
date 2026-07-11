@@ -67,6 +67,7 @@
   background: rgb(var(--water-panel-rgb) var(--water-panel-rgb) var(--water-panel-rgb) / var(--water-panel-alpha));
   backdrop-filter: blur(var(--water-panel-blur));
   -webkit-backdrop-filter: blur(var(--water-panel-blur));
+  transition: background 460ms cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1), -webkit-backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar::before,
@@ -158,6 +159,7 @@
   background: rgb(var(--water-panel-rgb) var(--water-panel-rgb) var(--water-panel-rgb) / var(--water-panel-alpha));
   backdrop-filter: blur(var(--water-panel-blur));
   -webkit-backdrop-filter: blur(var(--water-panel-blur));
+  transition: background 460ms cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1), -webkit-backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-brand {
@@ -307,6 +309,11 @@
   transition: opacity 260ms ease;
 }
 
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar > *,
+.sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav > * {
+  transition: filter 460ms cubic-bezier(0.22, 1, 0.36, 1), opacity 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar {
   background: rgb(var(--idle-top-rgb) var(--idle-top-rgb) var(--idle-top-rgb) / var(--idle-top-alpha));
   backdrop-filter: blur(var(--idle-top-blur));
@@ -342,7 +349,6 @@
   filter: blur(var(--idle-top-content-blur));
   opacity: 0.76;
   pointer-events: none;
-  transition: filter 220ms ease, opacity 220ms ease;
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav > * {
