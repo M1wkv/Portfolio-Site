@@ -86,8 +86,7 @@
 }
 
 .projects-nav {
-  width: 126px;
-  font-size: 17px !important;
+  display: none;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav {
@@ -95,13 +94,20 @@
   margin-left: 10px;
   background: #fff;
   color: #000;
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav:hover,
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav:focus-visible {
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.38);
+  transform: scale(1.02);
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .project-index {
   flex: 1 1 auto;
   min-width: 0;
   max-width: none;
-  margin-left: 10px;
+  margin-left: 0;
   height: 39px;
   padding: 0 6px;
   overflow: hidden;
@@ -183,6 +189,11 @@
   padding: 0 14px;
   border-radius: 999px;
   background: rgba(10, 10, 10, 0.5);
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-control:hover,
+.sphere-page:not(.is-project):not(.is-cv) .sphere-control:focus-within {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16), 0 0 18px rgba(255, 255, 255, 0.16);
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head {
