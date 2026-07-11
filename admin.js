@@ -4,6 +4,7 @@
   const STORAGE_ASSETS = "portfolioSphere.assets";
   const supabaseClient = window.createPortfolioSupabase ? window.createPortfolioSupabase() : null;
   const bucketName = window.PORTFOLIO_SUPABASE?.bucket || "portfolio";
+  let saveStage = "";
 
   const defaultContent = {
     profile: {
@@ -524,6 +525,7 @@
   }
 
   async function saveProjects() {
+    saveStage = "проверка списка проектов";
     const { data: existingProjects, error: existingError } = await supabaseClient
       .from("projects")
       .select("id,status");
@@ -532,6 +534,7 @@
     const existingById = new Map((existingProjects || []).map((project) => [project.id, project]));
     for (const [index, project] of content.portfolio.projects.entries()) {
       const previousProjectId = project.id;
+      saveStage = `загрузка обложки проекта «${project.title || index + 1}»`;
       const coverUrl = project.cover?.startsWith("data:")
         ? await uploadDataUrl(storagePath("covers", project.coverName || `${project.title}-cover`), project.cover)
         : project.coverUrl || project.cover || "";
@@ -552,6 +555,7 @@
         updated_at: new Date().toISOString()
       };
 
+      saveStage = `сохранение проекта «${project.title || index + 1}»`;
       const projectQuery = existingProject
         ? supabaseClient.from("projects").update(payload).eq("id", project.id)
         : supabaseClient.from("projects").insert(payload);
@@ -559,6 +563,7 @@
       if (projectError) throw projectError;
 
       const projectId = savedProject.id;
+      saveStage = `проверка галереи проекта «${project.title || index + 1}»`;
       const { data: previousImages, error: previousImagesError } = await supabaseClient
         .from("project_images")
         .select("id")
@@ -567,6 +572,7 @@
 
       const rows = [];
       for (const [galleryIndex, image] of project.gallery.entries()) {
+        saveStage = `загрузка изображения ${galleryIndex + 1} проекта «${project.title || index + 1}»`;
         const imageUrl = image.src?.startsWith("data:")
           ? await uploadDataUrl(storagePath("gallery", image.title || `${project.title}-${galleryIndex}`), image.src)
           : image.src || "";
@@ -577,6 +583,7 @@
       });
 
       if (rows.length) {
+        saveStage = `сохранение галереи проекта «${project.title || index + 1}»`;
         const { error: imageError } = await supabaseClient.from("project_images").insert(rows);
         if (imageError) throw imageError;
       }
@@ -586,6 +593,7 @@
         if (deleteImagesError) throw deleteImagesError;
       }
 
+      saveStage = `публикация проекта «${project.title || index + 1}»`;
       const { error: publishError } = await supabaseClient
         .from("projects")
         .update({ status: desiredStatus, updated_at: new Date().toISOString() })
@@ -611,6 +619,16 @@
   async function saveSupabaseContent() {
     if (!supabaseClient || !session) return;
 
+    saveStage = "обновление сессии Supabase";
+    const { data: refreshedSession, error: refreshError } = await supabaseClient.auth.refreshSession();
+    if (refreshError || !refreshedSession.session) {
+      session = null;
+      renderAuthPanel();
+      throw new Error("Сессия закончилась. Войдите в админ-панель заново.");
+    }
+    session = refreshedSession.session;
+
+    saveStage = "загрузка фотографии профиля";
     const photoUrl = content.profile.photo?.startsWith("data:")
       ? await uploadDataUrl(storagePath("profile", "profile-photo"), content.profile.photo)
       : content.profile.photoUrl || content.profile.photo || "";
@@ -618,6 +636,7 @@
       ? await uploadDataUrl(storagePath("settings", content.settings.faviconName || "favicon"), content.settings.favicon)
       : content.settings.faviconUrl || content.settings.favicon || "";
 
+    saveStage = "сохранение профиля";
     await upsertSingle("profile", {
       name: content.profile.name,
       role: content.profile.role,
@@ -627,6 +646,7 @@
       updated_at: new Date().toISOString()
     });
 
+    saveStage = "сохранение резюме";
     await replaceRows("cv_sections", [
       { position: "experience", title: "Experience", description: content.cv.experience, sort_order: 1 },
       { position: "education", title: "Education", description: content.cv.education, sort_order: 2 },
@@ -634,6 +654,7 @@
       { position: "certificates", title: "Certificates", description: content.cv.certificates, sort_order: 4 }
     ]);
 
+    saveStage = "сохранение разделов сайта";
     await replaceRows("services", content.services
       .filter((service) => service.enabled)
       .map((service, index) => ({
@@ -643,6 +664,7 @@
         updated_at: new Date().toISOString()
       })));
 
+    saveStage = "сохранение контактов";
     await upsertSingle("contacts", {
       telegram: content.contacts.telegram,
       email: content.contacts.email,
@@ -652,6 +674,7 @@
       updated_at: new Date().toISOString()
     });
 
+    saveStage = "сохранение настроек сайта";
     await upsertSingle("site_settings", {
       site_title: content.settings.siteTitle,
       meta_description: content.settings.description,
@@ -758,8 +781,13 @@
         saveButton.textContent = "SAVE";
       }, 900);
     } catch (error) {
-      setStatus(`Save failed: ${error.message}`);
-      alert(`Save failed: ${error.message}`);
+      const message = error?.message || "Неизвестная ошибка";
+      const connectionError = /failed to fetch|networkerror|network request failed/i.test(message);
+      const detailedMessage = connectionError
+        ? `Нет соединения с Supabase на этапе: ${saveStage || "сохранение"}. Проверьте, что проект Supabase активен и доступен в этой сети.`
+        : message;
+      setStatus(`Save failed: ${detailedMessage}`);
+      alert(`Save failed: ${detailedMessage}`);
     } finally {
       saveButton.disabled = false;
     }
