@@ -306,30 +306,34 @@
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar {
-  background: rgb(var(--idle-top-rgb) var(--idle-top-rgb) var(--idle-top-rgb) / var(--idle-top-alpha));
-  backdrop-filter: blur(var(--idle-top-blur));
-  -webkit-backdrop-filter: blur(var(--idle-top-blur));
-}
-
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav {
-  background: rgb(var(--idle-bottom-rgb) var(--idle-bottom-rgb) var(--idle-bottom-rgb) / var(--idle-bottom-alpha));
-  backdrop-filter: blur(var(--idle-bottom-blur));
-  -webkit-backdrop-filter: blur(var(--idle-bottom-blur));
-}
-
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar::after,
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav::after { opacity: 0; pointer-events: auto; }
-
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .project-index,
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .cv-nav,
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-control {
   background: transparent;
-  box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-line-range { opacity: 0; pointer-events: none; }
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar::after {
+  z-index: 3;
+  opacity: 1;
+  background: rgb(var(--idle-top-rgb) var(--idle-top-rgb) var(--idle-top-rgb) / var(--idle-top-alpha));
+  backdrop-filter: blur(var(--idle-top-blur));
+  -webkit-backdrop-filter: blur(var(--idle-top-blur));
+  pointer-events: auto;
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav::after {
+  z-index: 3;
+  opacity: 1;
+  background: rgb(var(--idle-bottom-rgb) var(--idle-bottom-rgb) var(--idle-bottom-rgb) / var(--idle-bottom-alpha));
+  backdrop-filter: blur(var(--idle-bottom-blur));
+  -webkit-backdrop-filter: blur(var(--idle-bottom-blur));
+  pointer-events: auto;
+}
 
 .sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range { left: 82px; }
 .sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range { left: 106px; }
