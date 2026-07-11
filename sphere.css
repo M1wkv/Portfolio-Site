@@ -92,6 +92,7 @@
   flex: 1 1 auto;
   min-width: 0;
   max-width: none;
+  margin-left: 10px;
   height: 39px;
   padding: 0 6px;
   overflow: hidden;
@@ -123,7 +124,9 @@
   min-height: 39px;
   padding: 0 12px;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 17px;
+  font-family: "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
   scroll-snap-align: start;
   transform: none;
 }
@@ -178,14 +181,15 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 14px;
+  font-family: "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
   font-weight: 500;
   pointer-events: none;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head b {
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
 }
 
