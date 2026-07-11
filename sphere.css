@@ -85,7 +85,7 @@
   font-weight: 700;
 }
 
-.projects-nav {
+.sphere-page:not(.is-project):not(.is-cv) .projects-nav {
   display: none;
 }
 
