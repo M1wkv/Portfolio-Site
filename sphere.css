@@ -75,6 +75,7 @@
 
 .projects-nav {
   width: 136px;
+  font-size: 17px !important;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav {
@@ -192,7 +193,7 @@
     transform: none;
   }
 
-  .projects-nav { width: 82px; }
+  .projects-nav { width: 82px; font-size: 12px !important; }
   .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav { width: 84px; }
   .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .top-nav-link,
   .sphere-page:not(.is-project):not(.is-cv) .project-index-button { font-size: 9px; }
