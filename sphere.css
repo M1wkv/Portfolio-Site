@@ -43,14 +43,14 @@
   --water-panel-alpha: 0.5;
   --water-panel-rgb: 14;
   --water-panel-blur: 0.9px;
-  --idle-top-alpha: 0.016;
+  --idle-top-alpha: 0.08;
   --idle-top-rgb: 0;
-  --idle-top-blur: 3.6px;
-  --idle-top-content-blur: 1.4px;
-  --idle-bottom-alpha: 0.016;
+  --idle-top-blur: 10px;
+  --idle-top-content-blur: 7px;
+  --idle-bottom-alpha: 0.08;
   --idle-bottom-rgb: 0;
-  --idle-bottom-blur: 3.6px;
-  --idle-bottom-content-blur: 1.4px;
+  --idle-bottom-blur: 10px;
+  --idle-bottom-content-blur: 7px;
   --mono: "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
