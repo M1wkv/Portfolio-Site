@@ -89,9 +89,10 @@
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .project-index {
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: none;
+  flex: 0 1 390px;
+  width: min(390px, 42vw);
+  min-width: 180px;
+  max-width: 390px;
   height: 39px;
   padding: 0 6px;
   overflow: hidden;
@@ -113,11 +114,14 @@
   scroll-behavior: smooth;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  user-select: none;
   scrollbar-width: none;
   white-space: nowrap;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .project-index-list::-webkit-scrollbar { display: none; }
+.sphere-page:not(.is-project):not(.is-cv) .project-index-list.is-dragging { cursor: grabbing; scroll-snap-type: none; }
 
 .sphere-page:not(.is-project):not(.is-cv) .project-index-button {
   min-height: 39px;
