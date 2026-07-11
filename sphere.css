@@ -310,7 +310,7 @@
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-topbar::after,
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-footer-nav::after { opacity: 1; }
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-footer-nav::after { opacity: 1; pointer-events: auto; }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle .project-index,
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-control,
