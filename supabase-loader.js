@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260712-panel-controls-1";
+    script.src = "sphere.js?v=20260712-frost-control-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
