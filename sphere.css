@@ -419,7 +419,7 @@ input {
   position: fixed;
   top: 24px;
   left: 50%;
-  z-index: 6;
+  z-index: 30;
   width: min(920px, calc(100vw - 220px));
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
@@ -459,7 +459,7 @@ input {
   position: fixed;
   left: 50%;
   bottom: 26px;
-  z-index: 7;
+  z-index: 30;
   max-width: calc(100vw - 40px);
   display: flex;
   align-items: center;
