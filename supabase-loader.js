@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260712-separate-panel-effects-1";
+    script.src = "sphere.js?v=20260712-unified-idle-overlay-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
