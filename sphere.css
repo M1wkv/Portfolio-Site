@@ -157,22 +157,22 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 9px;
+  font-size: 14px;
   font-weight: 500;
   pointer-events: none;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head b {
   color: #fff;
-  font-size: 9px;
+  font-size: 14px;
   font-weight: 500;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range {
   position: absolute;
   top: 11px;
-  left: 84px;
-  right: 43px;
+  left: 94px;
+  right: 52px;
   width: auto;
   height: 16px;
 }
