@@ -325,14 +325,14 @@
   background: rgb(var(--idle-top-rgb) var(--idle-top-rgb) var(--idle-top-rgb) / var(--idle-top-alpha));
   backdrop-filter: blur(var(--idle-top-blur));
   -webkit-backdrop-filter: blur(var(--idle-top-blur));
-  transition-duration: 4140ms;
+  transition-duration: 2070ms;
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav {
   background: rgb(var(--idle-bottom-rgb) var(--idle-bottom-rgb) var(--idle-bottom-rgb) / var(--idle-bottom-alpha));
   backdrop-filter: blur(var(--idle-bottom-blur));
   -webkit-backdrop-filter: blur(var(--idle-bottom-blur));
-  transition-duration: 4140ms;
+  transition-duration: 2070ms;
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar::after {
@@ -358,7 +358,7 @@
   filter: blur(var(--idle-top-content-blur));
   opacity: 0.76;
   pointer-events: none;
-  transition-duration: 4140ms;
+  transition-duration: 2070ms;
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav > * {
@@ -374,7 +374,7 @@
   filter: blur(var(--idle-bottom-content-blur));
   opacity: 0.76;
   pointer-events: none;
-  transition-duration: 4140ms;
+  transition-duration: 2070ms;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range { left: 82px; }
