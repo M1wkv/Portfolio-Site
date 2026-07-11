@@ -1,3 +1,27 @@
+@font-face {
+  font-family: "Helvetica Neue Cyr";
+  src: url("fonts/HelveticaNeueCyr-Roman.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica Neue Cyr";
+  src: url("fonts/HelveticaNeueCyr-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica Neue Cyr";
+  src: url("fonts/HelveticaNeueCyr-Bold.ttf") format("truetype");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --white: #fff;
   --muted: rgba(255, 255, 255, 0.32);
@@ -16,7 +40,7 @@
   --water-tint: 0.225;
   --water-blur: 1.2px;
   --water-scale: 1.005;
-  --mono: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* Main-screen navigation from Figma: project strip above, sphere controls below. */
@@ -901,7 +925,7 @@ input {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.07);
   color: #fff;
-  font: 700 12px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 700 12px/1 "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
   cursor: pointer;
 }
 
@@ -983,7 +1007,7 @@ input {
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.34);
   color: #fff;
-  font: 13px/1.35 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 13px/1.35 "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
   outline: none;
 }
 
