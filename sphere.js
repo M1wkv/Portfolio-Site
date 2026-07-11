@@ -171,7 +171,7 @@ const faceTurn=entry.faceTurn||0;
 const compress=Math.max(0.42,1-Math.abs(faceTurn)*0.38);ctx.transform(compress,0,0,1,0,0);}else{ctx.rotate(angle);ctx.scale(radialScale,tangentScale);ctx.rotate(-angle);}ctx.globalAlpha=alpha;if(item.loaded&&item.img.naturalWidth){ctx.drawImage(item.img,-cardW/2,-cardH/2,cardW,cardH);}else{const gradient=ctx.createLinearGradient(-cardW/2,-cardH/2,cardW/2,cardH/2);gradient.addColorStop(0,"rgba(255,255,255,0.18)");gradient.addColorStop(1,"rgba(255,255,255,0.04)");ctx.fillStyle=gradient;ctx.fillRect(-cardW/2,-cardH/2,cardW,cardH);}ctx.restore();}
 function getVisibleItems(){return mixSpatialItems(items.slice(0,Math.min(MAX_VISIBLE_ITEMS,items.length)));}
 function projectKey(item){return item?.projectId||item?.title||item?.src||"";}
-function setProjectIndexActive(key){projectIndexList?.querySelectorAll(".project-index-button").forEach((button)=>{button.classList.toggle("is-active",button.dataset.projectKey===key);});}
+function setProjectIndexActive(key){projectIndexList?.querySelectorAll(".project-index-button").forEach((button)=>{const isActive=button.dataset.projectKey===key;button.classList.toggle("is-active",isActive);if(isActive)button.scrollIntoView({behavior:"smooth",block:"nearest",inline:"start"});});}
 function renderProjectIndex(){if(!projectIndex||!projectIndexList)return;
 const projects=new Map();(projectMediaItems.length?projectMediaItems:items).forEach((item)=>{const key=projectKey(item);if(key&&!projects.has(key)){projects.set(key,item.title||"Проект");}});projectIndexList.innerHTML="";projects.forEach((title,key)=>{const button=document.createElement("button");button.className="project-index-button";button.type="button";button.dataset.projectKey=key;button.textContent=title;button.addEventListener("click",()=>focusSphereProject(key));projectIndexList.appendChild(button);});projectIndex.hidden=!projects.size;setProjectIndexActive(sphereProjectFocusKey);}
 function nearestAngle(current,target){return current+Math.atan2(Math.sin(target-current),Math.cos(target-current));}
@@ -465,6 +465,7 @@ canvas.addEventListener("wheel",(event)=>{event.preventDefault();if(viewMode==="
 projectBack.addEventListener("click",()=>{if(projectFocusTarget>0||projectFocusProgress>0.05){toggleProjectMedia();return;}closeProject();});
 cvOpen.addEventListener("click",openCv);
 projectsNav?.addEventListener("click",()=>{if(viewMode==="sphere")clearSphereProjectFocus();});
+projectIndexList?.addEventListener("wheel",(event)=>{if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;event.preventDefault();projectIndexList.scrollBy({left:event.deltaY,behavior:"smooth"});},{passive:false});
 cvBack.addEventListener("click",closeCv);
 cvView.addEventListener("wheel",handleCvWheel,{passive:false});
 cvSectionButtons.forEach((button)=>button.addEventListener("click",()=>setCvFace(button.dataset.cvFace)));
