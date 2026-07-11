@@ -83,6 +83,7 @@
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav {
   width: 164px;
+  margin-left: 10px;
   background: #fff;
   color: #000;
 }
@@ -271,8 +272,8 @@
   -webkit-backdrop-filter: blur(var(--water-panel-blur));
 }
 
-.sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range { left: 87px; }
-.sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range { left: 101px; }
+.sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range { left: 82px; }
+.sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range { left: 106px; }
 
 @media (max-width: 900px) {
   .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar {
