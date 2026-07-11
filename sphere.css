@@ -19,6 +19,179 @@
   --mono: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+/* Main-screen navigation from Figma: project strip above, sphere controls below. */
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar {
+  top: 24px;
+  width: min(815px, calc(100vw - 220px));
+  min-height: 53px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar::before,
+.sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav::before {
+  display: none;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .top-nav-link {
+  height: 39px;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.projects-nav {
+  width: 136px;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav {
+  width: 164px;
+  background: #fff;
+  color: #000;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .project-index {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, #000 0, #000 84%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 84%, transparent 100%);
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .project-index-list {
+  gap: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .project-index-button {
+  min-height: 39px;
+  padding: 0 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  transform: none;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .project-index-button:hover,
+.sphere-page:not(.is-project):not(.is-cv) .project-index-button:focus-visible,
+.sphere-page:not(.is-project):not(.is-cv) .project-index-button.is-active {
+  color: #fff;
+  transform: none;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav {
+  bottom: 24px;
+  width: min(815px, calc(100vw - 220px));
+  min-height: 53px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px 7px 16px;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-brand {
+  width: 126px;
+  flex: 0 0 126px;
+  font-size: 12px;
+  line-height: 0.9;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-dials {
+  flex: 1 1 auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-control {
+  position: relative;
+  height: 39px;
+  display: block;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.5);
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-control-head {
+  position: absolute;
+  inset: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-control-head b {
+  color: #fff;
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-line-range {
+  position: absolute;
+  top: 11px;
+  left: 84px;
+  right: 43px;
+  width: auto;
+  height: 16px;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-line-range::-webkit-slider-runnable-track { background: rgba(255, 255, 255, 0.74); }
+.sphere-page:not(.is-project):not(.is-cv) .sphere-line-range::-webkit-slider-thumb { width: 8px; height: 8px; margin-top: -3.5px; }
+.sphere-page:not(.is-project):not(.is-cv) .sphere-line-range::-moz-range-track { background: rgba(255, 255, 255, 0.74); }
+.sphere-page:not(.is-project):not(.is-cv) .sphere-line-range::-moz-range-thumb { width: 8px; height: 8px; }
+
+@media (max-width: 900px) {
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    min-height: 46px;
+    padding: 4px;
+    transform: none;
+  }
+
+  .projects-nav { width: 82px; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav { width: 84px; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .top-nav-link,
+  .sphere-page:not(.is-project):not(.is-cv) .project-index-button { font-size: 9px; }
+  .sphere-page:not(.is-project):not(.is-cv) .project-index-button { padding: 0 7px; min-height: 34px; }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    min-height: 48px;
+    padding: 5px 8px;
+    transform: none;
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-brand { width: 70px; flex-basis: 70px; font-size: 8px; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-dials { gap: 5px; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control { height: 36px; padding: 0 9px; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head { inset: 0 9px; font-size: 7px; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head b { font-size: 7px; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range { left: 54px; right: 30px; top: 10px; }
+}
+
 * {
   box-sizing: border-box;
 }
