@@ -306,32 +306,32 @@
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar {
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav {
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar::after {
-  z-index: 3;
-  opacity: 1;
   background: rgb(var(--idle-top-rgb) var(--idle-top-rgb) var(--idle-top-rgb) / var(--idle-top-alpha));
   backdrop-filter: blur(var(--idle-top-blur));
   -webkit-backdrop-filter: blur(var(--idle-top-blur));
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav {
+  background: rgb(var(--idle-bottom-rgb) var(--idle-bottom-rgb) var(--idle-bottom-rgb) / var(--idle-bottom-alpha));
+  backdrop-filter: blur(var(--idle-bottom-blur));
+  -webkit-backdrop-filter: blur(var(--idle-bottom-blur));
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar::after {
+  z-index: 1;
+  opacity: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   pointer-events: auto;
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav::after {
-  z-index: 3;
-  opacity: 1;
-  background: rgb(var(--idle-bottom-rgb) var(--idle-bottom-rgb) var(--idle-bottom-rgb) / var(--idle-bottom-alpha));
-  backdrop-filter: blur(var(--idle-bottom-blur));
-  -webkit-backdrop-filter: blur(var(--idle-bottom-blur));
+  z-index: 1;
+  opacity: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   pointer-events: auto;
 }
 
