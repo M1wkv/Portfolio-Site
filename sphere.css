@@ -54,7 +54,7 @@
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 6px 8px;
+  padding: 6px 10px 6px 8px;
   border-radius: 999px;
   background: rgb(var(--water-panel-rgb) var(--water-panel-rgb) var(--water-panel-rgb) / var(--water-panel-alpha));
   backdrop-filter: blur(var(--water-panel-blur));
@@ -77,7 +77,7 @@
 }
 
 .projects-nav {
-  width: 136px;
+  width: 126px;
   font-size: 17px !important;
 }
 
