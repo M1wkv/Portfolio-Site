@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Сфера портфолио</title>
-    <link rel="stylesheet" href="sphere.css?v=20260712-separate-panel-effects-1" />
+    <link rel="stylesheet" href="sphere.css?v=20260712-unified-idle-overlay-1" />
   </head>
   <body>
     <main class="sphere-page">
@@ -44,16 +44,9 @@
 
       <aside class="idle-controls" id="idleControls" aria-label="Настройки неактивных плашек">
         <strong>ПОКОЙ ПЛАШЕК</strong>
-        <div class="idle-control-group"><em>ПРОЕКТЫ</em>
-          <label><span>ПРОЗРАЧНОСТЬ <b data-idle-value="top-transparency">100</b></span><input data-idle-panel="top" data-idle-setting="transparency" type="range" min="0" max="100" step="1" value="100" /></label>
-          <label><span>ЗАТЕМНЕНИЕ <b data-idle-value="top-darkening">100</b></span><input data-idle-panel="top" data-idle-setting="darkening" type="range" min="0" max="100" step="1" value="100" /></label>
-          <label><span>МОРОЗНОСТЬ <b data-idle-value="top-frost">20</b></span><input data-idle-panel="top" data-idle-setting="frost" type="range" min="0" max="100" step="1" value="20" /></label>
-        </div>
-        <div class="idle-control-group"><em>УПРАВЛЕНИЕ</em>
-          <label><span>ПРОЗРАЧНОСТЬ <b data-idle-value="bottom-transparency">100</b></span><input data-idle-panel="bottom" data-idle-setting="transparency" type="range" min="0" max="100" step="1" value="100" /></label>
-          <label><span>ЗАТЕМНЕНИЕ <b data-idle-value="bottom-darkening">100</b></span><input data-idle-panel="bottom" data-idle-setting="darkening" type="range" min="0" max="100" step="1" value="100" /></label>
-          <label><span>МОРОЗНОСТЬ <b data-idle-value="bottom-frost">20</b></span><input data-idle-panel="bottom" data-idle-setting="frost" type="range" min="0" max="100" step="1" value="20" /></label>
-        </div>
+        <label><span>ПРОЗРАЧНОСТЬ <b data-idle-value="transparency">100</b></span><input data-idle-setting="transparency" type="range" min="0" max="100" step="1" value="100" /></label>
+        <label><span>ЗАТЕМНЕНИЕ <b data-idle-value="darkening">100</b></span><input data-idle-setting="darkening" type="range" min="0" max="100" step="1" value="100" /></label>
+        <label><span>МОРОЗНОСТЬ <b data-idle-value="frost">20</b></span><input data-idle-setting="frost" type="range" min="0" max="100" step="1" value="20" /></label>
       </aside>
 
       <input id="fisheyeRange" type="hidden" value="0.15" />
