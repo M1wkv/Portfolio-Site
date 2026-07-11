@@ -322,7 +322,6 @@
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-line-range { opacity: 0; pointer-events: none; }
-.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .glass-controls { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(16px); }
 
 .sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range { left: 82px; }
 .sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range { left: 106px; }
