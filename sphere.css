@@ -43,9 +43,9 @@
   --water-panel-alpha: 0.5;
   --water-panel-rgb: 14;
   --water-panel-blur: 0.9px;
-  --idle-panel-alpha: 0;
+  --idle-panel-alpha: 0.016;
   --idle-panel-rgb: 0;
-  --idle-panel-blur: 0px;
+  --idle-panel-blur: 3.6px;
   --mono: "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
