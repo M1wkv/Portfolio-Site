@@ -26,6 +26,10 @@ const projectIndex=document.getElementById("projectIndex");
 const projectIndexList=document.getElementById("projectIndexList");
 const projectsNav=document.getElementById("projectsNav");
 const waterInputs=Array.from(document.querySelectorAll("[data-water-setting]"));
+const idleInputs=Array.from(document.querySelectorAll("[data-idle-setting]"));
+const idleControls=document.getElementById("idleControls");
+const topbar=document.querySelector(".sphere-topbar");
+const footerNav=document.querySelector(".sphere-footer-nav");
 const cvOpen=document.getElementById("cvOpen");
 const cvView=document.getElementById("cvView");
 const cvBack=document.getElementById("cvBack");
@@ -107,6 +111,9 @@ const state={sphereSize:Number(sizeRange.value),elementScale:Number(scaleRange.v
 const projectState={itemScale:0.5,itemCount:50,gap:0.5,cylinderWidth:0.75,cylinderLength:1.25};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
 const waterDefaults={transparency:50,darkening:50,frost:5};
 let waterState={...waterDefaults};
+const idleDefaults={transparency:70,darkening:70,frost:10};
+let idleState={...idleDefaults};
+let uiIdleTimer=0;
 function resize(){dpr=Math.min(window.devicePixelRatio||1,2);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 function progress(input){return(Number(input.value)-Number(input.min))/(Number(input.max)-Number(input.min));}
 function updateUi(){state.sphereSize=Number(sizeRange.value);state.elementScale=Number(scaleRange.value);state.fisheye=Number(fisheyeRange.value);const sizeProgress=`${(progress(sizeRange)*100).toFixed(2)}%`;const scaleProgress=`${(progress(scaleRange)*100).toFixed(2)}%`;sizeRange.style.setProperty("--range-progress",sizeProgress);scaleRange.style.setProperty("--range-progress",scaleProgress);sizeDial?.style.setProperty("--progress",progress(sizeRange).toFixed(4));scaleDial?.style.setProperty("--progress",progress(scaleRange).toFixed(4));sizeValue.textContent=state.sphereSize>=1?"1.0":state.sphereSize.toFixed(1);sizeValue.classList.toggle("is-max",state.sphereSize>=1);scaleValue.textContent=state.elementScale.toFixed(2);if(fisheyeValue)fisheyeValue.textContent=state.fisheye.toFixed(2);}
@@ -114,6 +121,11 @@ function updateProjectUi(){projectState.itemScale=Number(projectScaleRange.value
 function loadWaterSettings(){try{return{...waterDefaults,...JSON.parse(localStorage.getItem(STORAGE_WATER)||"{}")};}catch{return{...waterDefaults};}}
 function updateWaterUi(save=true){waterInputs.forEach((input)=>{const key=input.dataset.waterSetting;waterState[key]=clampSetting(input.value,waterDefaults[key],0,100);const value=document.querySelector(`[data-water-value="${key}"]`);if(value)value.textContent=String(Math.round(waterState[key]));});const panelAlpha=1-waterState.transparency/100;const panelRgb=Math.round(28*(1-waterState.darkening/100));spherePage.style.setProperty("--water-panel-alpha",panelAlpha.toFixed(3));spherePage.style.setProperty("--water-panel-rgb",String(panelRgb));spherePage.style.setProperty("--water-panel-blur",`${(waterState.frost*0.18).toFixed(1)}px`);if(save){try{localStorage.setItem(STORAGE_WATER,JSON.stringify(waterState));}catch{}}}
 function initializeWaterEffects(){waterState=loadWaterSettings();waterInputs.forEach((input)=>{const key=input.dataset.waterSetting;input.value=String(clampSetting(waterState[key],waterDefaults[key],0,100));input.addEventListener("input",()=>updateWaterUi(true));});updateWaterUi(false);}
+function loadIdleSettings(){try{return{...idleDefaults,...JSON.parse(localStorage.getItem("portfolioSphere.idlePanelEffects.v1")||"{}")};}catch{return{...idleDefaults};}}
+function updateIdleUi(save=true){idleInputs.forEach((input)=>{const key=input.dataset.idleSetting;idleState[key]=clampSetting(input.value,idleDefaults[key],0,100);const value=document.querySelector(`[data-idle-value="${key}"]`);if(value)value.textContent=String(Math.round(idleState[key]));});const alpha=1-idleState.transparency/100;const rgb=Math.round(28*(1-idleState.darkening/100));spherePage.style.setProperty("--idle-panel-alpha",alpha.toFixed(3));spherePage.style.setProperty("--idle-panel-rgb",String(rgb));spherePage.style.setProperty("--idle-panel-blur",`${(idleState.frost*0.18).toFixed(1)}px`);if(save){try{localStorage.setItem("portfolioSphere.idlePanelEffects.v1",JSON.stringify(idleState));}catch{}}}
+function setUiIdle(idle){if(viewMode!=="sphere")return;spherePage.classList.toggle("is-ui-idle",idle);}
+function scheduleUiIdle(){window.clearTimeout(uiIdleTimer);uiIdleTimer=window.setTimeout(()=>setUiIdle(true),900);}
+function initializeIdleEffects(){idleState=loadIdleSettings();idleInputs.forEach((input)=>{const key=input.dataset.idleSetting;input.value=String(clampSetting(idleState[key],idleDefaults[key],0,100));input.addEventListener("input",()=>updateIdleUi(true));});updateIdleUi(false);[topbar,footerNav,document.getElementById("glassControls"),idleControls].filter(Boolean).forEach((surface)=>{surface.addEventListener("pointerenter",()=>{window.clearTimeout(uiIdleTimer);setUiIdle(false);});surface.addEventListener("pointerleave",scheduleUiIdle);});canvas.addEventListener("pointermove",scheduleUiIdle);scheduleUiIdle();}
 function effectiveElementScale(){return 0.2+state.elementScale*2.8;}
 function fibonacciPoint(index,total){const offset=2/total;
 const increment=Math.PI*(3-Math.sqrt(5));
@@ -473,4 +485,4 @@ cvSectionButtons.forEach((button)=>button.addEventListener("click",()=>setCvFace
 canvas.addEventListener("pointermove",()=>{if(viewMode==="cv"&&dragging){cvTargetBox={yaw:cvBoxYaw,pitch:cvBoxPitch};cvLastInteractionAt=performance.now();}});
 [sizeRange,scaleRange,fisheyeRange].forEach((input)=>{input.addEventListener("input",updateUi);});
 [projectScaleRange,projectCountRange,projectGapRange,projectWidthRange,projectLengthRange].forEach((input)=>{input.addEventListener("input",updateProjectUi);});
-window.addEventListener("resize",resize);resize();updateUi();updateProjectUi();initializeWaterEffects();loadItems(assets);Promise.all([loadStoredAssetsAsync(),loadStoredCvNodesAsync()]).then(([nextAssets,nextCvNodes])=>{assets=nextAssets;cvNodes=nextCvNodes;loadItems(assets);});render();})();
+window.addEventListener("resize",resize);resize();updateUi();updateProjectUi();initializeWaterEffects();initializeIdleEffects();loadItems(assets);Promise.all([loadStoredAssetsAsync(),loadStoredCvNodesAsync()]).then(([nextAssets,nextCvNodes])=>{assets=nextAssets;cvNodes=nextCvNodes;loadItems(assets);});render();})();
