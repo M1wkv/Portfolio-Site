@@ -43,6 +43,9 @@
   --water-panel-alpha: 0.5;
   --water-panel-rgb: 14;
   --water-panel-blur: 0.9px;
+  --idle-panel-alpha: 0.3;
+  --idle-panel-rgb: 8;
+  --idle-panel-blur: 1.8px;
   --mono: "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
@@ -157,6 +160,7 @@
   flex: 0 0 126px;
   font-size: 17px;
   line-height: 0.9;
+  transform: translateX(4px);
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-dials {
@@ -282,6 +286,43 @@
   backdrop-filter: blur(var(--water-panel-blur));
   -webkit-backdrop-filter: blur(var(--water-panel-blur));
 }
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar::after,
+.sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  opacity: 0;
+  background: rgb(var(--idle-panel-rgb) var(--idle-panel-rgb) var(--idle-panel-rgb) / var(--idle-panel-alpha));
+  backdrop-filter: blur(var(--idle-panel-blur));
+  -webkit-backdrop-filter: blur(var(--idle-panel-blur));
+  pointer-events: none;
+  transition: opacity 260ms ease;
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-topbar,
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-footer-nav {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-topbar::after,
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-footer-nav::after { opacity: 1; }
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .project-index,
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-control,
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .cv-nav {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .sphere-line-range { opacity: 0; pointer-events: none; }
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle .glass-controls { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(16px); }
 
 .sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range { left: 82px; }
 .sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range { left: 106px; }
@@ -447,7 +488,8 @@ input {
   z-index: 2;
 }
 
-.glass-controls {
+.glass-controls,
+.idle-controls {
   position: fixed;
   top: 50%;
   right: 24px;
@@ -465,17 +507,20 @@ input {
   transition: opacity 220ms ease, transform 220ms ease;
 }
 
-.glass-controls > strong {
+.glass-controls > strong,
+.idle-controls > strong {
   font-size: 11px;
   font-weight: 700;
 }
 
-.glass-controls label {
+.glass-controls label,
+.idle-controls label {
   display: grid;
   gap: 7px;
 }
 
-.glass-controls label > span {
+.glass-controls label > span,
+.idle-controls label > span {
   display: flex;
   justify-content: space-between;
   gap: 10px;
@@ -484,12 +529,14 @@ input {
   font-weight: 700;
 }
 
-.glass-controls b {
+.glass-controls b,
+.idle-controls b {
   color: #fff;
   font-size: inherit;
 }
 
-.glass-controls input {
+.glass-controls input,
+.idle-controls input {
   width: 100%;
   height: 14px;
   margin: 0;
@@ -503,6 +550,11 @@ input {
 .glass-controls input::-webkit-slider-thumb { width: 10px; height: 10px; margin-top: -4.5px; border: 0; border-radius: 50%; background: #fff; appearance: none; }
 .glass-controls input::-moz-range-track { height: 1px; background: rgba(255, 255, 255, 0.36); }
 .glass-controls input::-moz-range-thumb { width: 10px; height: 10px; border: 0; border-radius: 50%; background: #fff; }
+.idle-controls { left: 24px; right: auto; transform: translateY(-50%); }
+.idle-controls input::-webkit-slider-runnable-track { height: 1px; background: rgba(255, 255, 255, 0.36); }
+.idle-controls input::-webkit-slider-thumb { width: 10px; height: 10px; margin-top: -4.5px; border: 0; border-radius: 50%; background: #fff; appearance: none; }
+.idle-controls input::-moz-range-track { height: 1px; background: rgba(255, 255, 255, 0.36); }
+.idle-controls input::-moz-range-thumb { width: 10px; height: 10px; border: 0; border-radius: 50%; background: #fff; }
 
 .project-index {
   position: static;
@@ -936,6 +988,7 @@ input {
 .sphere-page.is-project .sphere-topbar,
 .sphere-page.is-project .sphere-footer-nav,
 .sphere-page.is-project .glass-controls,
+.sphere-page.is-project .idle-controls,
 .sphere-page.is-project .admin-nav,
 .sphere-page.is-project .sphere-bottom {
   opacity: 0;
@@ -1429,6 +1482,7 @@ input {
 .sphere-page.is-cv .sphere-topbar,
 .sphere-page.is-cv .sphere-footer-nav,
 .sphere-page.is-cv .glass-controls,
+.sphere-page.is-cv .idle-controls,
 .sphere-page.is-cv .admin-nav,
 .sphere-page.is-cv .sphere-bottom,
 .sphere-page.is-cv .project-view-ui {
@@ -1531,6 +1585,15 @@ input {
   .glass-controls {
     top: 118px;
     right: 12px;
+    width: 174px;
+    gap: 9px;
+    padding: 12px;
+    transform: none;
+  }
+
+  .idle-controls {
+    top: 118px;
+    left: 12px;
     width: 174px;
     gap: 9px;
     padding: 12px;
