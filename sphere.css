@@ -898,20 +898,58 @@ input {
   display: none;
 }
 
-.project-back {
+.project-top-nav {
   position: fixed;
-  top: 39px;
-  left: 49px;
-  width: 82px;
-  height: 42px;
-  border: 1px solid var(--line);
+  top: 28px;
+  left: 50%;
+  z-index: 14;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 53px;
+  padding: 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  cursor: pointer;
+  background: rgba(10, 10, 10, 0.5);
+  transform: translateX(-50%);
   pointer-events: auto;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+}
+
+.project-back,
+.project-cv-open {
+  height: 39px;
+  border: 0;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.project-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  background: transparent;
+  color: #fff;
+}
+
+.project-back span { font-size: 28px; font-weight: 400; line-height: 0; }
+
+.project-cv-open {
+  min-width: 164px;
+  padding: 0 24px;
+  background: #fff;
+  color: #040404;
+}
+
+.project-back:hover,
+.project-back:focus-visible,
+.project-cv-open:hover,
+.project-cv-open:focus-visible {
+  outline: none;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.25);
 }
 
 .project-controls {
@@ -1727,6 +1765,12 @@ input {
     top: 20px;
     left: 20px;
   }
+
+  .project-top-nav { top: 16px; height: 44px; padding: 4px; }
+  .project-back, .project-cv-open { height: 36px; font-size: 13px; }
+  .project-back { gap: 6px; padding: 0 12px; }
+  .project-back span { font-size: 21px; }
+  .project-cv-open { min-width: 108px; padding: 0 16px; }
 
   .project-controls {
     right: 12px;
