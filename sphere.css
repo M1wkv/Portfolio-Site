@@ -318,21 +318,21 @@
 .sphere-page:not(.is-project):not(.is-cv) .sphere-control,
 .sphere-page:not(.is-project):not(.is-cv) .cv-nav,
 .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range {
-  transition: background 460ms cubic-bezier(0.22, 1, 0.36, 1), color 460ms cubic-bezier(0.22, 1, 0.36, 1), opacity 460ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 460ms cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1), -webkit-backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background 460ms cubic-bezier(0.22, 1, 0.36, 1), color 460ms cubic-bezier(0.22, 1, 0.36, 1), opacity 460ms cubic-bezier(0.22, 1, 0.36, 1), filter 460ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 460ms cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1), -webkit-backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar {
   background: rgb(var(--idle-top-rgb) var(--idle-top-rgb) var(--idle-top-rgb) / var(--idle-top-alpha));
   backdrop-filter: blur(var(--idle-top-blur));
   -webkit-backdrop-filter: blur(var(--idle-top-blur));
-  transition-duration: 1380ms;
+  transition-duration: 4140ms;
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav {
   background: rgb(var(--idle-bottom-rgb) var(--idle-bottom-rgb) var(--idle-bottom-rgb) / var(--idle-bottom-alpha));
   backdrop-filter: blur(var(--idle-bottom-blur));
   -webkit-backdrop-filter: blur(var(--idle-bottom-blur));
-  transition-duration: 1380ms;
+  transition-duration: 4140ms;
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar::after {
@@ -358,11 +358,23 @@
   filter: blur(var(--idle-top-content-blur));
   opacity: 0.76;
   pointer-events: none;
-  transition-duration: 1380ms;
+  transition-duration: 4140ms;
 }
 
 .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav > * {
   filter: blur(var(--idle-bottom-content-blur));
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav > .sphere-dials {
+  filter: none;
+  opacity: 1;
+}
+
+.sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-control {
+  filter: blur(var(--idle-bottom-content-blur));
+  opacity: 0.76;
+  pointer-events: none;
+  transition-duration: 4140ms;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range { left: 82px; }
