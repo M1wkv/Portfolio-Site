@@ -1,3 +1,27 @@
+@font-face {
+  font-family: "Helvetica Neue Cyr";
+  src: url("fonts/HelveticaNeueCyr-Roman.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica Neue Cyr";
+  src: url("fonts/HelveticaNeueCyr-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Helvetica Neue Cyr";
+  src: url("fonts/HelveticaNeueCyr-Bold.ttf") format("truetype");
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #050505;
   --panel: #0d0d0d;
@@ -7,7 +31,7 @@
   --text: #fff;
   --muted: rgba(255, 255, 255, 0.52);
   --soft: rgba(255, 255, 255, 0.06);
-  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font: "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 * {
