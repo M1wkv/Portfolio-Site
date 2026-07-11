@@ -466,12 +466,6 @@ projectBack.addEventListener("click",()=>{if(projectFocusTarget>0||projectFocusP
 cvOpen.addEventListener("click",openCv);
 projectsNav?.addEventListener("click",()=>{if(viewMode==="sphere")clearSphereProjectFocus();});
 projectIndexList?.addEventListener("wheel",(event)=>{if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;event.preventDefault();projectIndexList.scrollBy({left:event.deltaY,behavior:"smooth"});},{passive:false});
-let projectStripDrag=null;
-projectIndexList?.addEventListener("pointerdown",(event)=>{if(event.button!==0)return;projectStripDrag={x:event.clientX,left:projectIndexList.scrollLeft,moved:false};projectIndexList.setPointerCapture(event.pointerId);projectIndexList.classList.add("is-dragging");});
-projectIndexList?.addEventListener("pointermove",(event)=>{if(!projectStripDrag)return;const delta=event.clientX-projectStripDrag.x;if(Math.abs(delta)>3)projectStripDrag.moved=true;projectIndexList.scrollLeft=projectStripDrag.left-delta;});
-projectIndexList?.addEventListener("pointerup",(event)=>{if(!projectStripDrag)return;projectIndexList.releasePointerCapture?.(event.pointerId);projectIndexList.classList.remove("is-dragging");window.setTimeout(()=>{projectStripDrag=null;},0);});
-projectIndexList?.addEventListener("pointercancel",()=>{projectStripDrag=null;projectIndexList.classList.remove("is-dragging");});
-projectIndexList?.addEventListener("click",(event)=>{if(projectStripDrag?.moved){event.preventDefault();event.stopPropagation();}},{capture:true});
 cvBack.addEventListener("click",closeCv);
 cvView.addEventListener("wheel",handleCvWheel,{passive:false});
 cvSectionButtons.forEach((button)=>button.addEventListener("click",()=>setCvFace(button.dataset.cvFace)));
