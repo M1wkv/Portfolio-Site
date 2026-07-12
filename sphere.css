@@ -1202,8 +1202,7 @@ input {
   color: #fff;
   text-transform: none;
   pointer-events: none;
-  perspective: 1200px;
-  perspective-origin: 50% 52%;
+  perspective: none;
 }
 
 .cv-view[hidden] {
@@ -1217,6 +1216,13 @@ input {
   overscroll-behavior: contain;
   pointer-events: auto;
   background: rgba(0, 0, 0, 0.52);
+}
+
+.cv-project-nav {
+  position: fixed;
+  top: 4.1vh;
+  left: 50%;
+  transform: translateX(-50%);
 }
 .cv-view::before {
   content: "";
