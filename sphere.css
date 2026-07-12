@@ -919,6 +919,8 @@ input {
 
 .project-back,
 .project-cv-open {
+  width: clamp(134px, 8.55vw, 164px);
+  min-width: 0;
   height: 3.6vh;
   border: 0;
   border-radius: 999px;
@@ -932,6 +934,7 @@ input {
 .project-back {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.52vw;
   padding: 0 0.84vw;
   background: transparent !important;
@@ -946,7 +949,6 @@ input {
 .project-back:focus-visible img { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.82)); }
 
 .project-cv-open {
-  min-width: 8.55vw;
   padding: 0 1.25vw;
   background: #fff;
   color: #040404;
@@ -1904,10 +1906,10 @@ input {
   }
 
   .project-top-nav { top: 16px; height: 44px; padding: 4px; }
-  .project-back, .project-cv-open { height: 36px; font-size: 13px; }
+  .project-back, .project-cv-open { width: 108px; min-width: 0; height: 36px; font-size: 13px; }
   .project-back { gap: 6px; padding: 0 12px; }
   .project-back img { width: 18px; }
-  .project-cv-open { min-width: 108px; padding: 0 16px; }
+  .project-cv-open { padding: 0 16px; }
 
   .project-controls {
     right: 12px;
