@@ -905,11 +905,11 @@ input {
   z-index: 14;
   display: flex;
   align-items: center;
-  gap: 0.22vw;
-  height: 4.9vh;
-  padding: 0.55vh;
+  gap: 0.7vw;
+  height: auto;
+  padding: 0;
   border-radius: 999px;
-  background: rgba(10, 10, 10, 0.5);
+  background: transparent;
   transform: translateX(-50%);
   pointer-events: auto;
 }
@@ -945,7 +945,11 @@ input {
 }
 
 .project-back:hover,
-.project-back:focus-visible,
+.project-back:focus-visible {
+  background: transparent;
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.58);
+}
+
 .project-cv-open:hover,
 .project-cv-open:focus-visible {
   outline: none;
@@ -1032,7 +1036,8 @@ input {
 
 .project-heading .project-subtitle {
   color: rgba(255, 255, 255, 0.68);
-  font-size: clamp(8px, 0.68vw, 13px);
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.25;
   max-width: 37.8vw;
   text-transform: none;
@@ -1053,7 +1058,8 @@ input {
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 999px;
   color: #fff;
-  font-size: clamp(7px, 0.68vw, 13px);
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1;
   white-space: nowrap;
 }
@@ -1103,7 +1109,8 @@ input {
 .project-narrative p {
   margin: 0;
   color: rgba(255, 255, 255, 0.82);
-  font-size: clamp(8px, 0.68vw, 13px);
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1.3;
   text-transform: none;
 }
@@ -1133,7 +1140,8 @@ input {
   border-radius: 999px;
   background: #fff;
   color: #040404;
-  font-size: clamp(7px, 0.68vw, 13px);
+  font-size: 13px;
+  font-weight: 500;
   line-height: 1;
   text-transform: none;
 }
@@ -1809,9 +1817,9 @@ input {
   }
 
   .project-heading strong { font-size: clamp(32px, 9vw, 52px); }
-  .project-heading .project-subtitle { font-size: 10px; }
+  .project-heading .project-subtitle { font-size: 13px; }
   .project-meta { gap: 6px; }
-  .project-meta span { min-height: 22px; padding: 0 8px; font-size: 8px; }
+  .project-meta span { min-height: 22px; padding: 0 8px; font-size: 13px; }
 
   .project-case {
     bottom: 18px;
@@ -1823,9 +1831,9 @@ input {
   .project-narrative i { display: none; }
   .project-narrative section:first-child { text-align: left; }
   .project-narrative b, .project-role > b { margin-bottom: 8px; font-size: 13px; }
-  .project-narrative p { font-size: 10px; line-height: 1.25; }
+  .project-narrative p { font-size: 13px; line-height: 1.25; }
   #projectRoleTags { gap: 5px; }
-  #projectRoleTags span { min-height: 20px; padding: 0 8px; font-size: 8px; }
+  #projectRoleTags span { min-height: 20px; padding: 0 8px; font-size: 13px; }
 
   .cv-back {
     top: 20px;
