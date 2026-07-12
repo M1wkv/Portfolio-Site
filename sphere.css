@@ -159,7 +159,7 @@
   min-height: 53px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.7vw;
   padding: 7px 8px 7px 16px;
   border-radius: 999px;
   background: rgb(var(--water-panel-rgb) var(--water-panel-rgb) var(--water-panel-rgb) / var(--water-panel-alpha));
@@ -907,12 +907,9 @@ input {
   align-items: center;
   gap: 10px;
   height: auto;
-  padding: 5px;
+  padding: 0;
   border-radius: 999px;
-  background: rgba(14, 14, 14, 0.72) !important;
-  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: transparent !important;
   transform: translateX(-50%);
   pointer-events: auto;
   transition: background 460ms cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1), -webkit-backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -920,11 +917,11 @@ input {
 
 .project-back,
 .project-cv-open {
-  height: 42px;
+  height: 3.6vh;
   border: 0;
   border-radius: 999px;
   font-family: var(--mono);
-  font-size: clamp(14px, 1.08vw, 17px);
+  font-size: clamp(12px, 1.08vw, 21px);
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
@@ -933,9 +930,8 @@ input {
 .project-back {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-width: 150px;
-  padding: 0 22px;
+  gap: 0.52vw;
+  padding: 0 0.84vw;
   background: transparent !important;
   color: #fff;
   text-shadow: 0 0 0 rgba(255, 255, 255, 0);
@@ -948,8 +944,8 @@ input {
 .project-back:focus-visible img { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.82)); }
 
 .project-cv-open {
-  min-width: 176px;
-  padding: 0 22px;
+  min-width: 8.55vw;
+  padding: 0 1.25vw;
   background: #fff;
   color: #040404;
 }
@@ -1082,17 +1078,17 @@ input {
 }
 
 .project-top-nav.is-frosted {
-  background: rgba(14, 14, 14, 0.72) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  transition-duration: 260ms;
+  background: rgb(var(--idle-top-rgb) var(--idle-top-rgb) var(--idle-top-rgb) / var(--idle-top-alpha)) !important;
+  backdrop-filter: blur(var(--idle-top-blur));
+  -webkit-backdrop-filter: blur(var(--idle-top-blur));
+  transition-duration: 2070ms;
 }
 
 .project-top-nav.is-frosted > * {
-  filter: none;
-  opacity: 1;
-  pointer-events: auto;
-  transition: filter 260ms cubic-bezier(0.22, 1, 0.36, 1), opacity 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  filter: blur(var(--idle-top-content-blur));
+  opacity: 0.76;
+  pointer-events: none;
+  transition: filter 2070ms cubic-bezier(0.22, 1, 0.36, 1), opacity 2070ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-top-nav > * {
@@ -1226,19 +1222,19 @@ input {
   pointer-events: none;
 }
 .cv-top-nav {
-  position: sticky;
-  top: 4.2vh;
-  z-index: 4;
-  width: max-content;
+  position: fixed;
+  top: 4.1vh;
+  left: 50%;
+  z-index: 24;
+  width: auto;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 4.2vh auto 0;
-  padding: 5px;
+  gap: 0.7vw;
+  margin: 0;
+  padding: 0;
   border-radius: 999px;
-  background: rgba(14, 14, 14, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: transparent;
+  transform: translateX(-50%);
 }
 .cv-top-nav .cv-back,
 .cv-top-nav .cv-works {
@@ -1246,20 +1242,20 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  height: 42px;
-  min-width: 150px;
-  padding: 0 22px;
+  gap: 0.52vw;
+  height: 3.6vh;
+  min-width: 0;
+  padding: 0 0.84vw;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: #fff;
-  font: 700 17px/1 "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 700 clamp(12px, 1.08vw, 21px)/1 "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
   cursor: pointer;
   transition: box-shadow 260ms ease, transform 260ms ease;
 }
-.cv-top-nav .cv-back img { width: 22px; height: auto; }
-.cv-top-nav .cv-works { min-width: 176px; background: #fff; color: #090909; }
+.cv-top-nav .cv-back img { width: clamp(18px, 1.25vw, 24px); height: auto; }
+.cv-top-nav .cv-works { min-width: 8.55vw; padding: 0 1.25vw; background: #fff; color: #090909; }
 .cv-top-nav .cv-back:hover,
 .cv-top-nav .cv-back:focus-visible { outline: none; box-shadow: 0 0 17px rgba(255,255,255,.48); }
 .cv-top-nav .cv-works:hover,
