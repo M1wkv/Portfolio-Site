@@ -162,7 +162,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260713-cv-nav-removed-1";
+    script.src = "sphere.js?v=20260713-cv-project-nav-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
