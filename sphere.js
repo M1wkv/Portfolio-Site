@@ -487,7 +487,7 @@ projectTopNav?.addEventListener("pointerleave",scheduleProjectTopNavFrost);
 cvOpen.addEventListener("click",openCv);
 projectsNav?.addEventListener("click",()=>{if(viewMode==="sphere")clearSphereProjectFocus();});
 projectIndexList?.addEventListener("wheel",(event)=>{if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;event.preventDefault();projectIndexList.scrollBy({left:event.deltaY,behavior:"smooth"});},{passive:false});
-cvBack.addEventListener("click",closeCv);
+cvBack?.addEventListener("click",closeCv);
 cvView.addEventListener("wheel",handleCvWheel,{passive:false});
 cvSectionButtons.forEach((button)=>button.addEventListener("click",()=>setCvFace(button.dataset.cvFace)));
 [cvSphereSizeRange,cvElementScaleRange,cvOverlayBlurRange,cvOverlayDimRange].forEach((input)=>input?.addEventListener("input",updateCvSceneUi));
