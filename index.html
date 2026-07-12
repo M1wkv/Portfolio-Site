@@ -12,7 +12,7 @@
     <link rel="canonical" href="https://m1wkv.github.io/Portfolio-Site/" />
     <link rel="preconnect" href="https://xidxcafcdfmoxxvnjjkl.supabase.co" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="sphere.css?v=20260712-smooth-project-glow-1" />
+    <link rel="stylesheet" href="sphere.css?v=20260712-cv-figma-1" />
   </head>
   <body>
     <main class="sphere-page">
@@ -108,16 +108,18 @@
       </section>
 
       <section class="cv-view" id="cvView" hidden>
-        <button class="cv-back" id="cvBack" type="button">НАЗАД</button>
-        <nav class="cv-sections" aria-label="CV sections">
-          <button class="cv-section-button is-active" type="button" data-cv-face="center">Главное</button>
-          <button class="cv-section-button" type="button" data-cv-face="left">Профиль</button>
-          <button class="cv-section-button" type="button" data-cv-face="right">Резюме</button>
-          <button class="cv-section-button" type="button" data-cv-face="top">Услуги</button>
-          <button class="cv-section-button" type="button" data-cv-face="bottom">Контакты</button>
-          <button class="cv-section-button" type="button" data-cv-face="back">+1</button>
+        <nav class="cv-top-nav" aria-label="Навигация резюме">
+          <button class="cv-back" id="cvBack" type="button"><img src="arrow.svg" alt="" aria-hidden="true"> НАЗАД</button>
+          <button class="cv-works" id="cvWorks" type="button" onclick="document.getElementById('cvBack').click()">РАБОТЫ</button>
         </nav>
-        <aside class="cv-scene-controls" aria-label="Настройки сцены CV">
+        <article class="cv-content">
+          <header class="cv-hero"><h1>АЛЕКСАНДР<br>МИШКА</h1><p>Коммуникационный дизайнер, специализируюсь на создании статичных визуальных материалов и разработке брендинга. Создаю фирменный стиль, ключевые визуалы, рекламные креативы, презентации, полиграфию и контент для digital-среды. Работаю с композицией, типографикой, цветом и визуальной системой бренда, а также использую нейросети для поиска идей и создания графики.</p></header>
+          <section class="cv-skills"><h2>НАВЫКИ И ИНСТРУМЕНТЫ</h2><div class="cv-chip-row cv-chip-row-outline"><span>Коммуникационный дизайн</span><span>Визуальные концепции</span><span>Key visual</span><span>Брендинг</span><span>Рекламные материалы</span><span>Полиграфия</span><span>Digital-креативы</span><span>Дизайн презентаций</span><span>Ретушь</span><span>Типографика</span><span>Верстка</span><span>AI-графика</span></div><div class="cv-chip-row cv-chip-row-solid"><span>Figma</span><span>Photoshop</span><span>3DS Max</span><span>Cinema 4D</span><span>Illustrator</span></div></section>
+          <section class="cv-about"><h2>ОБО МНЕ</h2><p>UX/UI дизайнер, создаю цифровые продукты, которые решают задачи бизнеса. Более 4 лет проектирую удобные интерфейсы для веб-сайтов и мобильных приложений. Помогаю бизнесу достигать целей с помощью продуманного дизайна, аналитики и качественной проработки пользовательского опыта.</p></section>
+          <section class="cv-experience"><div class="cv-experience-track"><article><b>Communication Designer</b><span>Freelance</span><time>2012 г.<br>нояб. 2018 г.</time></article><article><b>Senior Graphic Designer</b><span>Unique Present Media Holding</span><time>авг. 2018 г.<br>нояб. 2020 г.</time></article><article><b>Communication Designer</b><span>Eight Media Maker</span><time>нояб. 2020 г.<br>нояб. 2022 г.</time></article><article><b>Communication Designer</b><span>Tenge Bank</span><time>май 2024 г.<br>сент. 2024 г.</time></article><article><b>Head of Design</b><span>Salad Agency</span><time>нояб. 2020 г.<br>настоящее время</time></article></div><p>Основные места работы и направления моей профессиональной деятельности.</p></section>
+          <section class="cv-contacts"><h2>КОНТАКТЫ</h2><div class="cv-chip-row cv-chip-row-outline"><a href="#">LinkedIn</a><a href="#">Telegram</a><a href="#">Скачать CV</a></div></section>
+        </article>
+        <aside class="cv-scene-controls" aria-label="Настройки сцены CV" hidden>
           <strong>Сцена</strong>
           <label><span>Размер сферы <b id="cvSphereSizeValue">0.72</b></span><input id="cvSphereSizeRange" type="range" min="0.35" max="1" step="0.01" value="0.72" /></label>
           <label><span>Размер элементов <b id="cvElementScaleValue">0.60</b></span><input id="cvElementScaleRange" type="range" min="0.1" max="1" step="0.01" value="0.60" /></label>
