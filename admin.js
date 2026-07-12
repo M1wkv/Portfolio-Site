@@ -51,7 +51,13 @@
         projectScale: 0.5,
         projectGap: 0.5,
         projectWidth: 0.75,
-        projectLength: 1.25
+        projectLength: 1.25,
+        waterTransparency: 50,
+        waterDarkening: 50,
+        waterFrost: 5,
+        idleTransparency: 100,
+        idleDarkening: 100,
+        idleFrost: 20
       }
     }
   };
@@ -121,7 +127,7 @@
 
   function encodeSettingsPayload() {
     return JSON.stringify({
-      portfolioSphere: 2,
+      portfolioSphere: 3,
       analytics: content.settings.analytics || "",
       sphere: content.settings.sphere || defaultContent.settings.sphere
     });
@@ -270,7 +276,7 @@
       const output = form.querySelector(`[data-sphere-value="${input.name}"]`);
       if (!output) return;
       const value = Number(input.value);
-      if (input.name === "settings.sphere.itemCount") output.textContent = String(Math.round(value));
+      if (input.name === "settings.sphere.itemCount" || /(?:Transparency|Darkening|Frost)$/.test(input.name)) output.textContent = String(Math.round(value));
       else output.textContent = input.name === "settings.sphere.size" ? value.toFixed(1) : value.toFixed(2);
     });
   }
