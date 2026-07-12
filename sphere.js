@@ -244,7 +244,7 @@ function wrappedRelative(index,offset,total){let rel=index-offset;rel=((rel+tota
 function getRibbonEntries(visibleItems){const total=visibleItems.length;
 const ribbonRadius=Math.min(width*1.18,1760)*projectState.cylinderWidth;
 const maxAngle=1.28;
-const centerY=height*0.43;
+const centerY=height*0.43+30;
 const offscreenStep=width*1.4;
 const slots=visibleItems.map((item)=>ribbonSlot(item,ribbonRadius,maxAngle));return visibleItems.map((item,index)=>{const rawAngle=ribbonAngle(index,total,slots);
 const outside=Math.max(0,Math.abs(rawAngle)-maxAngle);
