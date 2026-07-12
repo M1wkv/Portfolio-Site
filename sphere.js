@@ -12,6 +12,7 @@ const spherePage=document.querySelector(".sphere-page");
 const projectViewUi=document.getElementById("projectViewUi");
 const projectBack=document.getElementById("projectBack");
 const projectCvOpen=document.getElementById("projectCvOpen");
+const projectTopNav=document.querySelector(".project-top-nav");
 const projectTitle=document.getElementById("projectTitle");
 const projectScaleRange=document.getElementById("projectScaleRange");
 const projectCountRange=document.getElementById("projectCountRange");
@@ -82,6 +83,7 @@ let ribbonAutoPausedUntil=0;
 let ribbonAutoSpeed=0;
 let ribbonAutoDirection=1;
 let ribbonAutoPhaseStartedAt=0;
+let projectTopNavTimer=0;
 let projectFocusTarget=0;
 let projectFocusProgress=0;
 let projectZoomTarget=0;
@@ -126,6 +128,8 @@ function loadIdleSettings(){try{return{...idleDefaults,...JSON.parse(localStorag
 function updateIdleUi(save=true){idleInputs.forEach((input)=>{const key=input.dataset.idleSetting;idleState[key]=clampSetting(input.value,idleDefaults[key],0,100);const value=document.querySelector(`[data-idle-value="${key}"]`);if(value)value.textContent=String(Math.round(idleState[key]));});const baseAlpha=1-idleState.transparency/100;const frostCarrier=idleState.frost>0?idleState.frost*0.004:0;const alpha=Math.max(baseAlpha,frostCarrier);const rgb=Math.round(28*(1-idleState.darkening/100));const contentBlur=Math.max(0.4,idleState.frost*0.35).toFixed(1);["top","bottom"].forEach((panel)=>{spherePage.style.setProperty(`--idle-${panel}-alpha`,alpha.toFixed(3));spherePage.style.setProperty(`--idle-${panel}-rgb`,String(rgb));spherePage.style.setProperty(`--idle-${panel}-blur`,`${(idleState.frost*0.5).toFixed(1)}px`);spherePage.style.setProperty(`--idle-${panel}-content-blur`,`${contentBlur}px`);});if(save){try{localStorage.setItem("portfolioSphere.idlePanelEffects.v5",JSON.stringify(idleState));}catch{}}}
 function setPanelIdle(panel,idle){if(viewMode!=="sphere")return;spherePage.classList.toggle(`is-ui-idle-${panel}`,idle);}
 function schedulePanelIdle(panel){window.clearTimeout(idleTimers[panel]);idleTimers[panel]=window.setTimeout(()=>setPanelIdle(panel,true),0);}
+function setProjectTopNavFrosted(frosted){projectTopNav?.classList.toggle("is-frosted",frosted);}
+function scheduleProjectTopNavFrost(){window.clearTimeout(projectTopNavTimer);projectTopNavTimer=window.setTimeout(()=>setProjectTopNavFrosted(true),0);}
 function initializeIdleEffects(){idleState=loadIdleSettings();idleInputs.forEach((input)=>{const key=input.dataset.idleSetting;input.value=String(clampSetting(idleState[key],idleDefaults[key],0,100));input.addEventListener("input",()=>updateIdleUi(true));});updateIdleUi(false);const surfaces={top:topbar,bottom:footerNav};Object.entries(surfaces).forEach(([panel,surface])=>{if(!surface)return;const wake=()=>{window.clearTimeout(idleTimers[panel]);setPanelIdle(panel,false);};surface.addEventListener("pointerenter",wake);surface.addEventListener("pointerleave",()=>schedulePanelIdle(panel));});spherePage.addEventListener("pointermove",(event)=>{Object.entries(surfaces).forEach(([panel,surface])=>{if(!surface)return;const rect=surface.getBoundingClientRect();const isOver=event.clientX>=rect.left&&event.clientX<=rect.right&&event.clientY>=rect.top&&event.clientY<=rect.bottom;if(isOver){window.clearTimeout(idleTimers[panel]);setPanelIdle(panel,false);}else schedulePanelIdle(panel);});},true);schedulePanelIdle("top");schedulePanelIdle("bottom");}
 function effectiveElementScale(){return 0.2+state.elementScale*2.8;}
 function fibonacciPoint(index,total){const offset=2/total;
@@ -244,7 +248,7 @@ function wrappedRelative(index,offset,total){let rel=index-offset;rel=((rel+tota
 function getRibbonEntries(visibleItems){const total=visibleItems.length;
 const ribbonRadius=Math.min(width*1.18,1760)*projectState.cylinderWidth;
 const maxAngle=1.28;
-const centerY=height*0.43+30;
+const centerY=height*0.43+45;
 const offscreenStep=width*1.4;
 const slots=visibleItems.map((item)=>ribbonSlot(item,ribbonRadius,maxAngle));return visibleItems.map((item,index)=>{const rawAngle=ribbonAngle(index,total,slots);
 const outside=Math.max(0,Math.abs(rawAngle)-maxAngle);
@@ -414,7 +418,7 @@ function drawCvCubeWarpedLine(text,y,fontSize,warp){ctx.font=`700 ${fontSize}px 
 function openProject(item){clearSphereProjectFocus();activeProjectKey=projectKey(item);
 const projectItems=getProjectItems();
 projectCountRange.value=String(Math.min(Number(projectCountRange.max),Math.max(1,projectItems.length)));updateProjectUi();
-const index=Math.max(0,projectItems.findIndex((candidate)=>candidate.src===item.src));document.documentElement.dataset.activeProjectItemCount=String(projectItems.length);ribbonTargetOffset=index;ribbonOffset=index;ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+5000;projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=1;viewMode="project";spherePage.classList.add("is-project");projectTitle.textContent=projectLabel(item,index);projectViewUi.hidden=false;projectViewUi.classList.remove("is-media-open");}
+const index=Math.max(0,projectItems.findIndex((candidate)=>candidate.src===item.src));document.documentElement.dataset.activeProjectItemCount=String(projectItems.length);ribbonTargetOffset=index;ribbonOffset=index;ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+5000;projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=1;viewMode="project";spherePage.classList.add("is-project");projectTitle.textContent=projectLabel(item,index);projectViewUi.hidden=false;projectViewUi.classList.remove("is-media-open");setProjectTopNavFrosted(true);}
 function toggleProjectMedia(){if(viewMode!=="project")return;
 const opening=projectFocusTarget<0.5;projectFocusTarget=opening?1:0;projectZoomTarget=0;projectZoomProgress=0;projectViewUi.classList.toggle("is-media-open",opening);ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+(opening?600000:5000);if(opening){
 const centeredIndex=Math.round(ribbonOffset);ribbonOffset=centeredIndex;ribbonTargetOffset=centeredIndex;syncCenteredProjectTitle();}}
@@ -423,7 +427,7 @@ const nextIndex=Number.isFinite(index)?index:visibleItems.findIndex((candidate)=
 function syncCenteredProjectTitle(){if(viewMode!=="project")return;
 const visibleItems=getProjectItems();if(!visibleItems.length)return;
 const index=((Math.round(ribbonTargetOffset)%visibleItems.length)+visibleItems.length)%visibleItems.length;projectTitle.textContent=projectLabel(visibleItems[index],index);}
-function closeProject(){document.documentElement.dataset.activeProjectItemCount="0";projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=0;viewMode="sphere";activeProjectKey="";spherePage.classList.remove("is-project");projectViewUi.hidden=true;projectViewUi.classList.remove("is-media-open");}
+function closeProject(){document.documentElement.dataset.activeProjectItemCount="0";projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=0;viewMode="sphere";activeProjectKey="";window.clearTimeout(projectTopNavTimer);setProjectTopNavFrosted(false);spherePage.classList.remove("is-project");projectViewUi.hidden=true;projectViewUi.classList.remove("is-media-open");}
 function openCv(){closeProject();viewMode="cv";transitionTarget=0;transitionProgress=0;cvWheelAccumulator=0;cvWheelLockedUntil=0;cvBoxYaw=-0.38;cvBoxPitch=0.22;cvBoxVelocity={yaw:0,pitch:0};setCvFace("center",false);updateCvSceneUi();spherePage.classList.add("is-cv");cvView.hidden=false;}
 function closeCv(){viewMode="sphere";cvWheelAccumulator=0;spherePage.classList.remove("is-cv");cvView.hidden=true;}
 function renderCvCamera(look){const deg=Math.PI/180;
@@ -477,6 +481,8 @@ canvas.addEventListener("pointerleave",()=>{hovering=false;dragging=false;});
 canvas.addEventListener("wheel",(event)=>{event.preventDefault();if(viewMode==="cv"){handleCvWheel(event);return;}if(projectFocusTarget>0||projectFocusProgress>0.05)return;if(viewMode==="project"||transitionProgress>0.6){touchRibbon(event.deltaY*0.0012);return;}const nextValue=Number(sizeRange.value)-event.deltaY*0.0009;sizeRange.value=String(Math.max(Number(sizeRange.min),Math.min(Number(sizeRange.max),nextValue)));updateUi();},{passive:false});
 projectBack.addEventListener("click",()=>{if(projectFocusTarget>0||projectFocusProgress>0.05){toggleProjectMedia();return;}closeProject();});
 projectCvOpen?.addEventListener("click",openCv);
+projectTopNav?.addEventListener("pointerenter",()=>{window.clearTimeout(projectTopNavTimer);setProjectTopNavFrosted(false);});
+projectTopNav?.addEventListener("pointerleave",scheduleProjectTopNavFrost);
 cvOpen.addEventListener("click",openCv);
 projectsNav?.addEventListener("click",()=>{if(viewMode==="sphere")clearSphereProjectFocus();});
 projectIndexList?.addEventListener("wheel",(event)=>{if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;event.preventDefault();projectIndexList.scrollBy({left:event.deltaY,behavior:"smooth"});},{passive:false});
