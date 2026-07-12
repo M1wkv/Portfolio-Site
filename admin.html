@@ -209,6 +209,38 @@
                     <input name="settings.sphere.rotationY" type="range" min="-0.32" max="0.32" step="0.01" />
                   </label>
                   <div class="settings-subsection-head wide">
+                    <span>Эффекты плашек</span>
+                    <p>Стартовый вид верхней и нижней плашек на главной странице.</p>
+                  </div>
+                  <label>
+                    <span class="sphere-setting-head"><span>Прозрачность</span><b data-sphere-value="settings.sphere.waterTransparency">50</b></span>
+                    <input name="settings.sphere.waterTransparency" type="range" min="0" max="100" step="1" />
+                  </label>
+                  <label>
+                    <span class="sphere-setting-head"><span>Затемнение</span><b data-sphere-value="settings.sphere.waterDarkening">50</b></span>
+                    <input name="settings.sphere.waterDarkening" type="range" min="0" max="100" step="1" />
+                  </label>
+                  <label>
+                    <span class="sphere-setting-head"><span>Морозность</span><b data-sphere-value="settings.sphere.waterFrost">5</b></span>
+                    <input name="settings.sphere.waterFrost" type="range" min="0" max="100" step="1" />
+                  </label>
+                  <div class="settings-subsection-head wide">
+                    <span>Покой плашек</span>
+                    <p>Вид плашек, когда курсор находится вне них.</p>
+                  </div>
+                  <label>
+                    <span class="sphere-setting-head"><span>Прозрачность</span><b data-sphere-value="settings.sphere.idleTransparency">100</b></span>
+                    <input name="settings.sphere.idleTransparency" type="range" min="0" max="100" step="1" />
+                  </label>
+                  <label>
+                    <span class="sphere-setting-head"><span>Затемнение</span><b data-sphere-value="settings.sphere.idleDarkening">100</b></span>
+                    <input name="settings.sphere.idleDarkening" type="range" min="0" max="100" step="1" />
+                  </label>
+                  <label>
+                    <span class="sphere-setting-head"><span>Морозность</span><b data-sphere-value="settings.sphere.idleFrost">20</b></span>
+                    <input name="settings.sphere.idleFrost" type="range" min="0" max="100" step="1" />
+                  </label>
+                  <div class="settings-subsection-head wide">
                     <span>Просмотр проектов</span>
                     <p>Начальные параметры цилиндра при открытии кейса.</p>
                   </div>
@@ -240,7 +272,7 @@
     <script src="supabase-config.js?v=20260628-security-1"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="admin.js?v=20260712-project-upload-transport-1"></script>
+<script src="admin.js?v=20260713-panel-settings-1"></script>
 <script src="admin-localization.js?v=20260627-safe-ru-2"></script>
   </body>
 </html>
