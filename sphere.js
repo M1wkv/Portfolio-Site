@@ -429,7 +429,7 @@ function syncCenteredProjectTitle(){if(viewMode!=="project")return;
 const visibleItems=getProjectItems();if(!visibleItems.length)return;
 const index=((Math.round(ribbonTargetOffset)%visibleItems.length)+visibleItems.length)%visibleItems.length;projectTitle.textContent=projectLabel(visibleItems[index],index);}
 function closeProject(){document.documentElement.dataset.activeProjectItemCount="0";projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=0;viewMode="sphere";activeProjectKey="";window.clearTimeout(projectTopNavTimer);setProjectTopNavFrosted(false);spherePage.classList.remove("is-project");projectViewUi.hidden=true;projectViewUi.classList.remove("is-media-open");}
-function openCv(){closeProject();viewMode="cv";transitionTarget=0;transitionProgress=0;cvWheelAccumulator=0;cvWheelLockedUntil=0;cvBoxYaw=-0.38;cvBoxPitch=0.22;cvBoxVelocity={yaw:0,pitch:0};setCvFace("center",false);updateCvSceneUi();spherePage.classList.add("is-cv");cvView.hidden=false;}
+function openCv(){closeProject();viewMode="cv";transitionTarget=0;transitionProgress=0;cvWheelAccumulator=0;cvWheelLockedUntil=0;cvBoxYaw=-0.38;cvBoxPitch=0.22;cvBoxVelocity={yaw:0,pitch:0};setCvFace("center",false);updateCvSceneUi();spherePage.classList.add("is-cv");cvView.hidden=false;cvView.scrollTop=0;}
 function closeCv(){viewMode="sphere";cvWheelAccumulator=0;spherePage.classList.remove("is-cv");cvView.hidden=true;}
 function renderCvCamera(look){const deg=Math.PI/180;
 const horizontalLook=58;
