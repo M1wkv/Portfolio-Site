@@ -10,7 +10,7 @@
     <title>Админ-панель портфолио</title>
     <link rel="preconnect" href="https://xidxcafcdfmoxxvnjjkl.supabase.co" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="admin.css?v=20260711-helvetica-cyr-1" />
+    <link rel="stylesheet" href="admin.css?v=20260713-settings-groups-1" />
   </head>
   <body>
     <main class="admin-shell">
@@ -153,36 +153,18 @@
 
           <section class="admin-section" data-panel="settings">
             <div class="form-grid two">
-              <label>
-                <span>Название сайта</span>
-                <input name="settings.siteTitle" type="text" />
-              </label>
-              <label>
-                <span>Язык</span>
-                <select name="settings.language">
-                  <option value="ru">Русский</option>
-                  <option value="en">Английский</option>
-                </select>
-              </label>
-              <label class="wide">
-                <span>Описание для Google</span>
-                <textarea name="settings.description" rows="4"></textarea>
-              </label>
-              <label class="wide">
-                <span>Иконка сайта</span>
-                <input id="faviconInput" type="file" accept="image/*" />
-                <input name="settings.favicon" type="hidden" />
-                <small id="faviconName">Файл не выбран</small>
-              </label>
-              <label class="wide">
-                <span>Аналитика</span>
-                <textarea name="settings.analytics" rows="5"></textarea>
-              </label>
-              <div class="settings-subsection wide">
-                <div class="settings-subsection-head">
-                  <span>Сфера / Визуальные параметры</span>
-                  <p>Параметры применяются к главной 3D-сфере после сохранения.</p>
+              <div class="settings-subsection settings-group wide">
+                <div class="settings-subsection-head"><span>Сайт / SEO</span><p>Основные метаданные и технические настройки сайта.</p></div>
+                <div class="form-grid two">
+                  <label><span>Название сайта</span><input name="settings.siteTitle" type="text" /></label>
+                  <label><span>Язык</span><select name="settings.language"><option value="ru">Русский</option><option value="en">Английский</option></select></label>
+                  <label class="wide"><span>Описание для Google</span><textarea name="settings.description" rows="4"></textarea></label>
+                  <label class="wide"><span>Иконка сайта</span><input id="faviconInput" type="file" accept="image/*" /><input name="settings.favicon" type="hidden" /><small id="faviconName">Файл не выбран</small></label>
+                  <label class="wide"><span>Аналитика</span><textarea name="settings.analytics" rows="5"></textarea></label>
                 </div>
+              </div>
+              <div class="settings-subsection settings-group wide">
+                <div class="settings-subsection-head"><span>Сфера</span><p>Параметры главной 3D-сферы.</p></div>
                 <div class="form-grid two sphere-settings-grid">
                   <label>
                     <span class="sphere-setting-head"><span>Размер сферы</span><b data-sphere-value="settings.sphere.size">0.6</b></span>
@@ -208,10 +190,12 @@
                     <span class="sphere-setting-head"><span>Вертикальное вращение</span><b data-sphere-value="settings.sphere.rotationY">-0.09</b></span>
                     <input name="settings.sphere.rotationY" type="range" min="-0.32" max="0.32" step="0.01" />
                   </label>
-                  <div class="settings-subsection-head wide">
-                    <span>Эффекты плашек</span>
-                    <p>Стартовый вид верхней и нижней плашек на главной странице.</p>
-                  </div>
+                </div>
+              </div>
+              <div class="settings-subsection settings-group wide">
+                <div class="settings-subsection-head"><span>Плашки</span><p>Активное и неактивное состояние верхней и нижней плашек.</p></div>
+                <div class="form-grid two sphere-settings-grid">
+                  <div class="settings-subsection-head wide"><span>Активное состояние</span></div>
                   <label>
                     <span class="sphere-setting-head"><span>Прозрачность</span><b data-sphere-value="settings.sphere.waterTransparency">50</b></span>
                     <input name="settings.sphere.waterTransparency" type="range" min="0" max="100" step="1" />
@@ -224,10 +208,7 @@
                     <span class="sphere-setting-head"><span>Морозность</span><b data-sphere-value="settings.sphere.waterFrost">5</b></span>
                     <input name="settings.sphere.waterFrost" type="range" min="0" max="100" step="1" />
                   </label>
-                  <div class="settings-subsection-head wide">
-                    <span>Покой плашек</span>
-                    <p>Вид плашек, когда курсор находится вне них.</p>
-                  </div>
+                  <div class="settings-subsection-head wide"><span>Покой плашек</span></div>
                   <label>
                     <span class="sphere-setting-head"><span>Прозрачность</span><b data-sphere-value="settings.sphere.idleTransparency">100</b></span>
                     <input name="settings.sphere.idleTransparency" type="range" min="0" max="100" step="1" />
@@ -240,10 +221,11 @@
                     <span class="sphere-setting-head"><span>Морозность</span><b data-sphere-value="settings.sphere.idleFrost">20</b></span>
                     <input name="settings.sphere.idleFrost" type="range" min="0" max="100" step="1" />
                   </label>
-                  <div class="settings-subsection-head wide">
-                    <span>Просмотр проектов</span>
-                    <p>Начальные параметры цилиндра при открытии кейса.</p>
-                  </div>
+                </div>
+              </div>
+              <div class="settings-subsection settings-group wide">
+                <div class="settings-subsection-head"><span>Просмотр проектов</span><p>Начальные параметры цилиндра при открытии кейса.</p></div>
+                <div class="form-grid two sphere-settings-grid">
                   <label>
                     <span class="sphere-setting-head"><span>Размер элементов проекта</span><b data-sphere-value="settings.sphere.projectScale">0.50</b></span>
                     <input name="settings.sphere.projectScale" type="range" min="0.4" max="1.6" step="0.01" />
