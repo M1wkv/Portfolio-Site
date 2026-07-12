@@ -909,7 +909,7 @@ input {
   height: auto;
   padding: 0;
   border-radius: 999px;
-  background: transparent;
+  background: transparent !important;
   transform: translateX(-50%);
   pointer-events: auto;
 }
@@ -931,7 +931,7 @@ input {
   align-items: center;
   gap: 0.52vw;
   padding: 0 0.84vw;
-  background: transparent;
+  background: transparent !important;
   color: #fff;
 }
 
@@ -947,7 +947,8 @@ input {
 .project-back:hover,
 .project-back:focus-visible {
   background: transparent;
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.58);
+  box-shadow: none;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.82);
 }
 
 .project-cv-open:hover,
