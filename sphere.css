@@ -1781,7 +1781,7 @@ input {
 }
 
 .sphere-page.is-cv .admin-nav,
-.sphere-page.is-cv .project-back {
+.sphere-page.is-cv .project-view-ui .project-back {
   visibility: hidden;
   pointer-events: none;
 }
