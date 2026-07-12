@@ -901,6 +901,7 @@ input {
 }
 
 .project-top-nav {
+  --project-nav-button-width: clamp(134px, 8.55vw, 164px);
   position: fixed;
   top: 4.1vh;
   left: 50%;
@@ -908,6 +909,7 @@ input {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: calc(var(--project-nav-button-width) * 2 + 10px);
   height: auto;
   padding: 0;
   border-radius: 999px;
@@ -919,7 +921,8 @@ input {
 
 .project-back,
 .project-cv-open {
-  width: clamp(134px, 8.55vw, 164px);
+  width: var(--project-nav-button-width);
+  flex: 0 0 var(--project-nav-button-width);
   min-width: 0;
   height: 3.6vh;
   border: 0;
@@ -1905,8 +1908,8 @@ input {
     left: 20px;
   }
 
-  .project-top-nav { top: 16px; height: 44px; padding: 4px; }
-  .project-back, .project-cv-open { width: 108px; min-width: 0; height: 36px; font-size: 13px; }
+  .project-top-nav { --project-nav-button-width: 108px; top: 16px; height: 44px; padding: 4px; width: calc(var(--project-nav-button-width) * 2 + 10px); }
+  .project-back, .project-cv-open { width: var(--project-nav-button-width); flex-basis: var(--project-nav-button-width); min-width: 0; height: 36px; font-size: 13px; }
   .project-back { gap: 6px; padding: 0 12px; }
   .project-back img { width: 18px; }
   .project-cv-open { padding: 0 16px; }
