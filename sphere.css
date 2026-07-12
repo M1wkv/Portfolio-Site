@@ -905,11 +905,14 @@ input {
   z-index: 14;
   display: flex;
   align-items: center;
-  gap: 0.7vw;
+  gap: 10px;
   height: auto;
-  padding: 0;
+  padding: 5px;
   border-radius: 999px;
-  background: transparent !important;
+  background: rgba(14, 14, 14, 0.72) !important;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   transform: translateX(-50%);
   pointer-events: auto;
   transition: background 460ms cubic-bezier(0.22, 1, 0.36, 1), backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1), -webkit-backdrop-filter 460ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -917,11 +920,11 @@ input {
 
 .project-back,
 .project-cv-open {
-  height: 3.6vh;
+  height: 42px;
   border: 0;
   border-radius: 999px;
   font-family: var(--mono);
-  font-size: clamp(12px, 1.08vw, 21px);
+  font-size: clamp(14px, 1.08vw, 17px);
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
@@ -930,8 +933,9 @@ input {
 .project-back {
   display: inline-flex;
   align-items: center;
-  gap: 0.52vw;
-  padding: 0 0.84vw;
+  gap: 10px;
+  min-width: 150px;
+  padding: 0 22px;
   background: transparent !important;
   color: #fff;
   text-shadow: 0 0 0 rgba(255, 255, 255, 0);
@@ -944,8 +948,8 @@ input {
 .project-back:focus-visible img { filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.82)); }
 
 .project-cv-open {
-  min-width: 8.55vw;
-  padding: 0 1.25vw;
+  min-width: 176px;
+  padding: 0 22px;
   background: #fff;
   color: #040404;
 }
@@ -1078,17 +1082,17 @@ input {
 }
 
 .project-top-nav.is-frosted {
-  background: rgb(var(--idle-top-rgb) var(--idle-top-rgb) var(--idle-top-rgb) / var(--idle-top-alpha)) !important;
-  backdrop-filter: blur(var(--idle-top-blur));
-  -webkit-backdrop-filter: blur(var(--idle-top-blur));
-  transition-duration: 2070ms;
+  background: rgba(14, 14, 14, 0.72) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition-duration: 260ms;
 }
 
 .project-top-nav.is-frosted > * {
-  filter: blur(var(--idle-top-content-blur));
-  opacity: 0.76;
-  pointer-events: none;
-  transition: filter 2070ms cubic-bezier(0.22, 1, 0.36, 1), opacity 2070ms cubic-bezier(0.22, 1, 0.36, 1);
+  filter: none;
+  opacity: 1;
+  pointer-events: auto;
+  transition: filter 260ms cubic-bezier(0.22, 1, 0.36, 1), opacity 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-top-nav > * {
