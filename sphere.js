@@ -47,7 +47,7 @@ const STORAGE_CV="portfolioSphere.cvNodes";
 const STORAGE_WATER="portfolioSphere.panelEffects.v2";
 const bootstrapData=readBootstrapData();
 const sphereSettings=bootstrapData.sphereSettings||window.PORTFOLIO_BOOTSTRAP?.sphereSettings||{};
-const MAX_VISIBLE_ITEMS=Math.round(clampSetting(sphereSettings.itemCount,50,10,100));sizeRange.value=String(clampSetting(sphereSettings.size,0.6,0.1,1));scaleRange.value=String(clampSetting(sphereSettings.elementScale,0.6,0.1,1));fisheyeRange.value=String(clampSetting(sphereSettings.fisheye,0.15,0,1));projectScaleRange.value=String(clampSetting(sphereSettings.projectScale,0.5,0.4,1.6));projectGapRange.value=String(clampSetting(sphereSettings.projectGap,0.5,0.5,2));projectWidthRange.value=String(clampSetting(sphereSettings.projectWidth,0.75,0.6,1.6));projectLengthRange.value=String(clampSetting(sphereSettings.projectLength,1.25,0.5,1.8));document.documentElement.dataset.sphereMaxVisibleItems=String(MAX_VISIBLE_ITEMS);
+const MAX_VISIBLE_ITEMS=Math.round(clampSetting(sphereSettings.itemCount,50,10,100));sizeRange.value=String(clampSetting(sphereSettings.size,0.6,0.1,1));scaleRange.value=String(clampSetting(sphereSettings.elementScale,0.6,0.1,1));fisheyeRange.value=String(clampSetting(sphereSettings.fisheye,0.15,0,1));projectScaleRange.value=String(clampSetting(sphereSettings.projectScale,0.5,0.4,1.6));projectGapRange.value=String(clampSetting(sphereSettings.projectGap,0.5,0.5,2));projectWidthRange.value=String(clampSetting(sphereSettings.projectWidth,0.75,0.6,1.6));projectLengthRange.value=String(clampSetting(sphereSettings.projectLength,1.25,0.5,1.8));document.documentElement.dataset.sphereMaxVisibleItems=String(MAX_VISIBLE_ITEMS);if(window.matchMedia("(max-width: 767px)").matches){sizeRange.value="0.7";scaleRange.value="0.24";}
 const defaultAssets=(window.SPHERE_ASSETS||[]).slice(0,100);
 const bootstrapAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);
 const bootstrapProjectAssets=normalizeAssets(bootstrapData.projectAssets||window.PORTFOLIO_BOOTSTRAP?.projectAssets||[]);
@@ -454,7 +454,7 @@ const depthScale=Math.max(0.72,Math.min(1.08,projection*1.16));
 const activeScale=panel.dataset.look==="center"?1.02:1.1;
 const baseScale=data.scale*depthScale*(active?activeScale:0.98);
 const opacity=active?1:Math.max(0.22,0.72-angleDistance*0.22);
-const blur=active?0:Math.min(1.25,angleDistance*0.26);
+const blur=0;
 const faceYaw=Math.max(-82,Math.min(82,-yawDelta*1.16));
 const facePitch=Math.max(-68,Math.min(68,pitchDelta*1.16));
 const layer=Math.round(3000-depth+(active&&panel.dataset.look!=="center"?90:0));panel.style.setProperty("--cv-x",`${screenX.toFixed(2)}px`);panel.style.setProperty("--cv-y",`${screenY.toFixed(2)}px`);panel.style.setProperty("--cv-scale",baseScale.toFixed(3));panel.style.setProperty("--cv-ry",`${faceYaw.toFixed(2)}deg`);panel.style.setProperty("--cv-rx",`${facePitch.toFixed(2)}deg`);panel.style.setProperty("--cv-opacity",opacity.toFixed(3));panel.style.setProperty("--cv-blur",`${blur.toFixed(2)}px`);panel.style.setProperty("--cv-z",String(layer));});}
@@ -485,4 +485,5 @@ canvas.addEventListener("pointermove",()=>{if(viewMode==="cv"&&dragging){cvTarge
 [sizeRange,scaleRange,fisheyeRange].forEach((input)=>{input.addEventListener("input",updateUi);});
 [projectScaleRange,projectCountRange,projectGapRange,projectWidthRange,projectLengthRange].forEach((input)=>{input.addEventListener("input",updateProjectUi);});
 window.addEventListener("resize",resize);resize();updateUi();updateProjectUi();initializeWaterEffects();applyCvDisplay(bootstrapData.cvDisplay||window.PORTFOLIO_BOOTSTRAP?.cvDisplay||{});loadItems(assets);Promise.all([loadStoredAssetsAsync(),loadStoredCvNodesAsync()]).then(([nextAssets,nextCvNodes])=>{assets=nextAssets;cvNodes=nextCvNodes;loadItems(assets);});render();})();
+
 
