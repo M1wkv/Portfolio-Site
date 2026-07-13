@@ -82,29 +82,51 @@
           </section>
 
           <section class="admin-section" data-panel="cv">
-            <div class="form-grid two">
-              <label class="wide">
-                <span>Опыт работы</span>
-                <textarea name="cv.experience" rows="6"></textarea>
-              </label>
-              <label class="wide">
-                <span>Образование</span>
-                <textarea name="cv.education" rows="4"></textarea>
-              </label>
-              <label class="wide">
-                <span>Навыки</span>
-                <textarea name="cv.skills" rows="4"></textarea>
-              </label>
-              <label class="wide">
-                <span>Сертификаты</span>
-                <textarea name="cv.certificates" rows="4"></textarea>
-              </label>
+            <div class="settings-subsection">
+              <div class="settings-subsection-head">
+                <span>Структура резюме</span>
+                <p>Поля соответствуют блокам, которые видны на странице резюме.</p>
+              </div>
+              <div class="form-grid two">
+                <label class="wide">
+                  <span>Вводный текст под именем</span>
+                  <textarea name="cv.intro" rows="4"></textarea>
+                </label>
+                <label class="wide">
+                  <span>Навыки</span>
+                  <textarea name="cv.skills" rows="3" placeholder="Через запятую"></textarea>
+                  <small>Каждый навык станет отдельной плашкой.</small>
+                </label>
+                <label class="wide">
+                  <span>Инструменты</span>
+                  <textarea name="cv.tools" rows="2" placeholder="Через запятую"></textarea>
+                  <small>Каждый инструмент станет отдельной белой плашкой.</small>
+                </label>
+                <label class="wide">
+                  <span>Обо мне</span>
+                  <textarea name="cv.about" rows="4"></textarea>
+                </label>
+                <label class="wide">
+                  <span>Опыт работы</span>
+                  <textarea name="cv.experienceItems" rows="7" placeholder="Должность | Компания | Период"></textarea>
+                  <small>Одна позиция в строке: должность | компания | период.</small>
+                </label>
+                <label class="wide">
+                  <span>Подпись под опытом</span>
+                  <input name="cv.experienceCaption" type="text" />
+                </label>
+              </div>
+            </div>
+            <div class="settings-subsection cv-file-section">
+              <div class="settings-subsection-head"><span>Файл резюме</span><p>PDF для кнопки «Скачать CV».</p></div>
+              <div class="form-grid two">
               <label class="wide">
                 <span>PDF-CV</span>
                 <input id="cvPdfInput" type="file" accept="application/pdf" />
                 <input name="cv.pdf" type="hidden" />
                 <small id="cvPdfName">Файл не выбран</small>
               </label>
+            </div>
             </div>
             <div class="settings-subsection cv-contacts-section">
               <div class="settings-subsection-head">
@@ -254,7 +276,7 @@
     <script src="supabase-config.js?v=20260628-security-1"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="admin.js?v=20260713-panel-settings-1"></script>
+<script src="admin.js?v=20260713-cv-layout-fields-1"></script>
 <script src="admin-localization.js?v=20260627-safe-ru-2"></script>
   </body>
 </html>
