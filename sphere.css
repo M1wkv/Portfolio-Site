@@ -1296,7 +1296,7 @@ input {
 .cv-chip-row span, .cv-chip-row a { display: inline-flex; align-items: center; min-height: 28px; padding: 0 14px; border-radius: 999px; text-decoration: none; font: 500 13px/1 "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif; text-transform: uppercase; }
 .cv-chip-row-outline span, .cv-chip-row-outline a { border: 1px solid rgba(255,255,255,.76); color: rgba(255,255,255,.94); }
 .cv-chip-row-solid { margin-top: 4px; }
-.cv-skills .cv-chip-row-solid { margin-top: -14px; }
+.cv-skills .cv-chip-row-solid { margin-top: -9px; }
 .cv-chip-row-solid span { background: #fff; color: #080808; font-weight: 700; }
 .cv-about { max-width: 1160px; }
 .cv-about p { margin-top: 0; font-size: 13px; font-weight: 400; line-height: 1.08; }
