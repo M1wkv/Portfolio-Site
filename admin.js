@@ -54,6 +54,16 @@
         projectGap: 0.5,
         projectWidth: 0.75,
         projectLength: 1.25,
+        tabletSize: 0.65,
+        tabletElementScale: 0.42,
+        mobileSize: 0.7,
+        mobileElementScale: 0.24,
+        tabletProjectScale: 0.44,
+        tabletProjectWidth: 0.7,
+        tabletProjectLength: 1.08,
+        mobileProjectScale: 0.38,
+        mobileProjectWidth: 0.66,
+        mobileProjectLength: 0.9,
         waterTransparency: 50,
         waterDarkening: 50,
         waterFrost: 5
@@ -84,7 +94,9 @@
     profile: ["Profile / Главный блок", "Главный блок"],
     cv: ["CV / Резюме", "Резюме"],
     portfolio: ["Portfolio / Кейсы", "Кейсы"],
-    settings: ["Settings / SEO", "SEO и настройки"]
+    seo: ["Settings / SEO", "SEO"],
+    sphere: ["Settings / Сфера", "Сфера"],
+    cylinder: ["Settings / Цилиндр", "Цилиндр"]
   };
 
   function clone(value) {
