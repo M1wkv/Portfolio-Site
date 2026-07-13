@@ -182,7 +182,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260713-cv-admin-content-1";
+    script.src = "sphere.js?v=20260713-mobile-nav-active-2";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
