@@ -192,8 +192,9 @@
 
           <section class="admin-section" data-panel="sphere">
               <div class="settings-subsection settings-group wide">
-                <div class="settings-subsection-head"><span>Сфера</span><p>Параметры главной 3D-сферы.</p></div>
+                <div class="settings-subsection-head"><span>Сфера</span><p>Параметры главной 3D-сферы для десктопа.</p></div>
                 <div class="form-grid two sphere-settings-grid">
+                  <div class="settings-subsection-head wide"><span>Десктоп</span></div>
                   <label>
                     <span class="sphere-setting-head"><span>Размер сферы</span><b data-sphere-value="settings.sphere.size">0.6</b></span>
                     <input name="settings.sphere.size" type="range" min="0.1" max="1" step="0.01" />
@@ -223,10 +224,20 @@
               <div class="settings-subsection settings-group wide">
                 <div class="settings-subsection-head"><span>Размеры по устройствам</span><p>Для планшета и мобильного экрана используются отдельные значения.</p></div>
                 <div class="form-grid two sphere-settings-grid">
+                  <div class="settings-subsection-head wide"><span>Планшет</span></div>
                   <label><span class="sphere-setting-head"><span>Планшет: сфера</span><b data-sphere-value="settings.sphere.tabletSize">0.65</b></span><input name="settings.sphere.tabletSize" type="range" min="0.1" max="1" step="0.01" /></label>
                   <label><span class="sphere-setting-head"><span>Планшет: элементы</span><b data-sphere-value="settings.sphere.tabletElementScale">0.42</b></span><input name="settings.sphere.tabletElementScale" type="range" min="0.1" max="1" step="0.01" /></label>
+                  <label><span class="sphere-setting-head"><span>Планшет: количество</span><b data-sphere-value="settings.sphere.tabletItemCount">50</b></span><input name="settings.sphere.tabletItemCount" type="range" min="10" max="100" step="1" /></label>
+                  <label><span class="sphere-setting-head"><span>Планшет: рыбий глаз</span><b data-sphere-value="settings.sphere.tabletFisheye">0.15</b></span><input name="settings.sphere.tabletFisheye" type="range" min="0" max="1" step="0.01" /></label>
+                  <label><span class="sphere-setting-head"><span>Планшет: гор. вращение</span><b data-sphere-value="settings.sphere.tabletRotationX">0.14</b></span><input name="settings.sphere.tabletRotationX" type="range" min="-0.32" max="0.32" step="0.01" /></label>
+                  <label><span class="sphere-setting-head"><span>Планшет: верт. вращение</span><b data-sphere-value="settings.sphere.tabletRotationY">-0.09</b></span><input name="settings.sphere.tabletRotationY" type="range" min="-0.32" max="0.32" step="0.01" /></label>
+                  <div class="settings-subsection-head wide"><span>Мобильный</span></div>
                   <label><span class="sphere-setting-head"><span>Мобильный: сфера</span><b data-sphere-value="settings.sphere.mobileSize">0.70</b></span><input name="settings.sphere.mobileSize" type="range" min="0.1" max="1" step="0.01" /></label>
                   <label><span class="sphere-setting-head"><span>Мобильный: элементы</span><b data-sphere-value="settings.sphere.mobileElementScale">0.24</b></span><input name="settings.sphere.mobileElementScale" type="range" min="0.1" max="1" step="0.01" /></label>
+                  <label><span class="sphere-setting-head"><span>Мобильный: количество</span><b data-sphere-value="settings.sphere.mobileItemCount">40</b></span><input name="settings.sphere.mobileItemCount" type="range" min="10" max="100" step="1" /></label>
+                  <label><span class="sphere-setting-head"><span>Мобильный: рыбий глаз</span><b data-sphere-value="settings.sphere.mobileFisheye">0.15</b></span><input name="settings.sphere.mobileFisheye" type="range" min="0" max="1" step="0.01" /></label>
+                  <label><span class="sphere-setting-head"><span>Мобильный: гор. вращение</span><b data-sphere-value="settings.sphere.mobileRotationX">0.14</b></span><input name="settings.sphere.mobileRotationX" type="range" min="-0.32" max="0.32" step="0.01" /></label>
+                  <label><span class="sphere-setting-head"><span>Мобильный: верт. вращение</span><b data-sphere-value="settings.sphere.mobileRotationY">-0.09</b></span><input name="settings.sphere.mobileRotationY" type="range" min="-0.32" max="0.32" step="0.01" /></label>
                 </div>
               </div>
               <div class="settings-subsection settings-group wide">
@@ -258,6 +269,10 @@
                     <input name="settings.sphere.projectScale" type="range" min="0.1" max="0.9" step="0.01" />
                   </label>
                   <label>
+                    <span class="sphere-setting-head"><span>Количество элементов</span><b data-sphere-value="settings.sphere.projectItemCount">20</b></span>
+                    <input name="settings.sphere.projectItemCount" type="range" min="1" max="100" step="1" />
+                  </label>
+                  <label>
                     <span class="sphere-setting-head"><span>Расстояние между элементами</span><b data-sphere-value="settings.sphere.projectGap">0.50</b></span>
                     <input name="settings.sphere.projectGap" type="range" min="0.5" max="2" step="0.1" />
                   </label>
@@ -275,6 +290,8 @@
                 <div class="settings-subsection-head"><span>Планшет</span><p>Размеры цилиндра для экранов от 768 до 1023 px.</p></div>
                 <div class="form-grid two sphere-settings-grid">
                   <label><span class="sphere-setting-head"><span>Размер элементов</span><b data-sphere-value="settings.sphere.tabletProjectScale">0.44</b></span><input name="settings.sphere.tabletProjectScale" type="range" min="0.1" max="0.9" step="0.01" /></label>
+                  <label><span class="sphere-setting-head"><span>Количество элементов</span><b data-sphere-value="settings.sphere.tabletProjectItemCount">16</b></span><input name="settings.sphere.tabletProjectItemCount" type="range" min="1" max="100" step="1" /></label>
+                  <label><span class="sphere-setting-head"><span>Расстояние</span><b data-sphere-value="settings.sphere.tabletProjectGap">0.50</b></span><input name="settings.sphere.tabletProjectGap" type="range" min="0.5" max="2" step="0.1" /></label>
                   <label><span class="sphere-setting-head"><span>Ширина цилиндра</span><b data-sphere-value="settings.sphere.tabletProjectWidth">0.70</b></span><input name="settings.sphere.tabletProjectWidth" type="range" min="0.6" max="1.6" step="0.01" /></label>
                   <label><span class="sphere-setting-head"><span>Длина цилиндра</span><b data-sphere-value="settings.sphere.tabletProjectLength">1.08</b></span><input name="settings.sphere.tabletProjectLength" type="range" min="0.5" max="1.8" step="0.01" /></label>
                 </div>
@@ -283,6 +300,8 @@
                 <div class="settings-subsection-head"><span>Мобильный</span><p>Размеры цилиндра для экранов до 767 px.</p></div>
                 <div class="form-grid two sphere-settings-grid">
                   <label><span class="sphere-setting-head"><span>Размер элементов</span><b data-sphere-value="settings.sphere.mobileProjectScale">0.38</b></span><input name="settings.sphere.mobileProjectScale" type="range" min="0.1" max="0.9" step="0.01" /></label>
+                  <label><span class="sphere-setting-head"><span>Количество элементов</span><b data-sphere-value="settings.sphere.mobileProjectItemCount">12</b></span><input name="settings.sphere.mobileProjectItemCount" type="range" min="1" max="100" step="1" /></label>
+                  <label><span class="sphere-setting-head"><span>Расстояние</span><b data-sphere-value="settings.sphere.mobileProjectGap">0.50</b></span><input name="settings.sphere.mobileProjectGap" type="range" min="0.5" max="2" step="0.1" /></label>
                   <label><span class="sphere-setting-head"><span>Ширина цилиндра</span><b data-sphere-value="settings.sphere.mobileProjectWidth">0.66</b></span><input name="settings.sphere.mobileProjectWidth" type="range" min="0.6" max="1.6" step="0.01" /></label>
                   <label><span class="sphere-setting-head"><span>Длина цилиндра</span><b data-sphere-value="settings.sphere.mobileProjectLength">0.90</b></span><input name="settings.sphere.mobileProjectLength" type="range" min="0.5" max="1.8" step="0.01" /></label>
                 </div>
@@ -296,10 +315,11 @@
     <script src="supabase-config.js?v=20260628-security-1"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="admin.js?v=20260714-device-settings-sections-1"></script>
+<script src="admin.js?v=20260714-device-profiles-controls-1"></script>
 <script src="admin-localization.js?v=20260627-safe-ru-2"></script>
   </body>
 </html>
+
 
 
 
