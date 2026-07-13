@@ -162,7 +162,7 @@
   }
 
   async function loadSphereSettings() {
-    const defaults = { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5 };
+    const defaults = { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, tabletSize: 0.65, tabletElementScale: 0.42, mobileSize: 0.7, mobileElementScale: 0.24, tabletProjectScale: 0.44, tabletProjectWidth: 0.7, tabletProjectLength: 1.08, mobileProjectScale: 0.38, mobileProjectWidth: 0.66, mobileProjectLength: 0.9, waterTransparency: 50, waterDarkening: 50, waterFrost: 5 };
     if (!client) return { values: defaults, signature: "" };
     const { data, error } = await client.from("site_settings").select("analytics,updated_at").limit(1).maybeSingle();
     if (error) throw error;
@@ -182,7 +182,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260714-responsive-sphere-cylinder-presets-1";
+    script.src = "sphere.js?v=20260714-device-settings-admin-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -232,7 +232,7 @@
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
     const fallbackAssets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
-    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, cvNodes: [], cvDisplay: {}, sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5 } });
+    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, cvNodes: [], cvDisplay: {}, sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, tabletSize: 0.65, tabletElementScale: 0.42, mobileSize: 0.7, mobileElementScale: 0.24, tabletProjectScale: 0.44, tabletProjectWidth: 0.7, tabletProjectLength: 1.08, mobileProjectScale: 0.38, mobileProjectWidth: 0.66, mobileProjectLength: 0.9, waterTransparency: 50, waterDarkening: 50, waterFrost: 5 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
@@ -243,6 +243,7 @@
   });
   window.setInterval(refreshIfContentChanged, 15000);
 })();
+
 
 
 
