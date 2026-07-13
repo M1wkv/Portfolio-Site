@@ -160,7 +160,7 @@ function drawCard(entry){const{item,x,y,z,depth,mode="sphere",alphaBoost=1}=entr
 const nearScale=mode==="ribbon"?1.85+depth*0.15:0.58+depth*0.88;
 const visualScale=(entry.visualScale||1)*(mode==="ribbon"?projectState.itemScale:1);
 const ratio=imageRatio(item);
-const base=112*effectiveElementScale()*nearScale*visualScale;
+const base=112*(mode==="ribbon"?1.88:effectiveElementScale())*nearScale*visualScale;
 let cardW=base*Math.sqrt(ratio);
 let cardH=base/Math.sqrt(ratio);if(mode==="ribbon"&&entry.centerFocus>0.5&&projectFocusProgress>0.001){const viewportMargin=width<700?24:48;const targetHeight=Math.max(120,height-viewportMargin*2);const focusFit=1+(targetHeight/cardH-1)*projectFocusProgress;cardW*=focusFit;cardH*=focusFit;}
 const alpha=mode==="ribbon"?alphaBoost:(0.22+depth*0.78)*alphaBoost;
