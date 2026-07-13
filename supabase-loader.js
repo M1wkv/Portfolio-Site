@@ -141,6 +141,26 @@
     ];
   }
 
+  async function loadCvDisplay() {
+    if (!client) return {};
+    const [{ data: profile }, { data: cv }, { data: contacts }] = await Promise.all([
+      client.from("profile").select("name").limit(1).maybeSingle(),
+      client.from("cv_sections").select("position,description").order("sort_order", { ascending: true }),
+      client.from("contacts").select("telegram,email,linkedin").limit(1).maybeSingle()
+    ]);
+    const byPosition = new Map((cv || []).map((section) => [section.position, section.description || ""]));
+    return {
+      name: profile?.name || "",
+      intro: byPosition.get("intro") || "",
+      skills: byPosition.get("skills") || "",
+      tools: byPosition.get("tools") || "",
+      about: byPosition.get("about") || "",
+      experienceItems: byPosition.get("experience_items") || "",
+      experienceCaption: byPosition.get("experience_caption") || "",
+      contacts: contacts || {}
+    };
+  }
+
   async function loadSphereSettings() {
     const defaults = { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5, idleTransparency: 100, idleDarkening: 100, idleFrost: 20 };
     if (!client) return { values: defaults, signature: "" };
@@ -162,7 +182,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260713-cv-text-project-count-1";
+    script.src = "sphere.js?v=20260713-cv-admin-content-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -200,19 +220,19 @@
   }
 
   try {
-    const [bundle, cvNodes, sphereSettings] = await Promise.all([loadAssetBundle(), loadCvNodes(), loadSphereSettings()]);
+    const [bundle, cvNodes, sphereSettings, cvDisplay] = await Promise.all([loadAssetBundle(), loadCvNodes(), loadSphereSettings(), loadCvDisplay()]);
     bundle.assets = selectBalancedAssets(bundle.projectGroups, sphereSettings.values.itemCount);
     if (!bundle.assets.length) bundle.assets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
     if (!bundle.projectAssets.length) bundle.projectAssets = bundle.assets;
     activeContentSignature = `${bundle.signature}|${sphereSettings.signature}`;
-    setBootstrapPayload({ assets: bundle.assets, projectAssets: bundle.projectAssets, cvNodes, sphereSettings: sphereSettings.values });
+    setBootstrapPayload({ assets: bundle.assets, projectAssets: bundle.projectAssets, cvNodes, cvDisplay, sphereSettings: sphereSettings.values });
     if (bundle.assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(bundle.assets));
     else localStorage.removeItem(STORAGE_ASSETS);
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
     const fallbackAssets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
-    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, cvNodes: [], sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5, idleTransparency: 100, idleDarkening: 100, idleFrost: 20 } });
+    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, cvNodes: [], cvDisplay: {}, sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5, idleTransparency: 100, idleDarkening: 100, idleFrost: 20 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
