@@ -1056,6 +1056,7 @@ input {
   line-height: 1.25;
   max-width: 37.8vw;
   text-transform: none;
+  transform: translateY(-4px);
 }
 
 .project-meta {
@@ -1279,7 +1280,7 @@ input {
   display: grid;
   justify-items: center;
   gap: clamp(42px, 6.2vh, 78px);
-  margin: 7.5vh auto 11vh;
+  margin: 11.8vh auto 11vh;
   color: #fff;
   text-align: center;
 }
@@ -1307,7 +1308,7 @@ input {
   .cv-top-nav { top: 14px; margin-top: 14px; }
   .cv-top-nav .cv-back, .cv-top-nav .cv-works { min-width: 120px; height: 38px; padding: 0 14px; font-size: 14px; }
   .cv-top-nav .cv-works { min-width: 128px; }
-  .cv-content { width:min(100% - 28px, 620px); gap:44px; margin-top:58px; }
+  .cv-content { width:min(100% - 28px, 620px); gap:44px; margin-top:76px; }
   .cv-hero h1 { font-size: clamp(39px, 12.6vw, 62px); }
   .cv-hero p, .cv-about p { margin-top:20px; font-size:13px; line-height:1.18; }
   .cv-chip-row { gap:7px; } .cv-chip-row span, .cv-chip-row a { min-height:26px; padding:0 10px; font-size:11px; }
