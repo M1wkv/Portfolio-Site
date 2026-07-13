@@ -176,9 +176,9 @@ select { min-width: 0; }
 
 /* Final project layout overrides. */
 .sphere-page.is-project .project-controls {
-  left: 50%;
+  left: 0;
   right: auto;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .project-index-list { gap: 4px; }
@@ -186,9 +186,9 @@ select { min-width: 0; }
 @media (max-width: 767px) {
   .sphere-page.is-project .project-controls {
     top: 50%;
-    left: 50%;
+    left: 0;
     right: auto;
-    transform: translate(-50%, -50%);
+    transform: translateY(-50%);
   }
 
   .sphere-page.is-project .project-heading,
