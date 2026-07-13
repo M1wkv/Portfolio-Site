@@ -112,7 +112,7 @@ const cvSceneState={sphereSize:0.72,elementScale:0.6,blur:18,dim:45};
 let cvLastInteractionAt=performance.now();
 let cvAutoPitchDirection=1;
 const state={sphereSize:Number(sizeRange.value),elementScale:Number(scaleRange.value),fisheye:Number(fisheyeRange.value)};
-const projectState={itemScale:0.5,itemCount:50,gap:0.5,cylinderWidth:0.75,cylinderLength:1.25};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
+const projectState={itemScale:0.5,itemCount:20,gap:0.5,cylinderWidth:0.75,cylinderLength:1.25};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
 const waterDefaults={transparency:clampSetting(sphereSettings.waterTransparency,50,0,100),darkening:clampSetting(sphereSettings.waterDarkening,50,0,100),frost:clampSetting(sphereSettings.waterFrost,5,0,100)};
 let waterState={...waterDefaults};
 const idleDefaults={transparency:clampSetting(sphereSettings.idleTransparency,100,0,100),darkening:clampSetting(sphereSettings.idleDarkening,100,0,100),frost:clampSetting(sphereSettings.idleFrost,20,0,100)};
@@ -418,7 +418,7 @@ function drawCvBoxFace(face,centerX,centerY,focal,cameraZ){const points=face.poi
 function drawCvCubeWarpedLine(text,y,fontSize,warp){ctx.font=`700 ${fontSize}px Helvetica Neue Cyr, Helvetica Neue, Helvetica, Arial, sans-serif`;const intensity=warp*4.2;const glyphs=Array.from(text);const widths=glyphs.map((glyph)=>ctx.measureText(glyph).width);const total=widths.reduce((sum,value)=>sum+value,0);let cursor=-total/2;glyphs.forEach((glyph,index)=>{const glyphWidth=widths[index];const center=cursor+glyphWidth/2;const normal=total?center/(total/2):0;const edge=Math.min(1,Math.abs(normal));ctx.save();ctx.translate(center,y+normal*normal*fontSize*intensity*0.48);ctx.rotate(normal*intensity*0.34);ctx.scale(1+edge*edge*intensity*1.5,Math.max(0.46,1-edge*edge*intensity*0.38));ctx.fillText(glyph,0,0);ctx.restore();cursor+=glyphWidth;});}
 function openProject(item){clearSphereProjectFocus();activeProjectKey=projectKey(item);
 const projectItems=getProjectItems();
-projectCountRange.value=String(Math.min(Number(projectCountRange.max),Math.max(1,projectItems.length)));updateProjectUi();
+projectCountRange.value="20";updateProjectUi();
 const index=Math.max(0,projectItems.findIndex((candidate)=>candidate.src===item.src));document.documentElement.dataset.activeProjectItemCount=String(projectItems.length);ribbonTargetOffset=index;ribbonOffset=index;ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+5000;projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=1;viewMode="project";spherePage.classList.add("is-project");projectTitle.textContent=projectLabel(item,index);projectViewUi.hidden=false;projectViewUi.classList.remove("is-media-open");setProjectTopNavFrosted(true);}
 function toggleProjectMedia(){if(viewMode!=="project")return;
 const opening=projectFocusTarget<0.5;projectFocusTarget=opening?1:0;projectZoomTarget=0;projectZoomProgress=0;projectViewUi.classList.toggle("is-media-open",opening);ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+(opening?600000:5000);if(opening){
