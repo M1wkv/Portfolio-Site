@@ -56,10 +56,7 @@
         projectLength: 1.25,
         waterTransparency: 50,
         waterDarkening: 50,
-        waterFrost: 5,
-        idleTransparency: 100,
-        idleDarkening: 100,
-        idleFrost: 20
+        waterFrost: 5
       }
     }
   };
