@@ -174,6 +174,82 @@ select { min-width: 0; }
   .project-heading { top: 11vh; }
 }
 
+/* Final project layout overrides. */
+.sphere-page.is-project .project-controls {
+  left: 1.25vw;
+  right: auto;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .project-index-list { gap: 4px; }
+
+@media (max-width: 767px) {
+  .sphere-page.is-project .project-controls {
+    left: max(8px, env(safe-area-inset-left));
+    right: auto;
+  }
+
+  .sphere-page.is-project .project-heading,
+  .sphere-page.is-project .project-case,
+  .sphere-page.is-project .project-narrative section,
+  .sphere-page.is-project .project-role,
+  .sphere-page.is-cv .cv-content,
+  .sphere-page.is-cv .cv-experience article {
+    text-align: center;
+    justify-items: center;
+  }
+
+  .sphere-page.is-project .project-narrative section:first-child,
+  .sphere-page.is-project .project-narrative section:last-child {
+    margin-inline: 0;
+    text-align: center;
+  }
+
+  .sphere-page.is-cv .cv-experience article { grid-template-columns: 1fr; }
+  .sphere-page.is-cv .cv-experience time { grid-column: auto; grid-row: auto; }
+}
+
+/* Project controls remain independent from the main sphere controls. */
+.project-controls {
+  left: 1.25vw;
+  right: auto;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .project-index-list {
+  gap: 4px;
+}
+
+@media (max-width: 767px) {
+  .project-controls {
+    left: max(8px, env(safe-area-inset-left));
+    right: auto;
+  }
+
+  .sphere-page.is-project .project-heading,
+  .sphere-page.is-project .project-case,
+  .sphere-page.is-project .project-narrative section,
+  .sphere-page.is-project .project-role,
+  .sphere-page.is-cv .cv-content,
+  .sphere-page.is-cv .cv-experience article {
+    text-align: center;
+    justify-items: center;
+  }
+
+  .sphere-page.is-project .project-narrative section:first-child,
+  .sphere-page.is-project .project-narrative section:last-child {
+    margin-inline: 0;
+    text-align: center;
+  }
+
+  .sphere-page.is-cv .cv-experience article {
+    grid-template-columns: 1fr;
+  }
+
+  .sphere-page.is-cv .cv-experience time {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
 @media (max-width: 1023px) {
   .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-top .sphere-topbar,
   .sphere-page:not(.is-project):not(.is-cv).is-ui-idle-bottom .sphere-footer-nav {
