@@ -16,10 +16,12 @@
       socials: { telegram: "", behance: "", linkedin: "", instagram: "" }
     },
     cv: {
-      experience: "Portfolio systems, AI campaigns, social content packs, landing visuals and case studies.",
-      education: "",
-      skills: "Figma, Photoshop, Illustrator, After Effects, Midjourney, Runway, Krea and web layout basics.",
-      certificates: "",
+      intro: "Коммуникационный дизайнер, специализируюсь на создании статичных визуальных материалов и разработке брендинга.",
+      skills: "Коммуникационный дизайн, Визуальные концепции, Key visual, Брендинг, Рекламные материалы, Полиграфия, Digital-креативы, Дизайн презентаций, Ретушь, Типографика, Верстка, AI-графика",
+      tools: "Figma, Photoshop, 3DS Max, Cinema 4D, Illustrator",
+      about: "UX/UI дизайнер, создаю цифровые продукты, которые решают задачи бизнеса. Более 4 лет проектирую удобные интерфейсы для веб-сайтов и мобильных приложений.",
+      experienceItems: "Communication Designer | Freelance | 2012 г. - нояб. 2018 г.\nSenior Graphic Designer | Unique Present Media Holding | авг. 2018 г. - нояб. 2020 г.\nCommunication Designer | Eight Media Maker | нояб. 2020 г. - нояб. 2022 г.\nCommunication Designer | Tenge Bank | май 2024 г. - сент. 2024 г.\nHead of Design | Salad Agency | нояб. 2020 г. - настоящее время",
+      experienceCaption: "Основные места работы и направления моей профессиональной деятельности.",
       pdf: "",
       pdfName: "",
       pdfUrl: ""
@@ -196,10 +198,12 @@
           socials: profile?.socials || {}
         },
         cv: {
-          experience: cvByPosition.get("experience")?.description || firstCv?.description || defaultContent.cv.experience,
-          education: cvByPosition.get("education")?.description || "",
+          intro: cvByPosition.get("intro")?.description || defaultContent.cv.intro,
           skills: cvByPosition.get("skills")?.description || defaultContent.cv.skills,
-          certificates: cvByPosition.get("certificates")?.description || ""
+          tools: cvByPosition.get("tools")?.description || defaultContent.cv.tools,
+          about: cvByPosition.get("about")?.description || defaultContent.cv.about,
+          experienceItems: cvByPosition.get("experience_items")?.description || defaultContent.cv.experienceItems,
+          experienceCaption: cvByPosition.get("experience_caption")?.description || defaultContent.cv.experienceCaption
         },
         portfolio: {
           projects: (projects || []).map((project) => ({
@@ -684,10 +688,12 @@
 
     saveStage = "сохранение резюме";
     await replaceRows("cv_sections", [
-      { position: "experience", title: "Experience", description: content.cv.experience, sort_order: 1 },
-      { position: "education", title: "Education", description: content.cv.education, sort_order: 2 },
-      { position: "skills", title: "Skills", description: content.cv.skills, sort_order: 3 },
-      { position: "certificates", title: "Certificates", description: content.cv.certificates, sort_order: 4 }
+      { position: "intro", title: "Вводный текст", description: content.cv.intro, sort_order: 1 },
+      { position: "skills", title: "Навыки", description: content.cv.skills, sort_order: 2 },
+      { position: "tools", title: "Инструменты", description: content.cv.tools, sort_order: 3 },
+      { position: "about", title: "Обо мне", description: content.cv.about, sort_order: 4 },
+      { position: "experience_items", title: "Опыт работы", description: content.cv.experienceItems, sort_order: 5 },
+      { position: "experience_caption", title: "Подпись опыта", description: content.cv.experienceCaption, sort_order: 6 }
     ]);
 
     saveStage = "сохранение разделов сайта";
@@ -743,12 +749,12 @@
   async function syncSphereData() {
     const services = content.services.filter((service) => service.enabled).map((service) => service.title).join(", ");
     const contact = [content.contacts.telegram, content.contacts.email, content.contacts.phone].filter(Boolean).join(" / ");
-    const cvSummary = [content.cv.experience, content.cv.skills].filter(Boolean).join(" ");
+    const cvSummary = [content.cv.intro, content.cv.skills, content.cv.about].filter(Boolean).join(" ");
     const profileSummary = content.profile.description || defaultContent.profile.description;
     const nodes = [
       { look: "center", yaw: 0, pitch: 0, eyebrow: content.profile.role, title: content.profile.name, body: profileSummary, type: "hero" },
       { look: "top", yaw: 0, pitch: 34, title: "Profile", body: profileSummary },
-      { look: "bottom", yaw: 0, pitch: -34, title: "CV", body: cvSummary || defaultContent.cv.experience },
+      { look: "bottom", yaw: 0, pitch: -34, title: "CV", body: cvSummary || defaultContent.cv.experienceItems },
       { look: "left", yaw: -42, pitch: 0, title: "Services", body: services || defaultContent.services.map((service) => service.title).join(", ") },
       { look: "right", yaw: 42, pitch: 0, title: "Contact", body: contact || "Available for visual identity, AI art direction, portfolio sites and design case packaging." }
     ];
