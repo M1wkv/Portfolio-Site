@@ -176,16 +176,19 @@ select { min-width: 0; }
 
 /* Final project layout overrides. */
 .sphere-page.is-project .project-controls {
-  left: 1.25vw;
+  left: 50%;
   right: auto;
+  transform: translate(-50%, -50%);
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .project-index-list { gap: 4px; }
 
 @media (max-width: 767px) {
   .sphere-page.is-project .project-controls {
-    left: max(8px, env(safe-area-inset-left));
+    top: 50%;
+    left: 50%;
     right: auto;
+    transform: translate(-50%, -50%);
   }
 
   .sphere-page.is-project .project-heading,
