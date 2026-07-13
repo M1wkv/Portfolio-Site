@@ -162,7 +162,7 @@
   }
 
   async function loadSphereSettings() {
-    const defaults = { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5, idleTransparency: 100, idleDarkening: 100, idleFrost: 20 };
+    const defaults = { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5 };
     if (!client) return { values: defaults, signature: "" };
     const { data, error } = await client.from("site_settings").select("analytics,updated_at").limit(1).maybeSingle();
     if (error) throw error;
@@ -182,7 +182,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260713-mobile-nav-active-2";
+    script.src = "sphere.js?v=20260713-remove-idle-effect-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -232,7 +232,7 @@
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
     const fallbackAssets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
-    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, cvNodes: [], cvDisplay: {}, sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5, idleTransparency: 100, idleDarkening: 100, idleFrost: 20 } });
+    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, cvNodes: [], cvDisplay: {}, sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, waterTransparency: 50, waterDarkening: 50, waterFrost: 5 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
