@@ -51,17 +51,30 @@
         rotationX: 0.14,
         rotationY: -0.09,
         projectScale: 0.5,
+        projectItemCount: 20,
         projectGap: 0.5,
         projectWidth: 0.75,
         projectLength: 1.25,
         tabletSize: 0.65,
         tabletElementScale: 0.42,
+        tabletItemCount: 50,
+        tabletFisheye: 0.15,
+        tabletRotationX: 0.14,
+        tabletRotationY: -0.09,
         mobileSize: 0.7,
         mobileElementScale: 0.24,
+        mobileItemCount: 40,
+        mobileFisheye: 0.15,
+        mobileRotationX: 0.14,
+        mobileRotationY: -0.09,
         tabletProjectScale: 0.44,
+        tabletProjectItemCount: 16,
+        tabletProjectGap: 0.5,
         tabletProjectWidth: 0.7,
         tabletProjectLength: 1.08,
         mobileProjectScale: 0.38,
+        mobileProjectItemCount: 12,
+        mobileProjectGap: 0.5,
         mobileProjectWidth: 0.66,
         mobileProjectLength: 0.9,
         waterTransparency: 50,
@@ -289,7 +302,7 @@
       const output = form.querySelector(`[data-sphere-value="${input.name}"]`);
       if (!output) return;
       const value = Number(input.value);
-      if (input.name === "settings.sphere.itemCount" || /(?:Transparency|Darkening|Frost)$/.test(input.name)) output.textContent = String(Math.round(value));
+      if (/itemcount/i.test(input.name) || /(?:Transparency|Darkening|Frost)$/.test(input.name)) output.textContent = String(Math.round(value));
       else output.textContent = input.name === "settings.sphere.size" ? value.toFixed(1) : value.toFixed(2);
     });
   }
