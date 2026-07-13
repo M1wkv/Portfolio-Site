@@ -822,3 +822,47 @@ small {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Responsive hardening for the admin workspace. */
+html { overflow-x: clip; }
+
+:where(img, video, iframe) { max-width: 100%; height: auto; }
+
+textarea,
+input,
+select,
+button { max-width: 100%; }
+
+.admin-workspace { min-width: 0; }
+
+@media (min-width: 1440px) {
+  .workspace-header > *,
+  .admin-form { width: min(1480px, 100%); margin-inline: auto; }
+  .workspace-header { padding-inline: clamp(34px, 4vw, 88px); }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .admin-sidebar { padding: 20px 24px; }
+  .admin-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .form-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .form-grid.two .wide { grid-column: 1 / -1; }
+}
+
+@media (max-width: 767px) {
+  .admin-shell { min-width: 0; }
+  .admin-sidebar { padding: max(16px, env(safe-area-inset-top)) 16px 18px; }
+  .workspace-header { padding-inline: max(16px, env(safe-area-inset-left)); }
+  .admin-form { padding-inline: max(16px, env(safe-area-inset-left)); padding-bottom: max(32px, env(safe-area-inset-bottom)); }
+  .admin-tabs button,
+  .workspace-actions button,
+  .section-toolbar button { min-height: 44px; }
+  label input, label textarea, label select { min-height: 44px; }
+  .project-preview { grid-template-columns: minmax(72px, 24vw) minmax(0, 1fr); }
+  .project-preview img, .project-preview > span { width: min(24vw, 104px); height: auto; aspect-ratio: 4 / 3; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .admin-tabs button:hover,
+  .workspace-actions button:hover,
+  .section-toolbar button:hover { transform: translateY(-1px); }
+}
