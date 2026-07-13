@@ -1259,7 +1259,7 @@ input {
 .project-controls {
   position: fixed;
   top: 50%;
-  left: 1.25vw;
+  left: 0;
   right: auto;
   z-index: 8;
   width: min(214px, 11.15vw);
@@ -2404,7 +2404,7 @@ input {
 
   .project-top-nav,
   .cv-project-nav { top: max(12px, env(safe-area-inset-top)); --project-nav-button-width: min(42vw, 132px); }
-  .project-controls { top: 50%; left: max(8px, env(safe-area-inset-left)); right: auto; width: min(172px, calc(100vw - 16px)); max-height: min(46svh, 390px); overflow-y: auto; }
+  .project-controls { top: 50%; left: 0; right: auto; width: min(172px, calc(100vw - 16px)); max-height: min(46svh, 390px); overflow-y: auto; }
   .project-heading { top: 72px; width: min(calc(100vw - 28px), 540px); }
   .project-heading strong { max-width: 100%; font-size: clamp(28px, 9vw, 46px); white-space: normal; overflow-wrap: anywhere; }
   .project-heading .project-subtitle, .project-meta { max-width: min(90vw, 520px); }
