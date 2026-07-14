@@ -2428,7 +2428,7 @@ input {
     justify-content: center;
     column-gap: 4px;
     row-gap: 4px;
-    transform: translateY(3px);
+    transform: translateY(5px);
   }
   .project-meta-time {
     display: flex;
@@ -2483,6 +2483,7 @@ input {
   .project-case { width: min(860px, calc(100vw - 48px)); }
   .project-controls { width: 180px; }
   .project-heading .project-subtitle { transform: translateY(2px); }
+  .project-meta { transform: translateY(2px); }
   .cv-content { width: min(900px, calc(100% - 48px)); }
 }
 
