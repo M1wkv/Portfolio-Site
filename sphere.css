@@ -1275,6 +1275,9 @@ input {
   -webkit-backdrop-filter: blur(12px);
 }
 
+/* Saved cylinder parameters remain active, but the panel is not shown in the case view. */
+.project-view-ui .project-controls { display: none !important; }
+
 .project-control {
   display: grid;
   gap: 9px;
@@ -1365,6 +1368,13 @@ input {
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
+}
+
+.project-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.52vw;
 }
 
 .project-meta-time { display: contents; }
@@ -2429,6 +2439,10 @@ input {
   }
   .project-meta span {
     width: fit-content;
+  }
+  .project-tools {
+    flex: 0 0 100%;
+    gap: 4px;
   }
   .project-narrative section:last-child { display: none; }
   .project-narrative section:first-child > b {
