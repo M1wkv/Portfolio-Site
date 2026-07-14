@@ -203,7 +203,7 @@ select { min-width: 0; }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  :root { --content-chip-gap: 8px; }
+  :root { --content-chip-gap: 6px; }
 }
 
 @media (max-width: 1023px) {
@@ -2559,7 +2559,7 @@ input {
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  :root { --content-chip-gap: 8px; }
+  :root { --content-chip-gap: 6px; }
 }
 
 /* Shared chip rhythm across project details and CV sections. */
@@ -2580,7 +2580,7 @@ input {
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  :root { --content-chip-gap: 8px; }
+  :root { --content-chip-gap: 6px; }
 }
 
 @media (max-width: 1023px) {
