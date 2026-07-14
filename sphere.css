@@ -198,18 +198,22 @@ select { min-width: 0; }
 #projectRoleTags,
 .cv-chip-row { gap: var(--content-chip-gap); }
 
-@media (max-width: 1023px) {
-  :root { --content-chip-gap: 4px; }
+@media (max-width: 767px) {
+  :root { --content-chip-gap: 6px; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root { --content-chip-gap: 8px; }
 }
 
 @media (max-width: 1023px) {
   .project-meta {
-    column-gap: 4px;
-    row-gap: 4px;
+    column-gap: var(--content-chip-gap);
+    row-gap: var(--content-chip-gap);
   }
 
   .project-tools,
-  .project-meta-time { gap: 4px; }
+  .project-meta-time { gap: var(--content-chip-gap); }
 }
 
 /* Final project layout overrides. */
@@ -2537,6 +2541,27 @@ input {
   .project-heading { top: 11vh; }
 }
 
+/* Final shared chip rhythm across project details and CV sections. */
+:root { --content-chip-gap: 10px; }
+
+.project-meta {
+  column-gap: var(--content-chip-gap);
+  row-gap: var(--content-chip-gap);
+}
+
+.project-tools,
+.project-meta-time,
+#projectRoleTags,
+.cv-chip-row { gap: var(--content-chip-gap); }
+
+@media (max-width: 767px) {
+  :root { --content-chip-gap: 6px; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root { --content-chip-gap: 8px; }
+}
+
 /* Shared chip rhythm across project details and CV sections. */
 :root { --content-chip-gap: 10px; }
 
@@ -2550,16 +2575,20 @@ input {
 #projectRoleTags,
 .cv-chip-row { gap: var(--content-chip-gap); }
 
-@media (max-width: 1023px) {
-  :root { --content-chip-gap: 4px; }
+@media (max-width: 767px) {
+  :root { --content-chip-gap: 6px; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root { --content-chip-gap: 8px; }
 }
 
 @media (max-width: 1023px) {
   .project-meta {
-    column-gap: 4px;
-    row-gap: 4px;
+    column-gap: var(--content-chip-gap);
+    row-gap: var(--content-chip-gap);
   }
 
   .project-tools,
-  .project-meta-time { gap: 4px; }
+  .project-meta-time { gap: var(--content-chip-gap); }
 }
