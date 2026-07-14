@@ -1409,7 +1409,7 @@ input {
 .project-case {
   position: fixed;
   left: 50%;
-  bottom: 7vh;
+  bottom: calc(7vh + 8px);
   width: min(1190px, 62vw);
   transform: translateX(-50%);
   display: grid;
@@ -1435,11 +1435,19 @@ input {
 .project-narrative b,
 .project-role > b {
   display: block;
+  position: relative;
+  z-index: 1;
+  visibility: visible;
+  opacity: 1;
   margin-bottom: 0.68vw;
   color: #fff;
   font-size: clamp(13px, 1.08vw, 21px);
   font-weight: 700;
   line-height: 1;
+}
+
+.project-task-title {
+  color: #fff !important;
 }
 
 .project-narrative section:first-child { margin-left: -30px; text-align: right; }
@@ -2251,7 +2259,7 @@ input {
   }
 
   .project-case {
-    bottom: 26px;
+    bottom: 34px;
     width: calc(100vw - 40px);
     font-size: 11px;
   }
@@ -2273,7 +2281,7 @@ input {
   .project-meta span { min-height: 22px; padding: 0 8px; font-size: 13px; }
 
   .project-case {
-    bottom: 18px;
+    bottom: 26px;
     width: calc(100vw - 36px);
     gap: 16px;
   }
@@ -2429,7 +2437,7 @@ input {
   .project-heading .project-subtitle, .project-meta { max-width: min(90vw, 520px); }
   .project-heading .project-subtitle { transform: translateY(2px); }
   .project-meta #projectTools { flex-basis: auto; }
-  .project-case { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 30px); width: min(calc(100vw - 24px), 660px); max-height: 33svh; overflow-y: auto; padding-right: 3px; }
+  .project-case { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 38px); width: min(calc(100vw - 24px), 660px); max-height: 33svh; overflow-y: auto; padding-right: 3px; }
   .cv-view { overflow-y: auto !important; overflow-x: clip; padding-bottom: env(safe-area-inset-bottom); }
   .cv-content { width: min(calc(100% - 24px), 620px); min-height: calc(100svh - 94px); margin: 76px auto max(18px, env(safe-area-inset-bottom)); gap: clamp(20px, 4vh, 34px); }
   .cv-hero h1 { font-size: clamp(38px, 12.5vw, 58px); }
