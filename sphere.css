@@ -1367,6 +1367,8 @@ input {
   white-space: nowrap;
 }
 
+.project-meta-time { display: contents; }
+
 .project-view-ui.is-media-open .project-heading,
 .project-view-ui.is-media-open .project-case {
   opacity: 0;
@@ -2412,9 +2414,8 @@ input {
   .project-heading .project-subtitle { transform: translateY(2px); }
   .project-meta {
     display: grid;
-    grid-template-columns: repeat(2, max-content);
+    grid-template-columns: max-content;
     justify-content: center;
-    column-gap: 4px;
     row-gap: 6px;
   }
   .project-meta #projectTools {
@@ -2424,6 +2425,12 @@ input {
   .project-meta span {
     width: fit-content;
     justify-self: center;
+  }
+  .project-meta-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
   }
   .project-narrative section:last-child { display: none; }
   .project-narrative section:first-child > b {
