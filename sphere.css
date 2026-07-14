@@ -174,6 +174,27 @@ select { min-width: 0; }
   .project-heading { top: 11vh; }
 }
 
+/* Final viewport-specific spacing for project metadata chips. */
+@media (max-width: 1023px) {
+  .project-meta {
+    column-gap: 4px;
+    row-gap: 4px;
+  }
+
+  .project-tools,
+  .project-meta-time { gap: 4px; }
+}
+
+@media (max-width: 1023px) {
+  .project-meta {
+    column-gap: 4px;
+    row-gap: 4px;
+  }
+
+  .project-tools,
+  .project-meta-time { gap: 4px; }
+}
+
 /* Final project layout overrides. */
 .sphere-page.is-project .project-controls {
   left: 0;
@@ -1353,8 +1374,8 @@ input {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  column-gap: 4px;
-  row-gap: 4px;
+  column-gap: 10px;
+  row-gap: 10px;
 }
 
 .project-meta span {
@@ -1375,7 +1396,7 @@ input {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.52vw;
+  gap: 10px;
 }
 
 .project-meta-time {
@@ -1383,7 +1404,7 @@ input {
   flex: 0 0 100%;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 10px;
 }
 
 .project-view-ui.is-media-open .project-heading,
@@ -2497,4 +2518,14 @@ input {
   .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar,
   .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav { width: min(920px, calc(100vw - 320px)); }
   .project-heading { top: 11vh; }
+}
+
+@media (max-width: 1023px) {
+  .project-meta {
+    column-gap: 4px;
+    row-gap: 4px;
+  }
+
+  .project-tools,
+  .project-meta-time { gap: 4px; }
 }
