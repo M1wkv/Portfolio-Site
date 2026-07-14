@@ -1367,8 +1367,6 @@ input {
   white-space: nowrap;
 }
 
-.project-meta-time { display: contents; }
-
 .project-view-ui.is-media-open .project-heading,
 .project-view-ui.is-media-open .project-case {
   opacity: 0;
@@ -2413,24 +2411,14 @@ input {
   .project-heading .project-subtitle, .project-meta { max-width: min(90vw, 520px); }
   .project-heading .project-subtitle { transform: translateY(2px); }
   .project-meta {
-    display: grid;
-    grid-template-columns: max-content;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    row-gap: 6px;
-  }
-  .project-meta #projectTools {
-    grid-column: 1 / -1;
-    justify-self: center;
+    gap: 4px;
+    transform: translateY(3px);
   }
   .project-meta span {
     width: fit-content;
-    justify-self: center;
-  }
-  .project-meta-time {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
   }
   .project-narrative section:last-child { display: none; }
   .project-narrative section:first-child > b {
