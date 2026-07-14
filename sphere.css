@@ -185,6 +185,23 @@ select { min-width: 0; }
   .project-meta-time { gap: 4px; }
 }
 
+/* Shared chip rhythm across project details and CV sections. */
+:root { --content-chip-gap: 10px; }
+
+.project-meta {
+  column-gap: var(--content-chip-gap);
+  row-gap: var(--content-chip-gap);
+}
+
+.project-tools,
+.project-meta-time,
+#projectRoleTags,
+.cv-chip-row { gap: var(--content-chip-gap); }
+
+@media (max-width: 1023px) {
+  :root { --content-chip-gap: 4px; }
+}
+
 @media (max-width: 1023px) {
   .project-meta {
     column-gap: 4px;
@@ -2518,6 +2535,23 @@ input {
   .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar,
   .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav { width: min(920px, calc(100vw - 320px)); }
   .project-heading { top: 11vh; }
+}
+
+/* Shared chip rhythm across project details and CV sections. */
+:root { --content-chip-gap: 10px; }
+
+.project-meta {
+  column-gap: var(--content-chip-gap);
+  row-gap: var(--content-chip-gap);
+}
+
+.project-tools,
+.project-meta-time,
+#projectRoleTags,
+.cv-chip-row { gap: var(--content-chip-gap); }
+
+@media (max-width: 1023px) {
+  :root { --content-chip-gap: 4px; }
 }
 
 @media (max-width: 1023px) {
