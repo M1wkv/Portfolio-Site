@@ -1498,6 +1498,29 @@ input {
   text-transform: none;
 }
 
+/* Keep the original wide-screen composition: the role sits below both narrative columns. */
+@media (min-width: 768px) {
+  .project-idea-column {
+    display: contents;
+  }
+
+  .project-idea-column > section {
+    margin-right: -30px;
+  }
+
+  .project-narrative .project-role {
+    grid-column: 1 / -1;
+    justify-items: center;
+    margin-top: clamp(18px, 2.1vw, 36px);
+    text-align: center;
+  }
+
+  .project-narrative .project-role #projectRoleTags {
+    justify-content: center;
+    max-width: 39.6vw;
+  }
+}
+
 .sphere-page.is-project .sphere-topbar,
 .sphere-page.is-project .sphere-footer-nav,
 .sphere-page.is-project .glass-controls,
