@@ -2414,6 +2414,8 @@ input {
     display: grid;
     grid-template-columns: repeat(2, max-content);
     justify-content: center;
+    column-gap: 4px;
+    row-gap: 6px;
   }
   .project-meta #projectTools {
     grid-column: 1 / -1;
