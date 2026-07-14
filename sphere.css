@@ -2408,7 +2408,8 @@ input {
   .project-heading { top: 72px; width: min(calc(100vw - 28px), 540px); }
   .project-heading strong { max-width: 100%; font-size: clamp(28px, 9vw, 46px); white-space: normal; overflow-wrap: anywhere; }
   .project-heading .project-subtitle, .project-meta { max-width: min(90vw, 520px); }
-  .project-case { bottom: max(12px, env(safe-area-inset-bottom)); width: min(calc(100vw - 24px), 660px); max-height: 33svh; overflow-y: auto; padding-right: 3px; }
+  .project-heading .project-subtitle { transform: translateY(2px); }
+  .project-case { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 15px); width: min(calc(100vw - 24px), 660px); max-height: 33svh; overflow-y: auto; padding-right: 3px; }
   .cv-view { overflow-y: auto !important; overflow-x: clip; padding-bottom: env(safe-area-inset-bottom); }
   .cv-content { width: min(calc(100% - 24px), 620px); min-height: calc(100svh - 94px); margin: 76px auto max(18px, env(safe-area-inset-bottom)); gap: clamp(20px, 4vh, 34px); }
   .cv-hero h1 { font-size: clamp(38px, 12.5vw, 58px); }
@@ -2424,6 +2425,7 @@ input {
   .project-heading { width: min(680px, calc(100vw - 250px)); }
   .project-case { width: min(860px, calc(100vw - 48px)); }
   .project-controls { width: 180px; }
+  .project-heading .project-subtitle { transform: translateY(2px); }
   .cv-content { width: min(900px, calc(100% - 48px)); }
 }
 
