@@ -2419,7 +2419,24 @@ input {
     grid-column: 1 / -1;
     justify-self: center;
   }
+  .project-meta span {
+    width: fit-content;
+    justify-self: center;
+  }
   .project-narrative section:last-child { display: none; }
+  .project-role {
+    width: 100%;
+  }
+  #projectRoleTags {
+    width: 100%;
+    max-width: none;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+  #projectRoleTags span {
+    min-height: 20px;
+    padding: 0 8px;
+  }
   .project-case { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 38px); width: min(calc(100vw - 24px), 660px); max-height: 33svh; overflow-y: auto; padding-right: 3px; }
   .cv-view { overflow-y: auto !important; overflow-x: clip; padding-bottom: env(safe-area-inset-bottom); }
   .cv-content { width: min(calc(100% - 24px), 620px); min-height: calc(100svh - 94px); margin: 76px auto max(18px, env(safe-area-inset-bottom)); gap: clamp(20px, 4vh, 34px); }
