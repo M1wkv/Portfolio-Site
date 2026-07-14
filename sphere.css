@@ -2410,7 +2410,16 @@ input {
   .project-heading strong { max-width: 100%; font-size: clamp(28px, 9vw, 46px); white-space: normal; overflow-wrap: anywhere; }
   .project-heading .project-subtitle, .project-meta { max-width: min(90vw, 520px); }
   .project-heading .project-subtitle { transform: translateY(2px); }
-  .project-meta #projectTools { flex-basis: auto; }
+  .project-meta {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: center;
+  }
+  .project-meta #projectTools {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+  .project-narrative section:last-child { display: none; }
   .project-case { bottom: calc(max(12px, env(safe-area-inset-bottom)) + 38px); width: min(calc(100vw - 24px), 660px); max-height: 33svh; overflow-y: auto; padding-right: 3px; }
   .cv-view { overflow-y: auto !important; overflow-x: clip; padding-bottom: env(safe-area-inset-bottom); }
   .cv-content { width: min(calc(100% - 24px), 620px); min-height: calc(100svh - 94px); margin: 76px auto max(18px, env(safe-area-inset-bottom)); gap: clamp(20px, 4vh, 34px); }
