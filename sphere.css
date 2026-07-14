@@ -1367,21 +1367,6 @@ input {
   white-space: nowrap;
 }
 
-#projectTools {
-  width: fit-content;
-  max-width: 100%;
-  flex: 0 0 auto;
-}
-
-.project-meta-break {
-  flex-basis: 100%;
-  width: 0;
-  min-height: 0 !important;
-  height: 0;
-  padding: 0 !important;
-  border: 0 !important;
-}
-
 .project-view-ui.is-media-open .project-heading,
 .project-view-ui.is-media-open .project-case {
   opacity: 0;
@@ -1435,10 +1420,6 @@ input {
 .project-narrative b,
 .project-role > b {
   display: block;
-  position: relative;
-  z-index: 1;
-  visibility: visible;
-  opacity: 1;
   margin-bottom: 0.68vw;
   color: #fff;
   font-size: clamp(13px, 1.08vw, 21px);
@@ -1446,16 +1427,8 @@ input {
   line-height: 1;
 }
 
-.project-task-title {
-  color: #fff !important;
-}
-
 .project-narrative section:first-child { margin-left: -30px; text-align: right; }
-.project-idea-column {
-  display: grid;
-  gap: clamp(18px, 2.1vw, 36px);
-  margin-right: -30px;
-}
+.project-narrative section:last-child { margin-right: -30px; }
 
 .project-narrative p {
   margin: 0;
@@ -1469,9 +1442,9 @@ input {
 
 .project-role {
   display: grid;
-  justify-items: start;
+  justify-items: center;
   gap: 0;
-  text-align: left;
+  text-align: center;
 }
 
 .project-role > b { margin-bottom: 0.62vw; }
@@ -1479,9 +1452,9 @@ input {
 #projectRoleTags {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 0.42vw;
-  max-width: 100%;
+  max-width: 39.6vw;
 }
 
 #projectRoleTags span {
