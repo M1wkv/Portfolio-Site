@@ -1409,7 +1409,7 @@ input {
 .project-case {
   position: fixed;
   left: 50%;
-  bottom: calc(7vh + 8px);
+  bottom: 7vh;
   width: min(1190px, 62vw);
   transform: translateX(-50%);
   display: grid;
@@ -1498,28 +1498,6 @@ input {
   text-transform: none;
 }
 
-/* Keep the original wide-screen composition: the role sits below both narrative columns. */
-@media (min-width: 768px) {
-  .project-idea-column {
-    display: contents;
-  }
-
-  .project-idea-column > section {
-    margin-right: -30px;
-  }
-
-  .project-narrative .project-role {
-    grid-column: 1 / -1;
-    justify-items: center;
-    margin-top: clamp(18px, 2.1vw, 36px);
-    text-align: center;
-  }
-
-  .project-narrative .project-role #projectRoleTags {
-    justify-content: center;
-    max-width: 39.6vw;
-  }
-}
 
 .sphere-page.is-project .sphere-topbar,
 .sphere-page.is-project .sphere-footer-nav,
@@ -2282,7 +2260,7 @@ input {
   }
 
   .project-case {
-    bottom: 34px;
+    bottom: 26px;
     width: calc(100vw - 40px);
     font-size: 11px;
   }
@@ -2304,7 +2282,7 @@ input {
   .project-meta span { min-height: 22px; padding: 0 8px; font-size: 13px; }
 
   .project-case {
-    bottom: 26px;
+    bottom: 18px;
     width: calc(100vw - 36px);
     gap: 16px;
   }
