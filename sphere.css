@@ -2424,13 +2424,21 @@ input {
     justify-self: center;
   }
   .project-narrative section:last-child { display: none; }
+  .project-narrative section:first-child > b {
+    position: relative;
+    z-index: 1;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #fff !important;
+  }
   .project-role {
     width: 100%;
   }
   #projectRoleTags {
     width: 100%;
     max-width: none;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 4px;
   }
   #projectRoleTags span {
