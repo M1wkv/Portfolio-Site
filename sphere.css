@@ -226,7 +226,12 @@ select { min-width: 0; }
   }
 
   .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav { border-radius: 10px !important; }
-  .sphere-page:not(.is-project):not(.is-cv) .sphere-control { border-radius: 14px !important; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control {
+    height: 40px !important;
+    border-radius: 999px !important;
+    background: rgb(var(--water-panel-rgb) var(--water-panel-rgb) var(--water-panel-rgb) / var(--water-panel-alpha)) !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+  }
 
   .sphere-page:not(.is-project):not(.is-cv) .sphere-brand span { display: inline !important; }
   .sphere-page:not(.is-project):not(.is-cv) .sphere-brand span + span::before { content: " "; }
