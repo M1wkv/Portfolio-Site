@@ -216,6 +216,22 @@ select { min-width: 0; }
   .project-meta-time { gap: var(--content-chip-gap); }
 }
 
+@media (max-width: 767px) {
+  .sphere-page:not(.is-project):not(.is-cv) .project-index-list { gap: 6px !important; }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav {
+    width: min(42vw, 132px) !important;
+    min-height: 36px !important;
+    font-size: 13px !important;
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav { border-radius: 14px !important; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control { border-radius: 10px !important; }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-brand span { display: inline !important; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-brand span + span::before { content: " "; }
+}
+
 /* Final project layout overrides. */
 .sphere-page.is-project .project-controls {
   left: 0;
