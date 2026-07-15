@@ -248,6 +248,10 @@ select { min-width: 0; }
     flex: 1 1 100% !important;
     gap: 4px !important;
   }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head {
+    justify-content: flex-start !important;
+    gap: 4px !important;
+  }
 }
 
 /* Final project layout overrides. */
