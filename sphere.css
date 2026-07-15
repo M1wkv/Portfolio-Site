@@ -223,6 +223,7 @@ select { min-width: 0; }
     width: min(42vw, 132px) !important;
     min-height: 36px !important;
     font-size: 13px !important;
+    margin-left: 4px !important;
   }
 
   .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav { border-radius: 10px !important; }
