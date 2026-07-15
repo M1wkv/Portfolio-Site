@@ -248,6 +248,26 @@ select { min-width: 0; }
     flex: 1 1 100% !important;
     gap: 4px !important;
   }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control {
+    display: grid !important;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    align-items: center;
+    column-gap: 4px;
+    padding-inline: 8px !important;
+  }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head {
+    position: static !important;
+    display: contents !important;
+  }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head > span { grid-column: 1; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head > b { grid-column: 3; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range {
+    position: static !important;
+    grid-column: 2;
+    width: 100% !important;
+    min-width: 0;
+    margin: 0 !important;
+  }
 }
 
 /* Final project layout overrides. */
