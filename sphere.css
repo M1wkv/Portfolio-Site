@@ -229,15 +229,11 @@ select { min-width: 0; }
   }
 
   .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav {
-    left: 50% !important;
-    right: auto !important;
-    width: calc(100vw - 16px) !important;
     min-height: 48px !important;
     height: 48px;
     flex-wrap: nowrap !important;
     padding: 4px !important;
     border-radius: 10px !important;
-    transform: translateX(-50%) !important;
   }
   .sphere-page:not(.is-project):not(.is-cv) .sphere-control {
     height: 40px !important;
@@ -250,30 +246,7 @@ select { min-width: 0; }
   .sphere-page:not(.is-project):not(.is-cv) .sphere-dials {
     width: 100% !important;
     flex: 1 1 100% !important;
-    justify-content: center;
-    justify-items: stretch;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 4px !important;
-  }
-  .sphere-page:not(.is-project):not(.is-cv) .sphere-control {
-    display: grid !important;
-    grid-template-columns: max-content minmax(0, 1fr) max-content;
-    align-items: center;
-    column-gap: 4px;
-    padding-inline: 8px !important;
-  }
-  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head {
-    position: static !important;
-    display: contents !important;
-  }
-  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head > span { grid-column: 1; }
-  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head > b { grid-column: 3; }
-  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range {
-    position: static !important;
-    grid-column: 2;
-    width: 100% !important;
-    min-width: 0;
-    margin: 0 !important;
   }
 }
 
