@@ -225,8 +225,8 @@ select { min-width: 0; }
     font-size: 13px !important;
   }
 
-  .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav { border-radius: 14px !important; }
-  .sphere-page:not(.is-project):not(.is-cv) .sphere-control { border-radius: 10px !important; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-footer-nav { border-radius: 10px !important; }
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control { border-radius: 14px !important; }
 
   .sphere-page:not(.is-project):not(.is-cv) .sphere-brand span { display: inline !important; }
   .sphere-page:not(.is-project):not(.is-cv) .sphere-brand span + span::before { content: " "; }
