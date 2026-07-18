@@ -222,7 +222,54 @@ select { min-width: 0; }
   }
 
   .project-tools,
-  .project-meta-time { gap: var(--content-chip-gap); }
+.project-meta-time { gap: var(--content-chip-gap); }
+}
+
+/* Shared typography scale: only font sizes are normalized here. */
+:root {
+  --type-group-1: 17px;
+  --type-group-2: 13px;
+}
+
+/* Group 1: primary navigation and section headings. */
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav,
+.sphere-page:not(.is-project):not(.is-cv) .sphere-brand,
+.project-top-nav .project-back,
+.project-top-nav .project-cv-open,
+.project-narrative b,
+.project-role > b,
+.cv-content h2 {
+  font-size: var(--type-group-1) !important;
+}
+
+/* Group 2: project metadata, descriptions, tags and CV supporting copy. */
+.sphere-page:not(.is-project):not(.is-cv) .project-index-button,
+.sphere-page:not(.is-project):not(.is-cv) .sphere-control-head > span,
+.project-heading .project-subtitle,
+.project-meta span,
+.project-narrative p,
+#projectRoleTags span,
+.cv-hero p,
+.cv-about p,
+.cv-chip-row span,
+.cv-chip-row a,
+.cv-experience article,
+.cv-experience > p {
+  font-size: var(--type-group-2) !important;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --type-group-1: 15px;
+    --type-group-2: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --type-group-1: 13px;
+    --type-group-2: 11px;
+  }
 }
 
 @media (max-width: 767px) {
