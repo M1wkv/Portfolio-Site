@@ -23,6 +23,15 @@ select { min-width: 0; }
 }
 
 @media (max-width: 767px) {
+  .sphere-page:not(.is-project):not(.is-cv) .project-index-list {
+    gap: 6px !important;
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .project-index-button {
+    flex: 0 0 auto;
+    width: fit-content;
+  }
+
   .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar {
     top: max(8px, env(safe-area-inset-top));
     left: max(8px, env(safe-area-inset-left));
