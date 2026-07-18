@@ -270,6 +270,10 @@ select { min-width: 0; }
     --type-group-1: 13px;
     --type-group-2: 11px;
   }
+
+  .sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range {
+    left: 72px;
+  }
 }
 
 @media (max-width: 767px) {
