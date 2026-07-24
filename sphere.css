@@ -2732,7 +2732,7 @@ input {
   order: -1;
   display: block;
   min-height: calc(var(--type-group-2) * 2.24);
-  margin: 0 0 18px;
+  margin: 0 0 10px;
   color: rgba(255, 255, 255, 0.62);
   line-height: 1.12;
   white-space: normal;
@@ -2751,7 +2751,7 @@ input {
 
 .sphere-page.is-cv .cv-experience-track article > span {
   display: block;
-  margin-top: 18px;
+  margin-top: 10px;
   color: rgba(255, 255, 255, 0.62);
   line-height: 1.15;
   overflow-wrap: normal;
@@ -2827,7 +2827,7 @@ input {
 
   .sphere-page.is-cv .cv-experience-track time {
     min-height: 0;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
   }
 
   .sphere-page.is-cv .cv-experience-track b {
@@ -2835,6 +2835,6 @@ input {
   }
 
   .sphere-page.is-cv .cv-experience-track article > span {
-    margin-top: 8px;
+    margin-top: 10px;
   }
 }
