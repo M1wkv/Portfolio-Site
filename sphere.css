@@ -2699,7 +2699,7 @@ input {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0;
-  padding: 30px 32px 28px;
+  padding: 28px 32px 22px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 44px;
@@ -2712,7 +2712,7 @@ input {
 .sphere-page.is-cv .cv-experience-track article {
   position: relative;
   min-width: 0;
-  min-height: 142px;
+  min-height: 124px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -2731,7 +2731,8 @@ input {
 .sphere-page.is-cv .cv-experience-track time {
   order: -1;
   display: block;
-  margin: 0 0 22px;
+  min-height: calc(var(--type-group-2) * 2.24);
+  margin: 0 0 18px;
   color: rgba(255, 255, 255, 0.62);
   line-height: 1.12;
   white-space: normal;
@@ -2739,15 +2740,18 @@ input {
 
 .sphere-page.is-cv .cv-experience-track b {
   display: block;
-  margin: 0 0 12px;
+  min-height: calc(var(--type-group-1) * 2.16);
+  margin: 0;
+  font-size: var(--type-group-1) !important;
   line-height: 1.08;
+  text-transform: uppercase;
   overflow-wrap: normal;
   word-break: normal;
 }
 
 .sphere-page.is-cv .cv-experience-track article > span {
   display: block;
-  margin-top: auto;
+  margin-top: 18px;
   color: rgba(255, 255, 255, 0.62);
   line-height: 1.15;
   overflow-wrap: normal;
@@ -2776,7 +2780,7 @@ input {
   }
 
   .sphere-page.is-cv .cv-experience-track article {
-    min-height: 134px;
+    min-height: 120px;
     padding: 0 16px;
     scroll-snap-align: start;
   }
@@ -2822,6 +2826,15 @@ input {
   }
 
   .sphere-page.is-cv .cv-experience-track time {
+    min-height: 0;
     margin-bottom: 5px;
+  }
+
+  .sphere-page.is-cv .cv-experience-track b {
+    min-height: calc(var(--type-group-1) * 2.16);
+  }
+
+  .sphere-page.is-cv .cv-experience-track article > span {
+    margin-top: 8px;
   }
 }
