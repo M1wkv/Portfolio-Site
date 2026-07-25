@@ -20,7 +20,7 @@
       skills: "Коммуникационный дизайн, Визуальные концепции, Key visual, Брендинг, Рекламные материалы, Полиграфия, Digital-креативы, Дизайн презентаций, Ретушь, Типографика, Верстка, AI-графика",
       tools: "Figma, Photoshop, 3DS Max, Cinema 4D, Illustrator",
       about: "UX/UI дизайнер, создаю цифровые продукты, которые решают задачи бизнеса. Более 4 лет проектирую удобные интерфейсы для веб-сайтов и мобильных приложений.",
-      experienceItems: "Communication Designer | Freelance | 2012 г. - нояб. 2018 г.\nSenior Graphic Designer | Unique Present Media Holding | авг. 2018 г. - нояб. 2020 г.\nCommunication Designer | Eight Media Maker | нояб. 2020 г. - нояб. 2022 г.\nCommunication Designer | Tenge Bank | май 2024 г. - сент. 2024 г.\nHead of Design | Salad Agency | нояб. 2020 г. - наст. время",
+      experienceItems: "Communication Designer | Freelance | 2012 - нояб. 2018\nSenior Graphic Designer | Unique Present Media Holding | авг. 2018 - нояб. 2020\nCommunication Designer | Eight Media Maker | нояб. 2020 - нояб. 2022\nCommunication Designer | Tenge Bank | май 2024 - сент. 2024\nHead of Design | Salad Agency | нояб. 2020 - наст. время",
       experienceCaption: "Основные места работы и направления моей профессиональной деятельности.",
       pdf: "",
       pdfName: "",
