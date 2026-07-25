@@ -2730,9 +2730,10 @@ input {
 
 .sphere-page.is-cv .cv-experience-track time {
   order: -1;
-  display: block;
+  display: flex;
+  align-items: flex-end;
   min-height: calc(var(--type-group-2) * 2.24);
-  margin: 0 0 10px;
+  margin: 0 0 7px;
   color: rgba(255, 255, 255, 0.62);
   line-height: 1.12;
   white-space: normal;
@@ -2751,7 +2752,7 @@ input {
 
 .sphere-page.is-cv .cv-experience-track article > span {
   display: block;
-  margin-top: 10px;
+  margin-top: 7px;
   color: rgba(255, 255, 255, 0.62);
   line-height: 1.15;
   overflow-wrap: normal;
@@ -2826,8 +2827,9 @@ input {
   }
 
   .sphere-page.is-cv .cv-experience-track time {
+    display: block;
     min-height: 0;
-    margin-bottom: 10px;
+    margin-bottom: 7px;
   }
 
   .sphere-page.is-cv .cv-experience-track b {
@@ -2835,6 +2837,6 @@ input {
   }
 
   .sphere-page.is-cv .cv-experience-track article > span {
-    margin-top: 10px;
+    margin-top: 7px;
   }
 }
