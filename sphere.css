@@ -2699,7 +2699,7 @@ input {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0;
-  padding: 28px 32px 22px;
+  padding: 16px 32px;
   overflow: hidden;
   border: 0;
   border-radius: 44px;
@@ -2712,7 +2712,7 @@ input {
 .sphere-page.is-cv .cv-experience-track article {
   position: relative;
   min-width: 0;
-  min-height: 124px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -2776,12 +2776,12 @@ input {
     width: max-content;
     min-width: 100%;
     grid-template-columns: repeat(5, minmax(184px, 1fr));
-    padding: 26px 20px;
+    padding: 16px 20px;
     border-radius: 34px;
   }
 
   .sphere-page.is-cv .cv-experience-track article {
-    min-height: 120px;
+    min-height: 0;
     padding: 0 16px;
     scroll-snap-align: start;
   }
