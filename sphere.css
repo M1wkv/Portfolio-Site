@@ -2936,3 +2936,15 @@ input {
     box-shadow: var(--interactive-glow-shadow);
   }
 }
+
+/* Final mobile range offsets: keep each track clear of its label. */
+@media (max-width: 767px) {
+  .sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range {
+    left: 58px;
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range {
+    left: 86px;
+    right: 34px;
+  }
+}
