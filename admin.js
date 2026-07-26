@@ -21,7 +21,6 @@
       tools: "Figma, Photoshop, 3DS Max, Cinema 4D, Illustrator",
       about: "UX/UI дизайнер, создаю цифровые продукты, которые решают задачи бизнеса. Более 4 лет проектирую удобные интерфейсы для веб-сайтов и мобильных приложений.",
       experienceItems: "Communication Designer | Freelance | 2012 - нояб. 2018\nSenior Graphic Designer | Unique Present Media Holding | авг. 2018 - нояб. 2020\nCommunication Designer | Eight Media Maker | нояб. 2020 - нояб. 2022\nCommunication Designer | Tenge Bank | май 2024 - сент. 2024\nHead of Design | Salad Agency | нояб. 2020 - наст. время",
-      experienceCaption: "Основные места работы и направления моей профессиональной деятельности.",
       pdf: "",
       pdfName: "",
       pdfUrl: ""
@@ -224,8 +223,7 @@
           skills: cvByPosition.get("skills")?.description || defaultContent.cv.skills,
           tools: cvByPosition.get("tools")?.description || defaultContent.cv.tools,
           about: cvByPosition.get("about")?.description || defaultContent.cv.about,
-          experienceItems: cvByPosition.get("experience_items")?.description || defaultContent.cv.experienceItems,
-          experienceCaption: cvByPosition.get("experience_caption")?.description || defaultContent.cv.experienceCaption
+          experienceItems: cvByPosition.get("experience_items")?.description || defaultContent.cv.experienceItems
         },
         portfolio: {
           projects: (projects || []).map((project) => ({
@@ -714,8 +712,7 @@
       { position: "skills", title: "Навыки", description: content.cv.skills, sort_order: 2 },
       { position: "tools", title: "Инструменты", description: content.cv.tools, sort_order: 3 },
       { position: "about", title: "Обо мне", description: content.cv.about, sort_order: 4 },
-      { position: "experience_items", title: "Опыт работы", description: content.cv.experienceItems, sort_order: 5 },
-      { position: "experience_caption", title: "Подпись опыта", description: content.cv.experienceCaption, sort_order: 6 }
+      { position: "experience_items", title: "Опыт работы", description: content.cv.experienceItems, sort_order: 5 }
     ]);
 
     saveStage = "сохранение разделов сайта";
