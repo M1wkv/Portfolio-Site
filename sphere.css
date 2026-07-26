@@ -2846,3 +2846,93 @@ input {
     margin-top: 7px;
   }
 }
+
+/* Shared desktop hover language for navigation, chips and primary ranges. */
+:root {
+  --interactive-glow-duration: 420ms;
+  --interactive-glow-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --interactive-glow-shadow: 0 0 16px rgba(255, 255, 255, 0.42);
+  --interactive-glow-text: 0 0 12px rgba(255, 255, 255, 0.82);
+  --interactive-glow-filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.78));
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav,
+  .project-top-nav .project-cv-open,
+  .project-meta span,
+  #projectRoleTags span,
+  .cv-skills .cv-chip-row span,
+  .cv-contacts .cv-chip-row a {
+    transition:
+      box-shadow var(--interactive-glow-duration) var(--interactive-glow-ease),
+      color var(--interactive-glow-duration) var(--interactive-glow-ease),
+      background-color var(--interactive-glow-duration) var(--interactive-glow-ease);
+  }
+
+  .project-meta span,
+  #projectRoleTags span {
+    pointer-events: auto;
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav:is(:hover, :focus-visible),
+  .project-top-nav .project-cv-open:is(:hover, :focus-visible),
+  .project-meta span:is(:hover, :focus-visible),
+  #projectRoleTags span:is(:hover, :focus-visible),
+  .cv-skills .cv-chip-row span:is(:hover, :focus-visible),
+  .cv-contacts .cv-chip-row a:is(:hover, :focus-visible) {
+    box-shadow: var(--interactive-glow-shadow);
+    transform: none;
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .project-index-button,
+  .project-top-nav .project-back {
+    transition:
+      text-shadow var(--interactive-glow-duration) var(--interactive-glow-ease),
+      color var(--interactive-glow-duration) var(--interactive-glow-ease);
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .project-index-button:is(:hover, :focus-visible),
+  .project-top-nav .project-back:is(:hover, :focus-visible) {
+    color: #fff;
+    text-shadow: var(--interactive-glow-text);
+    filter: none;
+    transform: none;
+  }
+
+  .project-top-nav .project-back img {
+    transition: filter var(--interactive-glow-duration) var(--interactive-glow-ease);
+  }
+
+  .project-top-nav .project-back:is(:hover, :focus-visible) img {
+    filter: var(--interactive-glow-filter);
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range {
+    transition: filter var(--interactive-glow-duration) var(--interactive-glow-ease);
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range:is(:hover, :focus-visible) {
+    filter: var(--interactive-glow-filter);
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range::-webkit-slider-thumb {
+    transition:
+      width 160ms ease,
+      height 160ms ease,
+      margin-top 160ms ease,
+      box-shadow var(--interactive-glow-duration) var(--interactive-glow-ease);
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range:is(:hover, :focus-visible)::-webkit-slider-thumb {
+    box-shadow: var(--interactive-glow-shadow);
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range::-moz-range-progress {
+    transition: box-shadow var(--interactive-glow-duration) var(--interactive-glow-ease);
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range:is(:hover, :focus-visible)::-moz-range-progress,
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range:is(:hover, :focus-visible)::-moz-range-thumb {
+    box-shadow: var(--interactive-glow-shadow);
+  }
+}
