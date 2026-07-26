@@ -2690,7 +2690,7 @@ input {
 /* CV experience redesign based on the selected horizontal panel concept. */
 .sphere-page.is-cv .cv-experience {
   width: min(100%, 1180px);
-  gap: 14px;
+  gap: clamp(8px, 1.4vh, 14px);
   overflow: visible;
 }
 
