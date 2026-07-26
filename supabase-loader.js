@@ -129,7 +129,7 @@
     if (!profile && !cv?.length) return [];
 
     const profileText = t(profile?.short_description || "Creative designer building visual systems, AI-assisted image stories and interactive portfolio experiences.");
-    const cvText = (cv || []).filter((section) => section.description).map((section) => [t(section.title), t(section.description)].join(": ")).join(" ");
+    const cvText = (cv || []).filter((section) => !["pdf", "contact_form"].includes(section.position) && section.description).map((section) => [t(section.title), t(section.description)].join(": ")).join(" ");
     const serviceText = (services || []).map((service) => t(service.title)).filter(Boolean).join(", ");
     const contactText = contacts ? [contacts.telegram, contacts.email, contacts.phone].filter(Boolean).join(" / ") : "";
     return [
@@ -146,7 +146,7 @@
     const [{ data: profile }, { data: cv }, { data: contacts }] = await Promise.all([
       client.from("profile").select("name").limit(1).maybeSingle(),
       client.from("cv_sections").select("position,description").order("sort_order", { ascending: true }),
-      client.from("contacts").select("telegram,email,linkedin").limit(1).maybeSingle()
+      client.from("contacts").select("telegram,email,phone,behance,linkedin").limit(1).maybeSingle()
     ]);
     const byPosition = new Map((cv || []).map((section) => [section.position, section.description || ""]));
     return {
@@ -156,8 +156,8 @@
       tools: byPosition.get("tools") || "",
       about: byPosition.get("about") || "",
       experienceItems: byPosition.get("experience_items") || "",
-      experienceCaption: byPosition.get("experience_caption") || "",
-      contacts: contacts || {}
+      pdfUrl: byPosition.get("pdf") || "",
+      contacts: { ...(contacts || {}), formEndpoint: byPosition.get("contact_form") || "" }
     };
   }
 
@@ -182,7 +182,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260727-cv-caption-remove-1";
+    script.src = "sphere.js?v=20260727-cv-contact-links-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
