@@ -2961,4 +2961,22 @@ input {
   .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head b {
     font-size: var(--type-group-2);
   }
+
+  .sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range {
+    left: 79px;
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range {
+    left: 107px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 900px) {
+  .sphere-page:not(.is-project):not(.is-cv) #sphereSizeDial .sphere-line-range {
+    left: 78px;
+  }
+
+  .sphere-page:not(.is-project):not(.is-cv) #elementScaleDial .sphere-line-range {
+    left: 106px;
+  }
 }
