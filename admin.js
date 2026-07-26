@@ -223,7 +223,10 @@
           skills: cvByPosition.get("skills")?.description || defaultContent.cv.skills,
           tools: cvByPosition.get("tools")?.description || defaultContent.cv.tools,
           about: cvByPosition.get("about")?.description || defaultContent.cv.about,
-          experienceItems: cvByPosition.get("experience_items")?.description || defaultContent.cv.experienceItems
+          experienceItems: cvByPosition.get("experience_items")?.description || defaultContent.cv.experienceItems,
+          pdf: "",
+          pdfName: cvByPosition.get("pdf")?.title || "",
+          pdfUrl: cvByPosition.get("pdf")?.description || ""
         },
         portfolio: {
           projects: (projects || []).map((project) => ({
@@ -252,7 +255,7 @@
           phone: contacts.phone || "",
           behance: contacts.behance || "",
           linkedin: contacts.linkedin || "",
-          formEndpoint: ""
+          formEndpoint: cvByPosition.get("contact_form")?.description || ""
         } : defaultContent.contacts,
         settings: settings ? {
           siteTitle: settings.site_title || defaultContent.settings.siteTitle,
@@ -695,6 +698,10 @@
     const faviconUrl = content.settings.favicon?.startsWith("data:")
       ? await uploadDataUrl(storagePath("settings", content.settings.faviconName || "favicon"), content.settings.favicon)
       : content.settings.faviconUrl || content.settings.favicon || "";
+    saveStage = "загрузка PDF-CV";
+    const cvPdfUrl = content.cv.pdf?.startsWith("data:")
+      ? await uploadDataUrl(storagePath("cv", content.cv.pdfName || "cv.pdf"), content.cv.pdf)
+      : content.cv.pdfUrl || content.cv.pdf || "";
 
     saveStage = "сохранение профиля";
     await upsertSingle("profile", {
@@ -712,8 +719,12 @@
       { position: "skills", title: "Навыки", description: content.cv.skills, sort_order: 2 },
       { position: "tools", title: "Инструменты", description: content.cv.tools, sort_order: 3 },
       { position: "about", title: "Обо мне", description: content.cv.about, sort_order: 4 },
-      { position: "experience_items", title: "Опыт работы", description: content.cv.experienceItems, sort_order: 5 }
+      { position: "experience_items", title: "Опыт работы", description: content.cv.experienceItems, sort_order: 5 },
+      ...(cvPdfUrl ? [{ position: "pdf", title: content.cv.pdfName || "PDF-CV", description: cvPdfUrl, sort_order: 6 }] : []),
+      ...(content.contacts.formEndpoint ? [{ position: "contact_form", title: "Форма заявки", description: content.contacts.formEndpoint, sort_order: 7 }] : [])
     ]);
+    content.cv.pdf = "";
+    content.cv.pdfUrl = cvPdfUrl;
 
     saveStage = "сохранение разделов сайта";
     await replaceRows("services", content.services
