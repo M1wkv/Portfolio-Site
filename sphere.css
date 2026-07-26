@@ -2955,3 +2955,10 @@ input {
     top: 8px;
   }
 }
+
+/* Tablet control labels and values share the same typography token. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head b {
+    font-size: var(--type-group-2);
+  }
+}
