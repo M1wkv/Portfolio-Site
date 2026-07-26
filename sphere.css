@@ -2948,3 +2948,10 @@ input {
     right: 34px;
   }
 }
+
+/* Center the ranges inside the shorter tablet control pills. */
+@media (min-width: 768px) and (max-width: 900px) {
+  .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range {
+    top: 8px;
+  }
+}
