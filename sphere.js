@@ -51,6 +51,7 @@ const viewportProfile=window.matchMedia("(max-width: 767px)").matches?"mobile":w
 const defaultAssets=(window.SPHERE_ASSETS||[]).slice(0,100);
 const bootstrapAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);
 const bootstrapProjectAssets=normalizeAssets(bootstrapData.projectAssets||window.PORTFOLIO_BOOTSTRAP?.projectAssets||[]);
+const bootstrapProjects=(Array.isArray(bootstrapData.projects)?bootstrapData.projects:window.PORTFOLIO_BOOTSTRAP?.projects||[]).filter((project)=>project&&project.projectId).map((project)=>({projectId:String(project.projectId),title:String(project.title||"Проект")}));
 let assets=bootstrapAssets.length?bootstrapAssets:loadStoredAssets();
 let projectMediaAssets=bootstrapProjectAssets.length?bootstrapProjectAssets:assets;
 let items=[];
@@ -179,7 +180,7 @@ function getVisibleItems(){return mixSpatialItems(items.slice(0,Math.min(MAX_VIS
 function projectKey(item){return item?.projectId||item?.title||item?.src||"";}
 function setProjectIndexActive(key){projectIndexList?.querySelectorAll(".project-index-button").forEach((button)=>{const isActive=button.dataset.projectKey===key;button.classList.toggle("is-active",isActive);if(isActive)button.scrollIntoView({behavior:"smooth",block:"nearest",inline:"start"});});}
 function renderProjectIndex(){if(!projectIndex||!projectIndexList)return;
-const projects=new Map();(projectMediaItems.length?projectMediaItems:items).forEach((item)=>{const key=projectKey(item);if(key&&!projects.has(key)){projects.set(key,item.title||"Проект");}});projectIndexList.innerHTML="";projects.forEach((title,key)=>{const button=document.createElement("button");button.className="project-index-button";button.type="button";button.dataset.projectKey=key;button.textContent=title;button.addEventListener("click",()=>focusSphereProject(key));projectIndexList.appendChild(button);});projectIndex.hidden=!projects.size;setProjectIndexActive(sphereProjectFocusKey);}
+const projects=new Map();bootstrapProjects.forEach((project)=>projects.set(project.projectId,project.title));(projectMediaItems.length?projectMediaItems:items).forEach((item)=>{const key=projectKey(item);if(key&&!projects.has(key)){projects.set(key,item.title||"Проект");}});projectIndexList.innerHTML="";projects.forEach((title,key)=>{const button=document.createElement("button");button.className="project-index-button";button.type="button";button.dataset.projectKey=key;button.textContent=title;button.addEventListener("click",()=>focusSphereProject(key));projectIndexList.appendChild(button);});projectIndex.hidden=!projects.size;setProjectIndexActive(sphereProjectFocusKey);}
 function nearestAngle(current,target){return current+Math.atan2(Math.sin(target-current),Math.cos(target-current));}
 function clearSphereProjectFocus(){sphereProjectFocusTarget=0;sphereProjectFocusKey="";sphereProjectFocusSrc="";delete document.documentElement.dataset.sphereFocusedProject;delete document.documentElement.dataset.sphereFocusedSource;setProjectIndexActive("");}
 function focusSphereProject(key){if(viewMode!=="sphere")return;
