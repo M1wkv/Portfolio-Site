@@ -344,7 +344,7 @@
     return {
       id: `project-${Date.now()}`,
       title: "New case",
-      category: "Design",
+      category: "",
       status: "published",
       cover: "",
       coverName: "",
@@ -457,13 +457,14 @@
         <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
         <div class="project-details-grid">
           <label><span>Инструменты</span><textarea data-project-field="tools" rows="3"></textarea></label>
-          <label><span>Срок</span><textarea data-project-field="timeline" rows="3"></textarea></label>
-          <label><span>Что сделали</span><textarea data-project-field="scope" rows="3"></textarea></label>
-          <label><span>Результат</span><textarea data-project-field="result" rows="3"></textarea></label>
+          <label><span>Срок и год</span><textarea data-project-field="timeline" rows="3" placeholder="Например: 3 недели | 2025"></textarea></label>
+          <label><span>Задача</span><textarea data-project-field="scope" rows="3"></textarea></label>
+          <label><span>Визуальная идея</span><textarea data-project-field="result" rows="3"></textarea></label>
+          <label><span>Моя роль</span><textarea data-project-field="category" rows="3" placeholder="Через запятую или с новой строки"></textarea></label>
         </div>
       </div>
     `;
-    ["title", "status", "description", "tools", "timeline", "scope", "result"].forEach((fieldName) => {
+    ["title", "status", "description", "tools", "timeline", "scope", "result", "category"].forEach((fieldName) => {
       const field = card.querySelector(`[data-project-field="${fieldName}"]`);
       field.value = project[fieldName] || "";
       field.addEventListener("input", () => {
