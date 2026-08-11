@@ -646,13 +646,17 @@
       }
 
       saveStage = `публикация проекта «${project.title || index + 1}»`;
-      const { error: publishError } = await supabaseClient
+      const { data: publishedProject, error: publishError } = await supabaseClient
         .from("projects")
         .update({ status: desiredStatus, updated_at: new Date().toISOString() })
-        .eq("id", projectId);
+        .eq("id", projectId)
+        .select("id,status")
+        .single();
       if (publishError) throw publishError;
+      if (publishedProject.status !== desiredStatus) throw new Error(`Не удалось установить статус проекта «${project.title || index + 1}»`);
 
       project.id = projectId;
+      project.status = publishedProject.status;
       if (activeProjectId === previousProjectId) activeProjectId = projectId;
       project.cover = "";
       project.coverUrl = coverUrl;
