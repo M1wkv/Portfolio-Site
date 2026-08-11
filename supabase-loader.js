@@ -71,7 +71,7 @@
     if (!client) return { assets: [], projectAssets: [], signature: "", projectGroups: [] };
     const { data: projects, error: projectsError } = await client
       .from("projects")
-      .select("id,title,cover_url,status,sort_order,created_at,updated_at")
+      .select("id,title,cover_url,status,sort_order,created_at,updated_at,description,tools,timeline,scope,result,category")
       .eq("status", "published")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: false });
@@ -102,6 +102,12 @@
       return {
         projectId: project.id,
         title: project.title || "Untitled",
+        description: project.description || "",
+        tools: project.tools || "",
+        timeline: project.timeline || "",
+        task: project.scope || "",
+        idea: project.result || "",
+        role: project.category || "",
         updatedAt: project.updated_at || project.created_at || "",
         assets
       };
@@ -182,7 +188,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260811-project-catalog-1";
+    script.src = "sphere.js?v=20260812-project-content-sync-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -225,7 +231,7 @@
     if (!bundle.assets.length) bundle.assets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
     if (!bundle.projectAssets.length) bundle.projectAssets = bundle.assets;
     activeContentSignature = `${bundle.signature}|${sphereSettings.signature}`;
-    const projects = bundle.projectGroups.map(({ projectId, title }) => ({ projectId, title }));
+    const projects = bundle.projectGroups.map(({ assets, updatedAt, ...project }) => project);
     setBootstrapPayload({ assets: bundle.assets, projectAssets: bundle.projectAssets, projects, cvNodes, cvDisplay, sphereSettings: sphereSettings.values });
     if (bundle.assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(bundle.assets));
     else localStorage.removeItem(STORAGE_ASSETS);
