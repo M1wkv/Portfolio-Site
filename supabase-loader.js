@@ -105,7 +105,7 @@
         updatedAt: project.updated_at || project.created_at || "",
         assets
       };
-    }).filter((group) => group.assets.length);
+    });
 
     const signature = projectGroups
       .map((group) => `${group.projectId}:${group.assets.length}:${group.updatedAt}`)
@@ -182,7 +182,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260727-cv-contact-links-1";
+    script.src = "sphere.js?v=20260811-project-catalog-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
@@ -225,14 +225,15 @@
     if (!bundle.assets.length) bundle.assets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
     if (!bundle.projectAssets.length) bundle.projectAssets = bundle.assets;
     activeContentSignature = `${bundle.signature}|${sphereSettings.signature}`;
-    setBootstrapPayload({ assets: bundle.assets, projectAssets: bundle.projectAssets, cvNodes, cvDisplay, sphereSettings: sphereSettings.values });
+    const projects = bundle.projectGroups.map(({ projectId, title }) => ({ projectId, title }));
+    setBootstrapPayload({ assets: bundle.assets, projectAssets: bundle.projectAssets, projects, cvNodes, cvDisplay, sphereSettings: sphereSettings.values });
     if (bundle.assets.length) localStorage.setItem(STORAGE_ASSETS, JSON.stringify(bundle.assets));
     else localStorage.removeItem(STORAGE_ASSETS);
     if (cvNodes.length) localStorage.setItem(STORAGE_CV, JSON.stringify(cvNodes));
     exposeAssetDiagnostics(bundle.assets, bundle.projectGroups);
   } catch (error) {
     const fallbackAssets = normalizeAssets(window.SPHERE_ASSETS || []).slice(0, SPHERE_ASSET_LIMIT);
-    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, cvNodes: [], cvDisplay: {}, sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectItemCount: 20, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, tabletSize: 0.65, tabletElementScale: 0.42, tabletItemCount: 50, tabletFisheye: 0.15, tabletRotationX: 0.14, tabletRotationY: -0.09, mobileSize: 0.7, mobileElementScale: 0.24, mobileItemCount: 40, mobileFisheye: 0.15, mobileRotationX: 0.14, mobileRotationY: -0.09, tabletProjectScale: 0.44, tabletProjectItemCount: 16, tabletProjectGap: 0.5, tabletProjectWidth: 0.7, tabletProjectLength: 1.08, mobileProjectScale: 0.38, mobileProjectItemCount: 12, mobileProjectGap: 0.5, mobileProjectWidth: 0.66, mobileProjectLength: 0.9, waterTransparency: 50, waterDarkening: 50, waterFrost: 5 } });
+    setBootstrapPayload({ assets: fallbackAssets, projectAssets: fallbackAssets, projects: [], cvNodes: [], cvDisplay: {}, sphereSettings: { size: 0.6, elementScale: 0.6, itemCount: 50, fisheye: 0.15, rotationX: 0.14, rotationY: -0.09, projectScale: 0.5, projectItemCount: 20, projectGap: 0.5, projectWidth: 0.75, projectLength: 1.25, tabletSize: 0.65, tabletElementScale: 0.42, tabletItemCount: 50, tabletFisheye: 0.15, tabletRotationX: 0.14, tabletRotationY: -0.09, mobileSize: 0.7, mobileElementScale: 0.24, mobileItemCount: 40, mobileFisheye: 0.15, mobileRotationX: 0.14, mobileRotationY: -0.09, tabletProjectScale: 0.44, tabletProjectItemCount: 16, tabletProjectGap: 0.5, tabletProjectWidth: 0.7, tabletProjectLength: 1.08, mobileProjectScale: 0.38, mobileProjectItemCount: 12, mobileProjectGap: 0.5, mobileProjectWidth: 0.66, mobileProjectLength: 0.9, waterTransparency: 50, waterDarkening: 50, waterFrost: 5 } });
     console.warn("Supabase bootstrap skipped", error);
   } finally {
     loadSphereScript();
