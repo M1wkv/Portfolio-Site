@@ -433,7 +433,197 @@
           <figure class="project-gallery-item${isCover ? " is-cover" : ""}">
             <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.title || `Изображение ${galleryIndex + 1}`)}" loading="lazy">
             <button class="project-gallery-cover" type="button" data-gallery-cover="${galleryIndex}" aria-pressed="${isCover}" title="${isCover ? "Текущая обложка" : "Сделать обложкой"}">${isCover ? "ОБЛОЖКА" : "ВЫБРАТЬ"}</button>
-            <button class="project-gallery-remove" t…2968 tokens truncated…desiredStatus = project.status || "published";
+            <button class="project-gallery-remove" type="button" data-gallery-remove="${galleryIndex}" aria-label="Удалить изображение ${galleryIndex + 1}" title="Удалить изображение">×</button>
+          </figure>
+        `;
+        }).join("")
+      : '<p class="project-gallery-empty">В галерее пока нет изображений.</p>';
+    card.innerHTML = `
+      <div class="project-head">
+        <div class="project-meta">
+          <span>Кейс ${String(index + 1).padStart(2, "0")}</span>
+          <strong>${escapeHtml(project.title || "Без названия")}</strong>
+        </div>
+        <button class="project-remove" type="button">УДАЛИТЬ</button>
+      </div>
+      <div class="project-preview">
+        ${cover ? `<img src="${escapeHtml(cover)}" alt="">` : `<span>Нет обложки</span>`}
+        <div>
+          <b>${project.status === "published" ? "Опубликован" : "Скрыт"}</b>
+          <small>${galleryCount} изображений в галерее</small>
+        </div>
+      </div>
+      <div class="project-grid">
+        <label><span>Название</span><input data-project-field="title" type="text"></label>
+        <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
+        <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "Обложка не выбрана"}</small></label>
+        <label><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} изображений выбрано` : "Изображения не выбраны"}</small></label>
+        <div class="project-gallery-manager">
+          <div class="project-gallery-manager-head"><span>Изображения проекта</span><b>${project.gallery.length}</b></div>
+          <div class="project-gallery-grid">${galleryMarkup}</div>
+        </div>
+        <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
+        <div class="project-details-grid">
+          <label><span>Инструменты</span><textarea data-project-field="tools" rows="3"></textarea></label>
+          <label><span>Срок и год</span><textarea data-project-field="timeline" rows="3" placeholder="Например: 3 недели | 2025"></textarea></label>
+          <label><span>Задача</span><textarea data-project-field="scope" rows="3"></textarea></label>
+          <label><span>Визуальная идея</span><textarea data-project-field="result" rows="3"></textarea></label>
+          <label><span>Моя роль</span><textarea data-project-field="category" rows="3" placeholder="Через запятую или с новой строки"></textarea></label>
+        </div>
+      </div>
+    `;
+    ["title", "status", "description", "tools", "timeline", "scope", "result", "category"].forEach((fieldName) => {
+      const field = card.querySelector(`[data-project-field="${fieldName}"]`);
+      field.value = project[fieldName] || "";
+      field.addEventListener("input", () => {
+        project[fieldName] = field.value;
+        if (fieldName === "title") {
+          card.querySelector(".project-meta strong").textContent = project.title || "Без названия";
+          portfolioModeText.textContent = `Редактирование: ${project.title || "Без названия"}`;
+        }
+      });
+      field.addEventListener("change", () => {
+        project[fieldName] = field.value;
+        if (fieldName === "status") renderProjects();
+      });
+    });
+    card.querySelector('[data-project-file="cover"]').addEventListener("change", (event) => {
+      readFile(event.currentTarget, (data, name, file) => {
+        project.cover = data;
+        project.coverFile = file;
+        project.coverName = name;
+        project.coverGallerySrc = "";
+        renderProjects();
+      });
+    });
+    card.querySelector('[data-project-file="gallery"]').addEventListener("change", (event) => {
+      readFiles(event.currentTarget).then((images) => {
+        project.gallery = [...project.gallery, ...images];
+        renderProjects();
+      });
+    });
+    card.querySelectorAll("[data-gallery-remove]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const galleryIndex = Number(button.dataset.galleryRemove);
+        if (!Number.isInteger(galleryIndex)) return;
+        const removedImage = project.gallery[galleryIndex];
+        if (removedImage?.src === project.coverGallerySrc) {
+          project.coverGallerySrc = "";
+          project.coverUrl = "";
+          project.coverName = "";
+        }
+        project.gallery.splice(galleryIndex, 1);
+        renderProjects();
+      });
+    });
+    card.querySelectorAll("[data-gallery-cover]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const galleryIndex = Number(button.dataset.galleryCover);
+        const image = project.gallery[galleryIndex];
+        if (!Number.isInteger(galleryIndex) || !image?.src) return;
+        project.cover = "";
+        project.coverFile = null;
+        project.coverGallerySrc = image.src;
+        project.coverUrl = image.src.startsWith("data:") ? "" : image.src;
+        project.coverName = image.title || `Изображение ${galleryIndex + 1}`;
+        renderProjects();
+      });
+    });
+    card.querySelector(".project-remove").addEventListener("click", () => {
+      if (isPersistedProject(project)) pendingProjectRemovalIds.add(project.id);
+      content.portfolio.projects.splice(index, 1);
+      activeProjectId = null;
+      renderProjects();
+    });
+    projectsList.appendChild(card);
+  }
+
+  function renderProjects() {
+    projectsList.innerHTML = "";
+    const activeIndex = content.portfolio.projects.findIndex((project) => project.id === activeProjectId);
+    if (activeIndex < 0) {
+      activeProjectId = null;
+      renderProjectTiles();
+      return;
+    }
+    renderProjectEditor(content.portfolio.projects[activeIndex], activeIndex);
+  }
+
+  function dataUrlToBlob(dataUrl) {
+    const match = /^data:([^;,]+)?(;base64)?,(.*)$/s.exec(dataUrl);
+    if (!match) throw new Error("Неверный формат загружаемого файла");
+    const mimeType = match[1] || "application/octet-stream";
+    const payload = match[3] || "";
+    const binary = match[2] ? atob(payload) : decodeURIComponent(payload);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+    return new Blob([bytes], { type: mimeType });
+  }
+
+  async function uploadDataUrl(path, dataUrl) {
+    if (!supabaseClient || !dataUrl || !dataUrl.startsWith("data:")) return dataUrl || "";
+    const blob = dataUrlToBlob(dataUrl);
+    const config = window.PORTFOLIO_SUPABASE || {};
+    const accessToken = session?.access_token;
+    if (!config.url || !config.publishableKey || !accessToken) {
+      throw new Error("Нет активной сессии для загрузки изображения");
+    }
+
+    const encodedPath = path.split("/").map((part) => encodeURIComponent(part)).join("/");
+    const uploadUrl = `${config.url}/storage/v1/object/${encodeURIComponent(bucketName)}/${encodedPath}`;
+    await new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest();
+      request.open("POST", uploadUrl, true);
+      request.setRequestHeader("apikey", config.publishableKey);
+      request.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+      request.setRequestHeader("x-upsert", "true");
+      request.setRequestHeader("cache-control", "3600");
+      request.setRequestHeader("Content-Type", blob.type || "application/octet-stream");
+      request.onload = () => {
+        if (request.status >= 200 && request.status < 300) {
+          resolve();
+          return;
+        }
+        let responseMessage = request.responseText || request.statusText || "неизвестная ошибка";
+        try {
+          responseMessage = JSON.parse(request.responseText).message || responseMessage;
+        } catch (error) {
+          // The Storage response may be plain text.
+        }
+        reject(new Error(`Storage вернул ${request.status}: ${responseMessage}`));
+      };
+      request.onerror = () => reject(new Error("Браузер не смог соединиться с Supabase Storage"));
+      request.ontimeout = () => reject(new Error("Превышено время ожидания ответа от Supabase Storage"));
+      request.timeout = 60000;
+      request.send(blob);
+    });
+    return supabaseClient.storage.from(bucketName).getPublicUrl(path).data.publicUrl;
+  }
+
+  function storagePath(folder, fileName) {
+    const safe = String(fileName || "file").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "");
+    return `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}-${safe || "file"}`;
+  }
+
+  async function saveProjects() {
+    saveStage = "проверка списка проектов";
+    const { data: existingProjects, error: existingError } = await supabaseClient
+      .from("projects")
+      .select("id,status");
+    if (existingError) throw existingError;
+
+    const existingById = new Map((existingProjects || []).map((project) => [project.id, project]));
+    for (const [index, project] of content.portfolio.projects.entries()) {
+      const previousProjectId = project.id;
+      saveStage = `загрузка обложки проекта «${project.title || index + 1}»`;
+      let coverUrl = project.cover?.startsWith("data:")
+        ? await uploadDataUrl(storagePath("covers", project.coverName || `${project.title}-cover`), project.cover)
+        : project.coverUrl || project.cover || "";
+      const selectedGalleryCoverSrc = project.coverGallerySrc || "";
+      if (selectedGalleryCoverSrc && !selectedGalleryCoverSrc.startsWith("data:")) {
+        coverUrl = selectedGalleryCoverSrc;
+      }
+      const desiredStatus = project.status || "published";
       const existingProject = existingById.get(project.id);
       const payload = {
         title: project.title || "Untitled",
