@@ -66,6 +66,7 @@ let projectMediaItems=[];
 let width=0;
 let height=0;
 let dpr=1;
+let projectMediaSafeMargin=48;
 let dragging=false;
 let pointer={x:0,y:0};
 let pointerStart={x:0,y:0};
@@ -119,7 +120,8 @@ const state={sphereSize:Number(sizeRange.value),elementScale:Number(scaleRange.v
 const projectState={itemScale:0.5,itemCount:20,gap:0.5,cylinderWidth:0.75,cylinderLength:1.25};function clampSetting(value,fallback,min,max){const numeric=Number(value);return Math.max(min,Math.min(max,Number.isFinite(numeric)?numeric:fallback));}
 const waterDefaults={transparency:clampSetting(sphereSettings.waterTransparency,50,0,100),darkening:clampSetting(sphereSettings.waterDarkening,50,0,100),frost:clampSetting(sphereSettings.waterFrost,5,0,100)};
 let waterState={...waterDefaults};
-function resize(){dpr=Math.min(window.devicePixelRatio||1,2);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
+function updateProjectMediaSafeMargin(){const navBottom=projectTopNav?.getBoundingClientRect().bottom||0;const extraGap=Math.max(12,height*0.02);projectMediaSafeMargin=Math.max(width<700?48:72,Math.ceil(navBottom+extraGap));document.documentElement.dataset.projectMediaSafeMargin=String(projectMediaSafeMargin);}
+function resize(){dpr=Math.min(window.devicePixelRatio||1,2);width=window.innerWidth;height=window.innerHeight;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);updateProjectMediaSafeMargin();}
 function progress(input){return(Number(input.value)-Number(input.min))/(Number(input.max)-Number(input.min));}
 function updateUi(){state.sphereSize=Number(sizeRange.value);state.elementScale=Number(scaleRange.value);state.fisheye=Number(fisheyeRange.value);const sizeProgress=`${(progress(sizeRange)*100).toFixed(2)}%`;const scaleProgress=`${(progress(scaleRange)*100).toFixed(2)}%`;sizeRange.style.setProperty("--range-progress",sizeProgress);scaleRange.style.setProperty("--range-progress",scaleProgress);sizeDial?.style.setProperty("--progress",progress(sizeRange).toFixed(4));scaleDial?.style.setProperty("--progress",progress(scaleRange).toFixed(4));sizeValue.textContent=state.sphereSize>=1?"1.0":state.sphereSize.toFixed(1);sizeValue.classList.toggle("is-max",state.sphereSize>=1);scaleValue.textContent=state.elementScale.toFixed(2);if(fisheyeValue)fisheyeValue.textContent=state.fisheye.toFixed(2);}
 function updateProjectUi(){projectState.itemScale=Number(projectScaleRange.value);projectState.itemCount=Math.round(Number(projectCountRange.value));projectState.gap=Number(projectGapRange.value);projectState.cylinderWidth=Number(projectWidthRange.value);projectState.cylinderLength=Number(projectLengthRange.value);projectScaleValue.textContent=projectState.itemScale.toFixed(2);projectCountValue.textContent=String(projectState.itemCount);projectGapValue.textContent=projectState.gap.toFixed(2);projectWidthValue.textContent=projectState.cylinderWidth.toFixed(2);projectLengthValue.textContent=projectState.cylinderLength.toFixed(2);}
@@ -170,7 +172,7 @@ const visualScale=(entry.visualScale||1)*(mode==="ribbon"?projectState.itemScale
 const ratio=imageRatio(item);
 const base=112*(mode==="ribbon"?1.88:effectiveElementScale())*nearScale*visualScale;
 let cardW=base*Math.sqrt(ratio);
-let cardH=base/Math.sqrt(ratio);if(mode==="ribbon"&&entry.centerFocus>0.5&&projectFocusProgress>0.001){const viewportMargin=width<700?24:48;const targetHeight=Math.max(120,height-viewportMargin*2);const focusFit=1+(targetHeight/cardH-1)*projectFocusProgress;cardW*=focusFit;cardH*=focusFit;}
+let cardH=base/Math.sqrt(ratio);if(mode==="ribbon"&&entry.centerFocus>0.5&&projectFocusProgress>0.001){const targetHeight=Math.max(120,height-projectMediaSafeMargin*2);const focusFit=1+(targetHeight/cardH-1)*projectFocusProgress;cardW*=focusFit;cardH*=focusFit;}
 const alpha=mode==="ribbon"?alphaBoost:(0.22+depth*0.78)*alphaBoost;
 const dxFromCenter=x-width/2;
 const dyFromCenter=y-height/2;
@@ -425,7 +427,7 @@ const projectItems=getProjectItems();
 projectCountRange.value=String(Math.round(activeSceneSettings.projectItemCount));updateProjectUi();
 const index=Math.max(0,projectItems.findIndex((candidate)=>candidate.src===item.src));document.documentElement.dataset.activeProjectItemCount=String(projectItems.length);ribbonTargetOffset=index;ribbonOffset=index;ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+5000;projectFocusTarget=0;projectFocusProgress=0;projectZoomTarget=0;projectZoomProgress=0;transitionTarget=1;viewMode="project";spherePage.classList.add("is-project");applyProjectContent(item,index);projectViewUi.hidden=false;projectViewUi.classList.remove("is-media-open");setProjectTopNavFrosted(true);}
 function toggleProjectMedia(){if(viewMode!=="project")return;
-const opening=projectFocusTarget<0.5;projectFocusTarget=opening?1:0;projectZoomTarget=0;projectZoomProgress=0;projectViewUi.classList.toggle("is-media-open",opening);ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+(opening?600000:5000);if(opening){
+const opening=projectFocusTarget<0.5;if(opening)updateProjectMediaSafeMargin();projectFocusTarget=opening?1:0;projectZoomTarget=0;projectZoomProgress=0;projectViewUi.classList.toggle("is-media-open",opening);ribbonVelocity=0;ribbonAutoSpeed=0;ribbonAutoPhaseStartedAt=0;ribbonAutoPausedUntil=performance.now()+(opening?600000:5000);if(opening){
 const centeredIndex=Math.round(ribbonOffset);ribbonOffset=centeredIndex;ribbonTargetOffset=centeredIndex;syncCenteredProjectTitle();}}
 function centerProjectItem(item,index){const visibleItems=getProjectItems();
 const nextIndex=Number.isFinite(index)?index:visibleItems.findIndex((candidate)=>candidate===item);if(nextIndex>=0){ribbonTargetOffset=nextIndex;ribbonVelocity=0;ribbonAutoSpeed=0;ribbonLastInputAt=performance.now();ribbonAutoPausedUntil=ribbonLastInputAt+5000;ribbonAutoPhaseStartedAt=0;applyProjectContent(item,nextIndex);}}
