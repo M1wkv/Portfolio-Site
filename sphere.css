@@ -2857,17 +2857,6 @@ input {
 }
 
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-  .sphere-page.is-project .project-narrative section {
-    pointer-events: auto;
-    transition:
-      filter var(--interactive-glow-duration) var(--interactive-glow-ease),
-      color var(--interactive-glow-duration) var(--interactive-glow-ease);
-  }
-
-  .sphere-page.is-project .project-narrative section:is(:hover, :focus-within) {
-    filter: var(--interactive-glow-filter);
-  }
-
   .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav,
   .project-top-nav .project-cv-open,
   .project-meta span,
@@ -2945,6 +2934,36 @@ input {
   .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range:is(:hover, :focus-visible)::-moz-range-progress,
   .sphere-page:not(.is-project):not(.is-cv) .sphere-line-range:is(:hover, :focus-visible)::-moz-range-thumb {
     box-shadow: var(--interactive-glow-shadow);
+  }
+}
+
+/* Project information chips glow on every hover-capable desktop/trackpad. */
+@media (min-width: 1024px) and (hover: hover) {
+  .sphere-page.is-project .project-tools,
+  .sphere-page.is-project .project-meta-time,
+  .sphere-page.is-project #projectRoleTags {
+    pointer-events: auto;
+  }
+
+  .sphere-page.is-project .project-meta span,
+  .sphere-page.is-project #projectRoleTags span {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+    cursor: default;
+    transition:
+      box-shadow var(--interactive-glow-duration) var(--interactive-glow-ease),
+      filter var(--interactive-glow-duration) var(--interactive-glow-ease),
+      border-color var(--interactive-glow-duration) var(--interactive-glow-ease);
+  }
+
+  .sphere-page.is-project .project-meta span:hover,
+  .sphere-page.is-project #projectRoleTags span:hover {
+    border-color: rgba(255, 255, 255, 0.82);
+    box-shadow:
+      0 0 8px rgba(255, 255, 255, 0.72),
+      0 0 22px rgba(255, 255, 255, 0.5);
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
   }
 }
 
