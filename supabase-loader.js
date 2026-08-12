@@ -188,7 +188,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260812-project-content-sync-1";
+    script.src = "sphere.js?v=20260812-project-chip-hover-3";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
