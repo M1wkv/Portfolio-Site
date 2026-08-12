@@ -519,6 +519,10 @@ select { min-width: 0; }
   transition: box-shadow 220ms ease, transform 220ms ease;
 }
 
+.sphere-page:not(.is-project):not(.is-cv) .project-index[hidden] + .cv-nav {
+  margin-left: auto;
+}
+
 .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav:hover,
 .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav:focus-visible {
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.38);
