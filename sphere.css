@@ -2952,18 +2952,12 @@ input {
     pointer-events: auto;
     cursor: default;
     transition:
-      box-shadow var(--interactive-glow-duration) var(--interactive-glow-ease),
-      text-shadow var(--interactive-glow-duration) var(--interactive-glow-ease);
+      box-shadow var(--interactive-glow-duration) var(--interactive-glow-ease);
   }
 
-  .sphere-page.is-project .project-meta span:hover {
-    box-shadow: none;
-    text-shadow: 0 0 14px rgba(255, 255, 255, 0.82);
-  }
-
+  .sphere-page.is-project .project-meta span:hover,
   .sphere-page.is-project #projectRoleTags span:hover {
-    box-shadow: 0 0 16px rgba(255, 255, 255, 0.25);
-    text-shadow: none;
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.375);
   }
 }
 
