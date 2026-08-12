@@ -432,7 +432,7 @@
           return `
           <figure class="project-gallery-item${isCover ? " is-cover" : ""}">
             <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.title || `Изображение ${galleryIndex + 1}`)}" loading="lazy">
-            <button class="project-gallery-cover" type="button" data-gallery-cover="${galleryIndex}" aria-pressed="${isCover}" title="${isCover ? "Текущая обложка" : "Сделать обложкой"}">${isCover ? "ОБЛОЖКА" : "ВЫБРАТЬ"}</button>
+            <button class="project-gallery-cover" type="button" data-gallery-cover="${galleryIndex}" aria-pressed="${isCover}" title="${isCover ? "Текущая обложка" : "Сделать обложкой"}">${isCover ? "ОБЛОЖКА" : "СДЕЛАТЬ ОБЛОЖКОЙ"}</button>
             <button class="project-gallery-remove" type="button" data-gallery-remove="${galleryIndex}" aria-label="Удалить изображение ${galleryIndex + 1}" title="Удалить изображение">×</button>
           </figure>
         `;
@@ -456,10 +456,9 @@
       <div class="project-grid">
         <label><span>Название</span><input data-project-field="title" type="text"></label>
         <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
-        <label><span>Обложка</span><input data-project-file="cover" type="file" accept="image/*"><small>${project.coverName || project.coverUrl || "Обложка не выбрана"}</small></label>
-        <label><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} изображений выбрано` : "Изображения не выбраны"}</small></label>
+        <label class="wide"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} изображений выбрано. Обложка выбирается ниже.` : "Загрузите изображения, затем выберите обложку ниже."}</small></label>
         <div class="project-gallery-manager">
-          <div class="project-gallery-manager-head"><span>Изображения проекта</span><b>${project.gallery.length}</b></div>
+          <div class="project-gallery-manager-head"><span>Изображения проекта / выбор обложки</span><b>${project.gallery.length}</b></div>
           <div class="project-gallery-grid">${galleryMarkup}</div>
         </div>
         <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
@@ -485,15 +484,6 @@
       field.addEventListener("change", () => {
         project[fieldName] = field.value;
         if (fieldName === "status") renderProjects();
-      });
-    });
-    card.querySelector('[data-project-file="cover"]').addEventListener("change", (event) => {
-      readFile(event.currentTarget, (data, name, file) => {
-        project.cover = data;
-        project.coverFile = file;
-        project.coverName = name;
-        project.coverGallerySrc = "";
-        renderProjects();
       });
     });
     card.querySelector('[data-project-file="gallery"]').addEventListener("change", (event) => {
