@@ -2953,17 +2953,17 @@ input {
     cursor: default;
     transition:
       box-shadow var(--interactive-glow-duration) var(--interactive-glow-ease),
-      filter var(--interactive-glow-duration) var(--interactive-glow-ease),
-      border-color var(--interactive-glow-duration) var(--interactive-glow-ease);
+      text-shadow var(--interactive-glow-duration) var(--interactive-glow-ease);
   }
 
-  .sphere-page.is-project .project-meta span:hover,
+  .sphere-page.is-project .project-meta span:hover {
+    box-shadow: none;
+    text-shadow: 0 0 14px rgba(255, 255, 255, 0.82);
+  }
+
   .sphere-page.is-project #projectRoleTags span:hover {
-    border-color: rgba(255, 255, 255, 0.82);
-    box-shadow:
-      0 0 8px rgba(255, 255, 255, 0.72),
-      0 0 22px rgba(255, 255, 255, 0.5);
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.25);
+    text-shadow: none;
   }
 }
 
