@@ -625,7 +625,7 @@ small {
   object-fit: cover;
 }
 
-.project-gallery-item button {
+.project-gallery-item .project-gallery-remove {
   position: absolute;
   top: 7px;
   right: 7px;
@@ -643,11 +643,40 @@ small {
   cursor: pointer;
 }
 
-.project-gallery-item button:hover,
-.project-gallery-item button:focus-visible {
+.project-gallery-item .project-gallery-remove:hover,
+.project-gallery-item .project-gallery-remove:focus-visible {
   border-color: #fff;
   background: #000;
   outline: none;
+}
+
+.project-gallery-item .project-gallery-cover {
+  position: absolute;
+  left: 7px;
+  bottom: 7px;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.82);
+  color: #fff;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.project-gallery-item .project-gallery-cover:hover,
+.project-gallery-item .project-gallery-cover:focus-visible,
+.project-gallery-item.is-cover .project-gallery-cover {
+  border-color: #fff;
+  background: #fff;
+  color: #000;
+  outline: none;
+}
+
+.project-gallery-item.is-cover {
+  border-color: #fff;
 }
 
 .project-gallery-empty {
