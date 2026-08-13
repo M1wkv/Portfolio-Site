@@ -107,7 +107,6 @@
   let analyticsLoaded = false;
 
   const sectionLabels = {
-    profile: ["Profile / Главный блок", "Главный блок"],
     cv: ["CV / Резюме", "Резюме"],
     portfolio: ["Portfolio / Кейсы", "Кейсы"],
     settings: ["Settings / Настройки сайта", "Настройки сайта"]
@@ -323,7 +322,7 @@
   function switchTab(tabName) {
     tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.tab === tabName));
     panels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.panel === tabName));
-    const [kicker, title] = sectionLabels[tabName] || sectionLabels.profile;
+    const [kicker, title] = sectionLabels[tabName] || sectionLabels.cv;
     sectionKicker.textContent = kicker;
     sectionTitle.textContent = title;
     if (tabName === "settings" && session && !analyticsLoaded) loadAnalytics();
