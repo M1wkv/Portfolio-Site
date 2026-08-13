@@ -34,6 +34,9 @@ alter table public.services enable row level security;
 alter table public.contacts enable row level security;
 alter table public.site_settings enable row level security;
 
+create index if not exists project_images_project_id_idx
+  on public.project_images(project_id);
+
 create policy public_read_profile on public.profile
   for select to anon, authenticated using (true);
 create policy public_read_cv on public.cv_sections
@@ -111,18 +114,10 @@ set public = true,
     ]
 where id = 'portfolio';
 
-do $$
-declare
-  policy_row record;
-begin
-  for policy_row in
-    select policyname
-    from pg_policies
-    where schemaname = 'storage' and tablename = 'objects'
-  loop
-    execute format('drop policy if exists %I on storage.objects', policy_row.policyname);
-  end loop;
-end $$;
+drop policy if exists public_read_portfolio_files on storage.objects;
+drop policy if exists admin_insert_portfolio_files on storage.objects;
+drop policy if exists admin_update_portfolio_files on storage.objects;
+drop policy if exists admin_delete_portfolio_files on storage.objects;
 
 create policy public_read_portfolio_files on storage.objects
   for select to anon, authenticated
