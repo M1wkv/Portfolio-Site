@@ -7,12 +7,14 @@ window.PORTFOLIO_SUPABASE = {
 
 window.createPortfolioSupabase = () => {
   if (!window.supabase || !window.PORTFOLIO_SUPABASE) return null;
+  if (window.__portfolioSupabaseClient) return window.__portfolioSupabaseClient;
   const { url, publishableKey } = window.PORTFOLIO_SUPABASE;
-  return window.supabase.createClient(url, publishableKey, {
+  window.__portfolioSupabaseClient = window.supabase.createClient(url, publishableKey, {
     auth: {
       autoRefreshToken: true,
       detectSessionInUrl: false,
       persistSession: true
     }
   });
+  return window.__portfolioSupabaseClient;
 };
