@@ -864,6 +864,28 @@ button { max-width: 100%; }
 
 .admin-workspace { min-width: 0; }
 
+.analytics-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.analytics-head > div { display: grid; gap: 5px; }
+.analytics-head button { min-height: 36px; padding: 0 15px; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: #fff; cursor: pointer; }
+.analytics-state { padding: 18px 0; color: var(--muted); font-size: 13px; }
+.analytics-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.analytics-cards article { min-width: 0; display: grid; gap: 6px; padding: 16px; border-radius: 6px; background: var(--soft); }
+.analytics-cards span, .analytics-cards small { color: var(--muted); font-size: 11px; }
+.analytics-cards strong { font-size: clamp(26px, 3vw, 42px); line-height: 1; }
+.analytics-chart-wrap, .analytics-lists > section { margin-top: 18px; padding: 16px; border-radius: 6px; background: var(--soft); }
+.analytics-chart-wrap h3, .analytics-lists h3 { margin: 0 0 14px; font-size: 13px; }
+.analytics-chart { height: 150px; display: flex; align-items: stretch; gap: 4px; }
+.analytics-chart > i { position: relative; flex: 1; min-width: 2px; display: flex; align-items: flex-end; }
+.analytics-chart > i > b { width: 100%; min-height: 3px; display: block; border-radius: 2px 2px 0 0; background: #fff; opacity: 0.88; }
+.analytics-lists { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.analytics-list { display: grid; gap: 10px; }
+.analytics-list-row { display: grid; grid-template-columns: minmax(80px, 1fr) minmax(45px, 0.8fr) auto; align-items: center; gap: 9px; font-size: 11px; }
+.analytics-list-row > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.analytics-list-row > i { height: 3px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.1); }
+.analytics-list-row > i > b { height: 100%; display: block; background: #fff; }
+.analytics-list-row > strong { font-size: 11px; }
+.analytics-empty { margin: 0; color: var(--muted); font-size: 11px; }
+
 @media (min-width: 1440px) {
   .workspace-header > *,
   .admin-form { width: min(1480px, 100%); margin-inline: auto; }
@@ -888,6 +910,9 @@ button { max-width: 100%; }
   label input, label textarea, label select { min-height: 44px; }
   .project-preview { grid-template-columns: minmax(72px, 24vw) minmax(0, 1fr); }
   .project-preview img, .project-preview > span { width: min(24vw, 104px); height: auto; aspect-ratio: 4 / 3; }
+  .analytics-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .analytics-lists { grid-template-columns: 1fr; }
+  .analytics-head { align-items: flex-start; flex-direction: column; }
 }
 
 @media (hover: hover) and (pointer: fine) {
