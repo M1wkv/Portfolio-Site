@@ -1,0 +1,8 @@
+{
+  "name": "sphere-portfolio",
+  "private": true,
+  "scripts": {
+    "check": "node --check admin.js && node --check analytics.js && node --check sphere.js && node --check supabase-loader.js",
+    "test": "node --test qa/unit/*.test.js"
+  }
+}
