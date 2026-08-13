@@ -110,9 +110,7 @@
     profile: ["Profile / Главный блок", "Главный блок"],
     cv: ["CV / Резюме", "Резюме"],
     portfolio: ["Portfolio / Кейсы", "Кейсы"],
-    seo: ["Settings / SEO", "SEO"],
-    sphere: ["Settings / Сфера", "Сфера"],
-    cylinder: ["Settings / Цилиндр", "Цилиндр"]
+    settings: ["Settings / Настройки сайта", "Настройки сайта"]
   };
 
   function clone(value) {
@@ -328,7 +326,7 @@
     const [kicker, title] = sectionLabels[tabName] || sectionLabels.profile;
     sectionKicker.textContent = kicker;
     sectionTitle.textContent = title;
-    if (tabName === "seo" && session && !analyticsLoaded) loadAnalytics();
+    if (tabName === "settings" && session && !analyticsLoaded) loadAnalytics();
   }
 
   function setAnalyticsText(id, value) {
@@ -1005,7 +1003,7 @@
       });
       saveButton.disabled = false;
       setStatus("Ready");
-      if (document.querySelector('[data-tab="seo"]')?.classList.contains("is-active")) loadAnalytics();
+      if (document.querySelector('[data-tab="settings"]')?.classList.contains("is-active")) loadAnalytics();
       return;
     }
     panel.innerHTML = `
