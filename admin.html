@@ -24,9 +24,7 @@
           <button class="is-active" type="button" data-tab="profile">Профиль</button>
           <button type="button" data-tab="cv">Резюме</button>
           <button type="button" data-tab="portfolio">Портфолио</button>
-          <button type="button" data-tab="seo">SEO</button>
-          <button type="button" data-tab="sphere">Сфера</button>
-          <button type="button" data-tab="cylinder">Цилиндр</button>
+          <button type="button" data-tab="settings">Настройки сайта</button>
         </nav>
       </aside>
 
@@ -167,7 +165,7 @@
             <div id="projectsList" class="projects-list"></div>
           </section>
 
-          <section class="admin-section" data-panel="seo">
+          <section class="admin-section" data-panel="settings">
             <div class="form-grid two">
               <div class="settings-subsection settings-group wide analytics-dashboard">
                 <div class="settings-subsection-head analytics-head"><div><span>Статистика посетителей</span><p>Обновляется из Supabase. Посещения админки не учитываются.</p></div><button id="analyticsRefresh" type="button">ОБНОВИТЬ</button></div>
@@ -200,9 +198,7 @@
                 </div>
               </div>
             </div>
-          </section>
 
-          <section class="admin-section" data-panel="sphere">
               <div class="settings-subsection settings-group wide">
                 <div class="settings-subsection-head"><span>Сфера</span><p>Параметры главной 3D-сферы для десктопа.</p></div>
                 <div class="form-grid two sphere-settings-grid">
@@ -273,9 +269,7 @@
                   </label>
                 </div>
               </div>
-          </section>
 
-          <section class="admin-section" data-panel="cylinder">
               <div class="settings-subsection settings-group wide">
                 <div class="settings-subsection-head"><span>Цилиндр</span><p>Параметры просмотра открытого проекта на десктопе.</p></div>
                 <div class="form-grid two sphere-settings-grid">
@@ -330,7 +324,7 @@
     <script src="supabase-config.js?v=20260813-shared-client-1"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="admin.js?v=20260813-analytics-1"></script>
+<script src="admin.js?v=20260813-settings-section-1"></script>
 <script src="admin-localization.js?v=20260627-safe-ru-2"></script>
   </body>
 </html>
