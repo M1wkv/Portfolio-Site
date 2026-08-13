@@ -188,7 +188,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260812-stable-topbar-1";
+    script.src = "sphere.js?v=20260813-analytics-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
