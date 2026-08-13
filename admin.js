@@ -101,6 +101,10 @@
   const projectsBackButton = document.getElementById("projectsBackButton");
   const portfolioModeText = document.getElementById("portfolioModeText");
   const sphereSettingInputs = Array.from(form.querySelectorAll('input[type="range"][name^="settings.sphere."]'));
+  const analyticsContent = document.getElementById("analyticsContent");
+  const analyticsState = document.getElementById("analyticsState");
+  const analyticsRefresh = document.getElementById("analyticsRefresh");
+  let analyticsLoaded = false;
 
   const sectionLabels = {
     profile: ["Profile / Главный блок", "Главный блок"],
@@ -324,6 +328,69 @@
     const [kicker, title] = sectionLabels[tabName] || sectionLabels.profile;
     sectionKicker.textContent = kicker;
     sectionTitle.textContent = title;
+    if (tabName === "seo" && session && !analyticsLoaded) loadAnalytics();
+  }
+
+  function setAnalyticsText(id, value) {
+    const node = document.getElementById(id);
+    if (node) node.textContent = String(value ?? 0);
+  }
+
+  function renderAnalyticsList(id, rows, labelKey, valueKey, emptyText) {
+    const target = document.getElementById(id);
+    if (!target) return;
+    if (!rows?.length) {
+      target.innerHTML = `<p class="analytics-empty">${escapeHtml(emptyText)}</p>`;
+      return;
+    }
+    const max = Math.max(...rows.map((row) => Number(row[valueKey]) || 0), 1);
+    target.innerHTML = rows.map((row) => {
+      const value = Number(row[valueKey]) || 0;
+      return `<div class="analytics-list-row"><span>${escapeHtml(row[labelKey] || "-")}</span><i><b style="width:${Math.max(4, value / max * 100).toFixed(1)}%"></b></i><strong>${value}</strong></div>`;
+    }).join("");
+  }
+
+  function renderAnalytics(data) {
+    setAnalyticsText("analyticsToday", data.todayVisitors);
+    setAnalyticsText("analyticsTodayViews", `${data.todayViews || 0} просмотров`);
+    setAnalyticsText("analyticsWeek", data.visitors7);
+    setAnalyticsText("analyticsWeekViews", `${data.views7 || 0} просмотров`);
+    setAnalyticsText("analyticsMonth", data.visitors30);
+    setAnalyticsText("analyticsMonthViews", `${data.views30 || 0} просмотров`);
+    setAnalyticsText("analyticsProjectsCount", data.projectOpens30);
+    setAnalyticsText("analyticsCvCount", data.cvOpens30);
+    setAnalyticsText("analyticsContactCount", data.contactClicks30);
+    const chart = document.getElementById("analyticsChart");
+    const series = Array.isArray(data.series) ? data.series : [];
+    const max = Math.max(...series.map((entry) => Number(entry.visitors) || 0), 1);
+    if (chart) chart.innerHTML = series.map((entry) => {
+      const height = Math.max(3, (Number(entry.visitors) || 0) / max * 100);
+      const date = new Date(`${entry.day}T00:00:00`);
+      const label = Number.isNaN(date.getTime()) ? entry.day : date.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
+      return `<i title="${escapeHtml(label)}: ${Number(entry.visitors) || 0}"><b style="height:${height.toFixed(1)}%"></b></i>`;
+    }).join("");
+    renderAnalyticsList("analyticsProjects", data.projects, "title", "opens", "Открытий проектов пока нет");
+    renderAnalyticsList("analyticsSources", data.sources, "source", "visits", "Источники появятся после первых посещений");
+    renderAnalyticsList("analyticsDevices", data.devices?.map((row) => ({ ...row, device: ({ mobile: "Мобильные", tablet: "Планшеты", desktop: "Компьютеры" })[row.device] || row.device })), "device", "visits", "Данных об устройствах пока нет");
+  }
+
+  async function loadAnalytics() {
+    if (!supabaseClient || !session) return;
+    analyticsRefresh.disabled = true;
+    analyticsState.hidden = false;
+    analyticsState.textContent = "Загрузка статистики...";
+    try {
+      const { data, error } = await supabaseClient.rpc("get_portfolio_analytics", { p_days: 30 });
+      if (error) throw error;
+      renderAnalytics(data || {});
+      analyticsLoaded = true;
+      analyticsState.hidden = true;
+      analyticsContent.hidden = false;
+    } catch (error) {
+      analyticsState.textContent = `Не удалось загрузить статистику: ${error.message}`;
+    } finally {
+      analyticsRefresh.disabled = false;
+    }
   }
 
   function readFile(input, callback) {
@@ -938,6 +1005,7 @@
       });
       saveButton.disabled = false;
       setStatus("Ready");
+      if (document.querySelector('[data-tab="seo"]')?.classList.contains("is-active")) loadAnalytics();
       return;
     }
     panel.innerHTML = `
@@ -977,6 +1045,10 @@
   }
 
   tabs.forEach((tab) => tab.addEventListener("click", () => switchTab(tab.dataset.tab)));
+  analyticsRefresh?.addEventListener("click", () => {
+    analyticsLoaded = false;
+    loadAnalytics();
+  });
   addProjectButton.addEventListener("click", () => {
     const project = createProject();
     content.portfolio.projects.push(project);
