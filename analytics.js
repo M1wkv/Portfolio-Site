@@ -1,6 +1,5 @@
 (() => {
-  const client = window.createPortfolioSupabase?.();
-  if (!client || location.pathname.toLowerCase().includes("admin")) return;
+  if (location.pathname.toLowerCase().includes("admin")) return;
 
   const SESSION_KEY = "portfolioSphere.analyticsSession";
   const UUID_FALLBACK = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
@@ -32,7 +31,10 @@
     }
   }
 
+  let client = null;
+
   function track(eventType, details = {}) {
+    if (!client) return;
     const projectId = String(details.projectId || "").trim();
     client.rpc("track_analytics_event", {
       p_event_type: eventType,
@@ -48,5 +50,15 @@
   }
 
   window.PortfolioAnalytics = { track };
-  track("page_view");
+
+  let attempts = 0;
+  function start() {
+    client = window.createPortfolioSupabase?.() || null;
+    if (!client && attempts++ < 40) {
+      window.setTimeout(start, 100);
+      return;
+    }
+    if (client) track("page_view");
+  }
+  start();
 })();
