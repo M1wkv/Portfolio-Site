@@ -398,13 +398,55 @@
     reader.readAsDataURL(file);
   }
 
+  function dataUrlFromBlob(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error || new Error("Не удалось прочитать изображение"));
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function optimizeImageFile(file, options = {}) {
+    if (!file?.type?.startsWith("image/") || /image\/(gif|svg\+xml|avif|webp)/i.test(file.type)) {
+      return { src: await dataUrlFromBlob(file), title: file.name, file, optimized: false };
+    }
+    const maxDimension = Math.max(800, Number(options.maxDimension) || 2400);
+    const quality = Math.max(0.55, Math.min(0.92, Number(options.quality) || 0.82));
+    let bitmap;
+    try {
+      bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+      const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+      const width = Math.max(1, Math.round(bitmap.width * scale));
+      const height = Math.max(1, Math.round(bitmap.height * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d", { alpha: true });
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      context.drawImage(bitmap, 0, 0, width, height);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", quality));
+      if (!blob) throw new Error("WebP недоступен");
+      const baseName = file.name.replace(/\.[^.]+$/, "") || "image";
+      const optimizedFile = new File([blob], `${baseName}.webp`, { type: "image/webp", lastModified: file.lastModified });
+      return { src: await dataUrlFromBlob(optimizedFile), title: optimizedFile.name, file: optimizedFile, optimized: true, originalSize: file.size, optimizedSize: optimizedFile.size };
+    } catch (error) {
+      return { src: await dataUrlFromBlob(file), title: file.name, file, optimized: false };
+    } finally {
+      bitmap?.close?.();
+    }
+  }
+
+  async function readOptimizedImage(input, options = {}) {
+    const file = input.files && input.files[0];
+    if (!file) return null;
+    return optimizeImageFile(file, options);
+  }
+
   function readFiles(input) {
     const files = Array.from(input.files || []);
-    return Promise.all(files.map((file) => new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve({ src: reader.result, title: file.name, file });
-      reader.readAsDataURL(file);
-    })));
+    return Promise.all(files.map((file) => optimizeImageFile(file, { maxDimension: 2400, quality: 0.82 })));
   }
 
   function createProject() {
@@ -631,7 +673,7 @@
       request.setRequestHeader("apikey", config.publishableKey);
       request.setRequestHeader("Authorization", `Bearer ${accessToken}`);
       request.setRequestHeader("x-upsert", "true");
-      request.setRequestHeader("cache-control", "3600");
+      request.setRequestHeader("cache-control", "31536000");
       request.setRequestHeader("Content-Type", blob.type || "application/octet-stream");
       request.onload = () => {
         if (request.status >= 200 && request.status < 300) {
@@ -657,6 +699,26 @@
   function storagePath(folder, fileName) {
     const safe = String(fileName || "file").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "");
     return `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}-${safe || "file"}`;
+  }
+
+  function portfolioStoragePath(url) {
+    if (!url) return "";
+    try {
+      const parsed = new URL(url);
+      const marker = "/storage/v1/object/public/portfolio/";
+      const index = parsed.pathname.indexOf(marker);
+      return index >= 0 ? decodeURIComponent(parsed.pathname.slice(index + marker.length)) : "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  async function removePortfolioFiles(urls) {
+    const paths = Array.from(new Set((urls || []).map(portfolioStoragePath).filter(Boolean)));
+    for (let index = 0; index < paths.length; index += 100) {
+      const { error } = await supabaseClient.storage.from(bucketName).remove(paths.slice(index, index + 100));
+      if (error) throw error;
+    }
   }
 
   async function saveProjects() {
@@ -705,7 +767,7 @@
       saveStage = `проверка галереи проекта «${project.title || index + 1}»`;
       const { data: previousImages, error: previousImagesError } = await supabaseClient
         .from("project_images")
-        .select("id")
+        .select("id,image_url")
         .eq("project_id", projectId);
       if (previousImagesError) throw previousImagesError;
 
@@ -732,6 +794,8 @@
         const { error: deleteImagesError } = await supabaseClient.from("project_images").delete().in("id", previousImageIds);
         if (deleteImagesError) throw deleteImagesError;
       }
+      const retainedUrls = new Set(rows.map((row) => row.image_url).concat(coverUrl).filter(Boolean));
+      await removePortfolioFiles((previousImages || []).map((image) => image.image_url).filter((url) => !retainedUrls.has(url)));
 
       saveStage = `публикация проекта «${project.title || index + 1}»`;
       const { data: publishedProject, error: publishError } = await supabaseClient
@@ -753,10 +817,15 @@
 
     const removedIds = Array.from(pendingProjectRemovalIds);
     if (removedIds.length) {
+      const [{ data: removedImages }, { data: removedProjects }] = await Promise.all([
+        supabaseClient.from("project_images").select("image_url").in("project_id", removedIds),
+        supabaseClient.from("projects").select("cover_url").in("id", removedIds)
+      ]);
       const { error: removeImagesError } = await supabaseClient.from("project_images").delete().in("project_id", removedIds);
       if (removeImagesError) throw removeImagesError;
       const { error: removeProjectsError } = await supabaseClient.from("projects").delete().in("id", removedIds);
       if (removeProjectsError) throw removeProjectsError;
+      await removePortfolioFiles([...(removedImages || []).map((image) => image.image_url), ...(removedProjects || []).map((project) => project.cover_url)]);
       pendingProjectRemovalIds.clear();
     }
   }
@@ -1079,11 +1148,12 @@
   saveButton.addEventListener("click", saveContent);
 
   document.getElementById("profilePhotoInput").addEventListener("change", (event) => {
-    readFile(event.currentTarget, (data, name) => {
-      content.profile.photo = data;
+    readOptimizedImage(event.currentTarget, { maxDimension: 1600, quality: 0.84 }).then((image) => {
+      if (!image) return;
+      content.profile.photo = image.src;
       content.profile.photoUrl = "";
-      document.querySelector('[name="profile.photo"]').value = data;
-      document.getElementById("profilePhotoName").textContent = name;
+      document.querySelector('[name="profile.photo"]').value = image.src;
+      document.getElementById("profilePhotoName").textContent = image.title;
     });
   });
   document.getElementById("cvPdfInput").addEventListener("change", (event) => {
@@ -1095,12 +1165,13 @@
     });
   });
   document.getElementById("faviconInput").addEventListener("change", (event) => {
-    readFile(event.currentTarget, (data, name) => {
-      content.settings.favicon = data;
+    readOptimizedImage(event.currentTarget, { maxDimension: 512, quality: 0.88 }).then((image) => {
+      if (!image) return;
+      content.settings.favicon = image.src;
       content.settings.faviconUrl = "";
-      content.settings.faviconName = name;
-      document.querySelector('[name="settings.favicon"]').value = data;
-      document.getElementById("faviconName").textContent = name;
+      content.settings.faviconName = image.title;
+      document.querySelector('[name="settings.favicon"]').value = image.src;
+      document.getElementById("faviconName").textContent = image.title;
     });
   });
   sphereSettingInputs.forEach((input) => input.addEventListener("input", updateSphereSettingValues));
