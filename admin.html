@@ -10,7 +10,7 @@
     <title>Админ-панель портфолио</title>
     <link rel="preconnect" href="https://xidxcafcdfmoxxvnjjkl.supabase.co" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link rel="stylesheet" href="admin.css?v=20260812-gallery-cover-only-1" />
+    <link rel="stylesheet" href="admin.css?v=20260813-analytics-1" />
   </head>
   <body>
     <main class="admin-shell">
@@ -169,6 +169,26 @@
 
           <section class="admin-section" data-panel="seo">
             <div class="form-grid two">
+              <div class="settings-subsection settings-group wide analytics-dashboard">
+                <div class="settings-subsection-head analytics-head"><div><span>Статистика посетителей</span><p>Обновляется из Supabase. Посещения админки не учитываются.</p></div><button id="analyticsRefresh" type="button">ОБНОВИТЬ</button></div>
+                <div id="analyticsState" class="analytics-state">Загрузка статистики...</div>
+                <div id="analyticsContent" hidden>
+                  <div class="analytics-cards">
+                    <article><span>Сегодня</span><strong id="analyticsToday">0</strong><small id="analyticsTodayViews">0 просмотров</small></article>
+                    <article><span>7 дней</span><strong id="analyticsWeek">0</strong><small id="analyticsWeekViews">0 просмотров</small></article>
+                    <article><span>30 дней</span><strong id="analyticsMonth">0</strong><small id="analyticsMonthViews">0 просмотров</small></article>
+                    <article><span>Проекты / 30 дней</span><strong id="analyticsProjectsCount">0</strong><small>открытий проектов</small></article>
+                    <article><span>Резюме / 30 дней</span><strong id="analyticsCvCount">0</strong><small>открытий резюме</small></article>
+                    <article><span>Контакты / 30 дней</span><strong id="analyticsContactCount">0</strong><small>переходов</small></article>
+                  </div>
+                  <section class="analytics-chart-wrap"><h3>Посетители за 30 дней</h3><div id="analyticsChart" class="analytics-chart"></div></section>
+                  <div class="analytics-lists">
+                    <section><h3>Популярные проекты</h3><div id="analyticsProjects" class="analytics-list"></div></section>
+                    <section><h3>Источники</h3><div id="analyticsSources" class="analytics-list"></div></section>
+                    <section><h3>Устройства</h3><div id="analyticsDevices" class="analytics-list"></div></section>
+                  </div>
+                </div>
+              </div>
               <div class="settings-subsection settings-group wide">
                 <div class="settings-subsection-head"><span>Сайт / SEO</span><p>Основные метаданные и технические настройки сайта.</p></div>
                 <div class="form-grid two">
@@ -310,7 +330,7 @@
     <script src="supabase-config.js?v=20260628-security-1"></script>
     <script src="admin-storage.js"></script>
 <script src="site-localization.js?v=20260627-safe-ru-1"></script>
-<script src="admin.js?v=20260812-gallery-cover-only-1"></script>
+<script src="admin.js?v=20260813-analytics-1"></script>
 <script src="admin-localization.js?v=20260627-safe-ru-2"></script>
   </body>
 </html>
