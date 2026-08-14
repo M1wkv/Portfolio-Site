@@ -408,26 +408,53 @@
   }
 
   async function optimizeImageFile(file, options = {}) {
-    if (!file?.type?.startsWith("image/") || /image\/(gif|svg\+xml|avif|webp)/i.test(file.type)) {
+    const fileType = String(file?.type || "").toLowerCase();
+    const fileName = String(file?.name || "");
+    const isJpegOrPng = /image\/(jpeg|jpg|png)/i.test(fileType) || /\.(jpe?g|png)$/i.test(fileName);
+    if (!isJpegOrPng) {
       return { src: await dataUrlFromBlob(file), title: file.name, file, optimized: false };
     }
     const maxDimension = Math.max(800, Number(options.maxDimension) || 2400);
     const quality = Math.max(0.55, Math.min(0.92, Number(options.quality) || 0.82));
     let bitmap;
+    let image;
+    let objectUrl = "";
     try {
-      bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
-      const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
-      const width = Math.max(1, Math.round(bitmap.width * scale));
-      const height = Math.max(1, Math.round(bitmap.height * scale));
+      if (typeof createImageBitmap === "function") {
+        try {
+          bitmap = await createImageBitmap(file);
+        } catch (error) {
+          bitmap = null;
+        }
+      }
+      if (!bitmap) {
+        objectUrl = URL.createObjectURL(file);
+        image = new Image();
+        image.decoding = "async";
+        image.src = objectUrl;
+        await image.decode();
+      }
+      const source = bitmap || image;
+      const sourceWidth = bitmap?.width || image?.naturalWidth || 0;
+      const sourceHeight = bitmap?.height || image?.naturalHeight || 0;
+      if (!sourceWidth || !sourceHeight) throw new Error("Не удалось определить размер изображения");
+      const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
+      const width = Math.max(1, Math.round(sourceWidth * scale));
+      const height = Math.max(1, Math.round(sourceHeight * scale));
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
       const context = canvas.getContext("2d", { alpha: true });
       context.imageSmoothingEnabled = true;
       context.imageSmoothingQuality = "high";
-      context.drawImage(bitmap, 0, 0, width, height);
+      context.drawImage(source, 0, 0, width, height);
       const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", quality));
-      if (!blob) throw new Error("WebP недоступен");
+      if (!blob || blob.type !== "image/webp") throw new Error("WebP недоступен в этом браузере");
+      const signature = new Uint8Array(await blob.slice(0, 12).arrayBuffer());
+      const isWebP = signature.length === 12
+        && String.fromCharCode(...signature.slice(0, 4)) === "RIFF"
+        && String.fromCharCode(...signature.slice(8, 12)) === "WEBP";
+      if (!isWebP) throw new Error("Браузер вернул файл не в формате WebP");
       const baseName = file.name.replace(/\.[^.]+$/, "") || "image";
       const optimizedFile = new File([blob], `${baseName}.webp`, { type: "image/webp", lastModified: file.lastModified });
       return {
@@ -439,9 +466,10 @@
         optimizedSize: optimizedFile.size
       };
     } catch (error) {
-      return { src: await dataUrlFromBlob(file), title: file.name, file, optimized: false };
+      throw new Error(`Не удалось конвертировать «${fileName || "изображение"}» в WebP: ${error?.message || error}`);
     } finally {
       bitmap?.close?.();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     }
   }
 
@@ -451,9 +479,15 @@
     return optimizeImageFile(file, options);
   }
 
-  function readFiles(input) {
+  async function readFiles(input) {
     const files = Array.from(input.files || []);
-    return Promise.all(files.map((file) => optimizeImageFile(file, { maxDimension: 2400, quality: 0.82 })));
+    const images = [];
+    for (let index = 0; index < files.length; index += 1) {
+      setStatus(`Конвертация изображения ${index + 1} из ${files.length} в WebP`);
+      images.push(await optimizeImageFile(files[index], { maxDimension: 2400, quality: 0.82 }));
+    }
+    setStatus(files.length ? `${files.length} изображений подготовлено в WebP` : "Ready");
+    return images;
   }
 
   function createProject() {
@@ -603,6 +637,10 @@
       readFiles(event.currentTarget).then((images) => {
         project.gallery = [...project.gallery, ...images];
         renderProjects();
+      }).catch((error) => {
+        const message = error?.message || "Не удалось подготовить изображения";
+        setStatus(message);
+        alert(message);
       });
     });
     card.querySelectorAll("[data-gallery-remove]").forEach((button) => {
