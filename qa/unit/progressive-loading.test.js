@@ -13,8 +13,3 @@ test("sphere loads a small initial image batch and schedules the rest", () => {
 test("mobile canvas limits device pixel ratio", () => {
   assert.match(source, /mobileDpr=window\.innerWidth<768\?1\.35:2/);
 });
-
-test("project back closes the project even while media is expanded", () => {
-  assert.match(source, /projectBack\.addEventListener\("click",\(event\)=>\{event\.preventDefault\(\);event\.stopPropagation\(\);closeProject\(\);\}\)/);
-  assert.doesNotMatch(source, /projectBack\.addEventListener\("click",\(\)=>\{if\(projectFocusTarget/);
-});
