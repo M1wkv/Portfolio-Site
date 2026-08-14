@@ -466,11 +466,12 @@ select { min-width: 0; }
   --water-panel-rgb: 14;
   --water-panel-blur: 0.9px;
   --water-panel-surface: rgb(var(--water-panel-rgb) var(--water-panel-rgb) var(--water-panel-rgb) / var(--water-panel-alpha));
-  --idle-top-alpha: 0.08;
+  --black-panel-surface: rgba(8, 8, 8, 0.5);
+  --idle-top-alpha: 0.5;
   --idle-top-rgb: 0;
   --idle-top-blur: 10px;
   --idle-top-content-blur: 7px;
-  --idle-bottom-alpha: 0.08;
+  --idle-bottom-alpha: 0.5;
   --idle-bottom-rgb: 0;
   --idle-bottom-blur: 10px;
   --idle-bottom-content-blur: 7px;
@@ -993,7 +994,7 @@ input {
   padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.82);
+  background: var(--black-panel-surface);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transform: translateY(-50%);
@@ -1408,7 +1409,7 @@ input {
   gap: 0.95vw;
   padding: 0.95vw;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--black-panel-surface);
   color: #fff;
   pointer-events: auto;
   transform: translateY(-50%);
@@ -1749,7 +1750,7 @@ input {
 .cv-about { max-width: 1160px; }
 .cv-about p { margin-top: 0; font-size: 13px; font-weight: 400; line-height: 1.08; }
 .cv-experience { width: min(100%, 1120px); display: grid; gap: 17px; justify-items: center; }
-.cv-experience-track { width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; padding: 14px 24px; border-radius: 999px; background: rgba(11,11,11,.77); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.cv-experience-track { width: 100%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; padding: 14px 24px; border-radius: 999px; background: var(--black-panel-surface); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .cv-experience article { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 3px 12px; padding: 0 16px; text-align: left; font: 500 12px/1.02 "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif; }
 .cv-experience article:not(:last-child)::after { content:""; position:absolute; top:3px; right:0; bottom:3px; width:1px; background:rgba(255,255,255,.12); }
 .cv-experience b { font-weight:700; } .cv-experience span { color:rgba(255,255,255,.69); } .cv-experience time { grid-column:2; grid-row:1 / span 2; color:rgba(255,255,255,.78); white-space:nowrap; }
@@ -1961,7 +1962,7 @@ input {
   width: min(680px, calc(100vw - 220px));
   padding: 5px;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.78);
+  background: var(--black-panel-surface);
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.44);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -2005,7 +2006,7 @@ input {
   gap: 16px;
   padding: 16px;
   border-radius: 18px;
-  background: rgba(0, 0, 0, 0.78);
+  background: var(--black-panel-surface);
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.48);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -2709,7 +2710,7 @@ input {
   overflow: hidden;
   border: 0;
   border-radius: 44px;
-  background: rgba(8, 8, 8, 0.86);
+  background: var(--black-panel-surface);
   box-shadow: none;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
