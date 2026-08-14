@@ -8,6 +8,9 @@ test("admin image pipeline converts supported uploads to WebP", () => {
   assert.match(source, /canvas\.toBlob\(resolve, "image\/webp", quality\)/);
   assert.match(source, /maxDimension[^\n]+2400/);
   assert.match(source, /quality[^\n]+0\.82/);
+  assert.match(source, /String\.fromCharCode\(\.\.\.signature\.slice\(8, 12\)\) === "WEBP"/);
+  assert.match(source, /images\.push\(await optimizeImageFile/);
+  assert.doesNotMatch(source, /Promise\.all\(files\.map\(\(file\) => optimizeImageFile/);
 });
 
 test("admin removes obsolete portfolio objects from Storage", () => {
