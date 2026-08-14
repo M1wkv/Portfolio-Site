@@ -466,13 +466,13 @@ select { min-width: 0; }
   --water-panel-rgb: 14;
   --water-panel-blur: 0.9px;
   --water-panel-surface: rgb(var(--water-panel-rgb) var(--water-panel-rgb) var(--water-panel-rgb) / var(--water-panel-alpha));
-  --black-panel-surface: rgba(8, 8, 8, 0.5);
+  --black-panel-surface: rgb(var(--water-panel-rgb) var(--water-panel-rgb) var(--water-panel-rgb) / 0.5);
   --idle-top-alpha: 0.5;
-  --idle-top-rgb: 0;
+  --idle-top-rgb: var(--water-panel-rgb);
   --idle-top-blur: 10px;
   --idle-top-content-blur: 7px;
   --idle-bottom-alpha: 0.5;
-  --idle-bottom-rgb: 0;
+  --idle-bottom-rgb: var(--water-panel-rgb);
   --idle-bottom-blur: 10px;
   --idle-bottom-content-blur: 7px;
   --mono: "Helvetica Neue Cyr", "Helvetica Neue", Helvetica, Arial, sans-serif;
