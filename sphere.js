@@ -490,7 +490,7 @@ canvas.addEventListener("pointerup",(event)=>{if(viewMode==="cv"){dragging=false
 canvas.addEventListener("pointerenter",()=>{hovering=true;});
 canvas.addEventListener("pointerleave",()=>{hovering=false;dragging=false;});
 canvas.addEventListener("wheel",(event)=>{event.preventDefault();if(viewMode==="cv"){handleCvWheel(event);return;}if(projectFocusTarget>0||projectFocusProgress>0.05)return;if(viewMode==="project"||transitionProgress>0.6){touchRibbon(event.deltaY*0.0012);return;}const nextValue=Number(sizeRange.value)-event.deltaY*0.0009;sizeRange.value=String(Math.max(Number(sizeRange.min),Math.min(Number(sizeRange.max),nextValue)));updateUi();},{passive:false});
-projectBack.addEventListener("click",()=>{if(projectFocusTarget>0||projectFocusProgress>0.05){toggleProjectMedia();return;}closeProject();});
+projectBack.addEventListener("click",(event)=>{event.preventDefault();event.stopPropagation();closeProject();});
 projectCvOpen?.addEventListener("click",openCv);
 projectTopNav?.addEventListener("pointerenter",()=>{window.clearTimeout(projectTopNavTimer);setProjectTopNavFrosted(false);});
 projectTopNav?.addEventListener("pointerleave",scheduleProjectTopNavFrost);
