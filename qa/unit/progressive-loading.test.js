@@ -13,3 +13,9 @@ test("sphere loads a small initial image batch and schedules the rest", () => {
 test("mobile canvas limits device pixel ratio", () => {
   assert.match(source, /mobileDpr=window\.innerWidth<768\?1\.35:2/);
 });
+
+test("sphere click centers an image before opening its project", () => {
+  assert.match(source, /function focusSphereItem\(item,index\)/);
+  assert.match(source, /sphereProjectFocusSrc===hit\.item\.src&&sphereProjectFocusTarget>0/);
+  assert.match(source, /else\{focusSphereItem\(hit\.item,hit\.index\);\}/);
+});
