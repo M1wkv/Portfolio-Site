@@ -407,6 +407,29 @@
     });
   }
 
+  function isVideoMedia(value, type = "") {
+    const source = String(value || "").split("?")[0].toLowerCase();
+    return String(type || "").toLowerCase().startsWith("video/")
+      || source.startsWith("data:video/")
+      || /\.(mp4|webm)$/.test(source);
+  }
+
+  async function prepareMediaFile(file, options = {}) {
+    if (!isVideoMedia(file?.name, file?.type)) return optimizeImageFile(file, options);
+    const supported = /video\/(mp4|webm)/i.test(file.type) || /\.(mp4|webm)$/i.test(file.name);
+    if (!supported) throw new Error(`Видео «${file.name}» должно быть в формате MP4 или WebM`);
+    if (file.size > 50 * 1024 * 1024) throw new Error(`Видео «${file.name}» превышает лимит 50 МБ`);
+    return {
+      src: URL.createObjectURL(file),
+      title: file.name,
+      file,
+      mediaType: "video",
+      optimized: false,
+      originalSize: file.size,
+      optimizedSize: file.size
+    };
+  }
+
   async function optimizeImageFile(file, options = {}) {
     const fileType = String(file?.type || "").toLowerCase();
     const fileName = String(file?.name || "");
@@ -481,13 +504,16 @@
 
   async function readFiles(input) {
     const files = Array.from(input.files || []);
-    const images = [];
+    const media = [];
     for (let index = 0; index < files.length; index += 1) {
-      setStatus(`Конвертация изображения ${index + 1} из ${files.length} в WebP`);
-      images.push(await optimizeImageFile(files[index], { maxDimension: 2400, quality: 0.82 }));
+      const video = isVideoMedia(files[index]?.name, files[index]?.type);
+      setStatus(video
+        ? `Подготовка видео ${index + 1} из ${files.length}`
+        : `Конвертация изображения ${index + 1} из ${files.length} в WebP`);
+      media.push(await prepareMediaFile(files[index], { maxDimension: 2400, quality: 0.82 }));
     }
-    setStatus(files.length ? `${files.length} изображений подготовлено в WebP` : "Ready");
-    return images;
+    setStatus(files.length ? `${files.length} медиафайлов подготовлено` : "Ready");
+    return media;
   }
 
   function createProject() {
@@ -575,11 +601,15 @@
     const galleryCount = project.gallery.length + galleryUrls.length;
     const galleryMarkup = project.gallery.length
       ? project.gallery.map((image, galleryIndex) => {
-          const isCover = cover === image.src;
+          const video = isVideoMedia(image.src, image.file?.type || image.mediaType);
+          const isCover = !video && cover === image.src;
+          const preview = video
+            ? `<video src="${escapeHtml(image.src)}" autoplay muted loop playsinline preload="metadata"></video><span class="project-gallery-kind">VIDEO</span>`
+            : `<img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.title || `Изображение ${galleryIndex + 1}`)}" loading="lazy">`;
           return `
           <figure class="project-gallery-item${isCover ? " is-cover" : ""}">
-            <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.title || `Изображение ${galleryIndex + 1}`)}" loading="lazy">
-            <button class="project-gallery-cover" type="button" data-gallery-cover="${galleryIndex}" aria-pressed="${isCover}" title="${isCover ? "Текущая обложка" : "Сделать обложкой"}">${isCover ? "ОБЛОЖКА" : "СДЕЛАТЬ ОБЛОЖКОЙ"}</button>
+            ${preview}
+            ${video ? "" : `<button class="project-gallery-cover" type="button" data-gallery-cover="${galleryIndex}" aria-pressed="${isCover}" title="${isCover ? "Текущая обложка" : "Сделать обложкой"}">${isCover ? "ОБЛОЖКА" : "СДЕЛАТЬ ОБЛОЖКОЙ"}</button>`}
             <button class="project-gallery-remove" type="button" data-gallery-remove="${galleryIndex}" aria-label="Удалить изображение ${galleryIndex + 1}" title="Удалить изображение">×</button>
           </figure>
         `;
@@ -597,15 +627,15 @@
         ${cover ? `<img src="${escapeHtml(cover)}" alt="">` : `<span>Нет обложки</span>`}
         <div>
           <b>${project.status === "published" ? "Опубликован" : "Скрыт"}</b>
-          <small>${galleryCount} изображений в галерее</small>
+          <small>${galleryCount} медиафайлов в галерее</small>
         </div>
       </div>
       <div class="project-grid">
         <label><span>Название</span><input data-project-field="title" type="text"></label>
         <label><span>Статус</span><select data-project-field="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option></select></label>
-        <label class="wide"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*" multiple><small>${project.gallery.length ? `${project.gallery.length} изображений выбрано. Обложка выбирается ниже.` : "Загрузите изображения, затем выберите обложку ниже."}</small></label>
+        <label class="wide"><span>Галерея</span><input data-project-file="gallery" type="file" accept="image/*,video/mp4,video/webm" multiple><small>${project.gallery.length ? `${project.gallery.length} медиафайлов выбрано. Обложка выбирается только из изображений.` : "Загрузите изображения или MP4/WebM, затем выберите обложку ниже."}</small></label>
         <div class="project-gallery-manager">
-          <div class="project-gallery-manager-head"><span>Изображения проекта / выбор обложки</span><b>${project.gallery.length}</b></div>
+          <div class="project-gallery-manager-head"><span>Медиа проекта / выбор обложки</span><b>${project.gallery.length}</b></div>
           <div class="project-gallery-grid">${galleryMarkup}</div>
         </div>
         <label class="project-gallery"><span>Описание</span><textarea data-project-field="description" rows="4"></textarea></label>
@@ -634,11 +664,11 @@
       });
     });
     card.querySelector('[data-project-file="gallery"]').addEventListener("change", (event) => {
-      readFiles(event.currentTarget).then((images) => {
-        project.gallery = [...project.gallery, ...images];
+      readFiles(event.currentTarget).then((media) => {
+        project.gallery = [...project.gallery, ...media];
         renderProjects();
       }).catch((error) => {
-        const message = error?.message || "Не удалось подготовить изображения";
+        const message = error?.message || "Не удалось подготовить медиафайлы";
         setStatus(message);
         alert(message);
       });
@@ -653,6 +683,7 @@
           project.coverUrl = "";
           project.coverName = "";
         }
+        if (removedImage?.src?.startsWith("blob:")) URL.revokeObjectURL(removedImage.src);
         project.gallery.splice(galleryIndex, 1);
         renderProjects();
       });
@@ -661,7 +692,7 @@
       button.addEventListener("click", () => {
         const galleryIndex = Number(button.dataset.galleryCover);
         const image = project.gallery[galleryIndex];
-        if (!Number.isInteger(galleryIndex) || !image?.src) return;
+        if (!Number.isInteger(galleryIndex) || !image?.src || isVideoMedia(image.src, image.file?.type || image.mediaType)) return;
         project.cover = "";
         project.coverFile = null;
         project.coverGallerySrc = image.src;
@@ -701,13 +732,12 @@
     return new Blob([bytes], { type: mimeType });
   }
 
-  async function uploadDataUrl(path, dataUrl) {
-    if (!supabaseClient || !dataUrl || !dataUrl.startsWith("data:")) return dataUrl || "";
-    const blob = dataUrlToBlob(dataUrl);
+  async function uploadBlob(path, blob) {
+    if (!supabaseClient || !blob) return "";
     const config = window.PORTFOLIO_SUPABASE || {};
     const accessToken = session?.access_token;
     if (!config.url || !config.publishableKey || !accessToken) {
-      throw new Error("Нет активной сессии для загрузки изображения");
+      throw new Error("Нет активной сессии для загрузки файла");
     }
 
     const encodedPath = path.split("/").map((part) => encodeURIComponent(part)).join("/");
@@ -767,6 +797,11 @@
       }
     }
     return supabaseClient.storage.from(bucketName).getPublicUrl(path).data.publicUrl;
+  }
+
+  async function uploadDataUrl(path, dataUrl) {
+    if (!supabaseClient || !dataUrl || !dataUrl.startsWith("data:")) return dataUrl || "";
+    return uploadBlob(path, dataUrlToBlob(dataUrl));
   }
 
   function storagePath(folder, fileName) {
@@ -846,12 +881,23 @@
 
       const rows = [];
       for (const [galleryIndex, image] of project.gallery.entries()) {
-        saveStage = `загрузка изображения ${galleryIndex + 1} проекта «${project.title || index + 1}»`;
-        const imageUrl = image.src?.startsWith("data:")
-          ? await uploadDataUrl(storagePath("gallery", image.title || `${project.title}-${galleryIndex}`), image.src)
-          : image.src || "";
+        const video = isVideoMedia(image.src, image.file?.type || image.mediaType);
+        saveStage = `загрузка ${video ? "видео" : "изображения"} ${galleryIndex + 1} проекта «${project.title || index + 1}»`;
+        const path = storagePath("gallery", image.title || `${project.title}-${galleryIndex}`);
+        const previousPreviewUrl = image.src || "";
+        const imageUrl = image.file
+          ? await uploadBlob(path, image.file)
+          : image.src?.startsWith("data:")
+            ? await uploadDataUrl(path, image.src)
+            : image.src || "";
         if (selectedGalleryCoverSrc && image.src === selectedGalleryCoverSrc) coverUrl = imageUrl;
         if (imageUrl) rows.push({ project_id: projectId, image_url: imageUrl, title: image.title || project.title, sort_order: galleryIndex });
+        if (imageUrl && (image.file || image.src?.startsWith("data:"))) {
+          if (previousPreviewUrl.startsWith("blob:")) URL.revokeObjectURL(previousPreviewUrl);
+          image.src = imageUrl;
+          image.file = null;
+          image.mediaType = video ? "video" : "image";
+        }
       }
       projectGalleryUrls(project).forEach((image, urlIndex) => {
         rows.push({ project_id: projectId, image_url: image.src, title: image.title || project.title, sort_order: rows.length + urlIndex });
