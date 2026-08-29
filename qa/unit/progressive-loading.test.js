@@ -19,3 +19,19 @@ test("sphere click centers an image before opening its project", () => {
   assert.match(source, /sphereProjectFocusSrc===hit\.item\.src&&sphereProjectFocusTarget>0/);
   assert.match(source, /else\{focusSphereItem\(hit\.item,hit\.index\);\}/);
 });
+
+test("visible video cards autoplay muted", () => {
+  assert.match(source, /document\.createElement\("video"\)/);
+  assert.match(source, /img\.muted=true/);
+  assert.match(source, /img\.loop=true/);
+  assert.match(source, /img\.playsInline=true/);
+  assert.match(source, /function syncVisibleVideoPlayback\(\)/);
+  assert.match(source, /visibleVideoItems\.has\(item\)/);
+});
+
+test("opened project video restarts and plays with sound", () => {
+  assert.match(source, /function openExpandedVideo\(item\)/);
+  assert.match(source, /item\.img\.muted=false/);
+  assert.match(source, /item\.img\.currentTime=0/);
+  assert.match(source, /openExpandedVideo\(projectItems\[index\]\)/);
+});
