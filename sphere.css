@@ -1528,6 +1528,10 @@ input {
   gap: 10px;
 }
 
+.project-meta-time > [hidden] {
+  display: none !important;
+}
+
 .project-view-ui.is-media-open .project-heading,
 .project-view-ui.is-media-open .project-case {
   opacity: 0;
