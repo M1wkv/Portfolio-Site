@@ -3036,7 +3036,7 @@ input {
       filter var(--interactive-glow-duration) var(--interactive-glow-ease);
   }
 
-  .sphere-page :is(#cvOpen, #projectsNav, .project-index-button, #projectBack, #projectCvOpen, #cvBack, #cvWorks, #cvContactLinks a):active:not(:disabled):not([aria-disabled="true"]) {
+  .sphere-page :is(#cvOpen, #projectsNav, .project-index-button, #projectBack, #projectCvOpen, #cvBack, #cvWorks, #cvContactLinks a):is(.is-pressed, :active:not([data-press-managed])):not(:disabled):not([aria-disabled="true"]) {
     --button-press-duration: 100ms;
     scale: 0.97;
   }
