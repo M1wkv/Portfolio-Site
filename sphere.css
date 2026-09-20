@@ -3041,3 +3041,19 @@ input {
     scale: 0.97;
   }
 }
+
+
+/* Main-screen optical text alignment: move copy only, not the pill surfaces. */
+.sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav,
+.sphere-page:not(.is-project):not(.is-cv) .project-index-button {
+  padding-top: 1px;
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-control-head {
+  transform: translateY(1px);
+}
+
+.sphere-page:not(.is-project):not(.is-cv) .sphere-brand {
+  position: relative;
+  top: 1px;
+}
