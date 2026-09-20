@@ -3046,7 +3046,7 @@ input {
 /* Main-screen optical text alignment: move copy only, not the pill surfaces. */
 .sphere-page:not(.is-project):not(.is-cv) .sphere-topbar .cv-nav,
 .sphere-page:not(.is-project):not(.is-cv) .project-index-button {
-  padding-top: 1px;
+  padding-top: 2px;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head {
@@ -3055,7 +3055,7 @@ input {
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-brand {
   position: relative;
-  top: 1px;
+  top: 2px;
 }
 
 
@@ -3071,5 +3071,5 @@ input {
   .cv-section-button
 ) {
   box-sizing: border-box;
-  padding-top: 1px;
+  padding-top: 2px;
 }
