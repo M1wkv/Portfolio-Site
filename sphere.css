@@ -3073,3 +3073,10 @@ input {
   box-sizing: border-box;
   padding-top: 2px;
 }
+
+
+/* Project view: optical alignment for the role heading only. */
+.sphere-page.is-project .project-role > b {
+  position: relative;
+  top: -1px;
+}
