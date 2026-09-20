@@ -4,6 +4,8 @@ const fs = require("node:fs");
 
 const source = fs.readFileSync("sphere.js", "utf8");
 const styles = fs.readFileSync("sphere.css", "utf8");
+const loader = fs.readFileSync("supabase-loader.js", "utf8");
+const entryPages = ["index.html", "sphere-embed.html"].map((name) => fs.readFileSync(name, "utf8"));
 
 test("sphere loads a small initial image batch and schedules the rest", () => {
   assert.match(source, /initialCount=window\.innerWidth<768\?8:12/);
@@ -21,6 +23,11 @@ test("main sphere follows horizontal drag and inverts vertical drag", () => {
   assert.match(source, /rotation\.x\+=dy\*0\.005\*sphereVerticalDragDirection/);
   assert.match(source, /targetVelocity\.y\+=dx\*0\.000022;/);
   assert.match(source, /targetVelocity\.x\+=dy\*0\.000022\*sphereVerticalDragDirection/);
+});
+
+test("entry pages and loader cache-bust the vertical drag fix", () => {
+  entryPages.forEach((html) => assert.match(html, /supabase-loader\.js\?v=20260920-vertical-drag-2/));
+  assert.match(loader, /sphere\.js\?v=20260920-vertical-drag-1/);
 });
 
 test("sphere click centers an image before opening its project", () => {
