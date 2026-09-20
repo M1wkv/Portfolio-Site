@@ -3075,8 +3075,7 @@ input {
 }
 
 
-/* Project view: optical alignment for the role heading only. */
-.sphere-page.is-project .project-role > b {
-  position: relative;
-  top: -1px;
+/* Project view: raise copy inside role pills by 1px from the shared 2px offset. */
+.sphere-page.is-project #projectRoleTags span {
+  padding-top: 1px;
 }
