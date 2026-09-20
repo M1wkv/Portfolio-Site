@@ -3050,10 +3050,26 @@ input {
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-control-head {
-  transform: translateY(1px);
+  transform: none;
 }
 
 .sphere-page:not(.is-project):not(.is-cv) .sphere-brand {
   position: relative;
   top: 1px;
+}
+
+
+/* Site-wide optical text alignment for pill-shaped buttons and chips.
+   Main-screen sphere setting labels are intentionally excluded. */
+.sphere-page :is(
+  .project-top-nav .project-back,
+  .project-top-nav .project-cv-open,
+  .project-meta span,
+  #projectRoleTags span,
+  .cv-chip-row span,
+  .cv-chip-row a,
+  .cv-section-button
+) {
+  box-sizing: border-box;
+  padding-top: 1px;
 }
