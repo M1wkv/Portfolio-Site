@@ -15,12 +15,12 @@ test("mobile canvas limits device pixel ratio", () => {
   assert.match(source, /mobileDpr=window\.innerWidth<768\?1\.35:2/);
 });
 
-test("main sphere drag and inertia use inverted direction on both axes", () => {
-  assert.match(source, /const sphereDragDirection=-1/);
-  assert.match(source, /rotation\.y\+=dx\*0\.005\*sphereDragDirection/);
-  assert.match(source, /rotation\.x\+=dy\*0\.005\*sphereDragDirection/);
-  assert.match(source, /targetVelocity\.y\+=dx\*0\.000022\*sphereDragDirection/);
-  assert.match(source, /targetVelocity\.x\+=dy\*0\.000022\*sphereDragDirection/);
+test("main sphere follows horizontal drag and inverts vertical drag", () => {
+  assert.match(source, /const sphereVerticalDragDirection=-1/);
+  assert.match(source, /rotation\.y\+=dx\*0\.005;/);
+  assert.match(source, /rotation\.x\+=dy\*0\.005\*sphereVerticalDragDirection/);
+  assert.match(source, /targetVelocity\.y\+=dx\*0\.000022;/);
+  assert.match(source, /targetVelocity\.x\+=dy\*0\.000022\*sphereVerticalDragDirection/);
 });
 
 test("sphere click centers an image before opening its project", () => {
