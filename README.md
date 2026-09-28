@@ -1,26 +1,128 @@
-# Portfolio Site
+# Сфера — интерактивное портфолио
 
-Static portfolio deployed through GitHub Pages with Supabase as the content database and file storage.
+«Сфера» — адаптивный сайт-портфолио с интерактивной сферой, просмотром проектов, резюме и отдельной панелью управления контентом.
 
-## Active entry points
+- Сайт: https://m1wkv.github.io/Portfolio-Site/
+- Панель управления: https://m1wkv.github.io/Portfolio-Site/admin.html
 
-- `index.html` - public portfolio.
-- `admin.html` - authenticated content editor.
-- `sphere-embed.html` - compatibility entry that mirrors the public page.
+## Возможности
 
-## Runtime structure
+- интерактивная сфера с проектами и управлением мышью или касанием;
+- отдельный просмотр проекта с описанием, ролью и медиаматериалами;
+- разделы резюме и контактов;
+- адаптивная верстка для компьютеров, планшетов и телефонов;
+- локализация пользовательской и административной частей;
+- редактирование контента через защищенную панель управления;
+- хранение данных и файлов в Supabase;
+- локальные резервные данные на случай недоступности базы.
 
-- `sphere.js` / `sphere.css` - sphere, project carousel and CV cylinder.
-- `supabase-loader.js` - public data loading and balanced asset selection.
-- `admin.js` / `admin.css` - authenticated editor and uploads.
-- `supabase-config.js` - public Supabase connection settings.
-- `site-localization.js` / `admin-localization.js` - interface localization.
-- `admin-storage.js` - local fallback storage.
+## Технологии
 
-## Security
+- HTML5;
+- CSS3;
+- JavaScript без фреймворков;
+- Canvas 2D;
+- Supabase Database, Auth и Storage;
+- GitHub Pages;
+- встроенный тестовый раннер Node.js.
 
-Run `supabase-security.sql` in Supabase SQL Editor before treating the admin and storage policies as protected. See `SECURITY.md`.
+## Основные файлы
 
-## Deployment
+| Файл | Назначение |
+| --- | --- |
+| `index.html` | Главная публичная страница портфолио |
+| `sphere.js` | Сфера, навигация по проектам и интерактивные элементы |
+| `sphere.css` | Стили сферы, проектов и разделов портфолио |
+| `styles.css` | Общие стили интерфейса |
+| `sphere-assets.js` | Локальные резервные данные и медиаресурсы |
+| `supabase-loader.js` | Загрузка публичного контента из Supabase |
+| `supabase-config.js` | Публичные настройки подключения к Supabase |
+| `admin.html` | Точка входа в панель управления |
+| `admin.js` | Авторизация, редактирование контента и загрузка файлов |
+| `admin.css` | Стили панели управления |
+| `admin-storage.js` | Локальное резервное хранилище панели |
+| `site-localization.js` | Локализация публичного сайта |
+| `admin-localization.js` | Локализация панели управления |
+| `analytics.js` | Клиентская аналитика |
+| `supabase-security.sql` | Таблицы, RLS-политики и настройки Storage |
+| `supabase-analytics.sql` | SQL-настройки аналитики |
+| `SECURITY.md` | Инструкции по безопасности |
+| `qa/unit/` | Модульные тесты |
 
-The root files are the GitHub Pages source. The `deploy` directory mirrors deployable files for compatibility with the existing workflow.
+## Локальный запуск
+
+Для просмотра проекта достаточно любого локального статического сервера.
+
+```bash
+git clone https://github.com/M1wkv/Portfolio-Site.git
+cd Portfolio-Site
+python3 -m http.server 8080
+```
+
+После запуска откройте:
+
+- публичный сайт: http://localhost:8080/
+- панель управления: http://localhost:8080/admin.html
+
+Открывать `index.html` напрямую через `file://` не рекомендуется: браузер может ограничить загрузку модулей, данных и внешних ресурсов.
+
+## Настройка Supabase
+
+1. Создайте проект Supabase.
+2. Укажите URL проекта, публичный publishable key, UID администратора и имя Storage-бакета в `supabase-config.js`.
+3. Проверьте `supabase-security.sql`, укажите тот же UID администратора и выполните скрипт в Supabase SQL Editor.
+4. При необходимости выполните `supabase-analytics.sql`.
+5. Если панель предназначена для одного администратора, отключите публичную регистрацию пользователей.
+
+В браузерном коде допустим только публичный publishable key. Никогда не добавляйте в репозиторий `service_role` или другой секретный ключ.
+
+Основные таблицы проекта:
+
+- `profile`;
+- `cv_sections`;
+- `projects`;
+- `project_images`;
+- `services`;
+- `contacts`;
+- `site_settings`.
+
+Файлы проектов хранятся в Storage-бакете `portfolio`, если другое имя не задано в конфигурации.
+
+## Работа с панелью управления
+
+1. Откройте `admin.html`.
+2. Войдите под пользователем, UID которого указан в конфигурации и RLS-политиках.
+3. Измените профиль, проекты, резюме, услуги или контакты.
+4. Сохраните изменения и проверьте результат на публичной странице.
+
+Подробнее о настройке доступа и политик: [SECURITY.md](SECURITY.md).
+
+## Проверка кода
+
+Требуется Node.js с поддержкой встроенного тестового раннера.
+
+```bash
+npm run check
+npm test
+```
+
+- `npm run check` проверяет синтаксис основных JavaScript-файлов;
+- `npm test` запускает тесты из `qa/unit/`.
+
+Установка зависимостей не требуется: проект не использует сторонние npm-пакеты во время выполнения.
+
+## Публикация
+
+Сайт публикуется через GitHub Pages из корня репозитория. После изменения файлов в ветке `main` дождитесь обновления Pages и выполните жесткую перезагрузку страницы, если браузер показывает закэшированную версию.
+
+## Безопасность
+
+Перед использованием панели в рабочем окружении обязательно:
+
+- примените актуальные RLS-политики из `supabase-security.sql`;
+- проверьте UID администратора в конфигурации и SQL;
+- отключите ненужную публичную регистрацию;
+- не храните секретные ключи в клиентском JavaScript;
+- ограничивайте типы и размер загружаемых файлов.
+
+Дополнительные рекомендации находятся в [SECURITY.md](SECURITY.md).
