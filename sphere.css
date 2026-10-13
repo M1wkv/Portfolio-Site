@@ -3171,3 +3171,34 @@ input {
     user-select: none;
   }
 }
+
+/* Fade only the scrolling CV content; keep the glass panel intact. */
+@media (min-width: 1024px) {
+  .sphere-page.is-cv .cv-experience-window {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 44px;
+    background: var(--black-panel-surface);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .sphere-page.is-cv .cv-experience-track {
+    --cv-fade-left: #000;
+    --cv-fade-right: #000;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    mask-image: linear-gradient(to right, var(--cv-fade-left) 0, #000 42px, #000 calc(100% - 42px), var(--cv-fade-right) 100%);
+    -webkit-mask-image: linear-gradient(to right, var(--cv-fade-left) 0, #000 42px, #000 calc(100% - 42px), var(--cv-fade-right) 100%);
+  }
+
+  .sphere-page.is-cv .cv-experience-track.can-scroll-left {
+    --cv-fade-left: transparent;
+  }
+
+  .sphere-page.is-cv .cv-experience-track.can-scroll-right {
+    --cv-fade-right: transparent;
+  }
+}
