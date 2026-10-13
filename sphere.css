@@ -3093,3 +3093,49 @@ input {
     justify-content: center;
   }
 }
+
+
+/* Desktop CV contact alignment and horizontal experience rail. */
+@media (min-width: 1024px) {
+  .sphere-page.is-cv #cvContactLinks a {
+    height: 28px;
+    min-height: 28px;
+    box-sizing: border-box;
+    justify-content: center;
+    padding: 1px 14px 0;
+    text-align: center;
+  }
+
+  .sphere-page.is-cv .cv-experience {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  }
+
+  .sphere-page.is-cv .cv-experience::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .sphere-page.is-cv .cv-experience::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sphere-page.is-cv .cv-experience::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+  }
+
+  .sphere-page.is-cv .cv-experience-track {
+    width: max-content;
+    min-width: 100%;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(210px, 1fr);
+  }
+
+  .sphere-page.is-cv .cv-experience-track article {
+    scroll-snap-align: start;
+  }
+}
