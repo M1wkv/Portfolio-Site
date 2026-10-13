@@ -574,7 +574,7 @@ window.addEventListener("resize",resize);document.addEventListener("visibilitych
     frame=requestAnimationFrame(ease);
   },{passive:false});
   track.addEventListener("pointerdown",(event)=>{
-    if(!isDesktop()||event.button!==0||limit()<=0)return;
+    if(!isDesktop()||event.pointerType!=="mouse"||event.button!==0||limit()<=0)return;
     stop();
     dragging=true;
     pointerId=event.pointerId;
