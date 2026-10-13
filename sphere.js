@@ -281,10 +281,10 @@ const edgeX=Math.sin(maxAngle)*ribbonRadius+outside*offscreenStep;
 const edgePresence=smoothstep(1-outside*0.34);
 const innerX=outside>0?width/2+Math.sign(rawAngle)*edgeX:width/2+sidePush*ribbonRadius;
 const innerDepth=Math.min(1,0.28+Math.pow(side,0.92)*0.72*projectState.cylinderLength);
-const edgeFade=Math.max(0,1-outside*0.72);
+const edgeFade=smoothstep(1-outside*8);
 const innerScale=(1+side*2*projectState.cylinderLength)*(0.34+edgePresence*0.66);
 const zoom=projectZoomProgress;
-const outerRadius=Math.min(width*0.62,1040)*(1-zoom*0.14)*projectState.cylinderWidth;
+const outerRadius=Math.min(width*0.78,1480)*(1-zoom*0.14)*projectState.cylinderWidth;
 const outerEdgeX=Math.sin(maxAngle)*outerRadius+outside*offscreenStep;
 const outerX=outside>0?width/2+Math.sign(rawAngle)*outerEdgeX:width/2+sidePush*outerRadius;
 const outerCurve=Math.max(0,Math.cos(angle));
@@ -293,7 +293,7 @@ const outerDepth=0.38+outerCurve*0.62;
 const centerFocus=Math.max(0,1-Math.abs(rel)*2);
 const expandedOuterScale=(0.68+outerCurve*1.05)*(0.4+edgePresence*0.6);
 const outerScale=centerFocus>0.5?innerScale:expandedOuterScale;
-const focus=projectFocusProgress;return{item,index,x:innerX+(outerX-innerX)*focus,y:centerY+(height*0.5-centerY)*focus,z:innerZ+(outerZ-innerZ)*focus,depth:innerDepth+(outerDepth-innerDepth)*focus,mode:"ribbon",faceTurn:sidePush*(1-focus*0.42),visualScale:innerScale+(outerScale-innerScale)*focus,alphaBoost:visibleByCount?1:0,centerFocus};});}
+const focus=projectFocusProgress;return{item,index,x:innerX+(outerX-innerX)*focus,y:centerY+(height*0.5-centerY)*focus,z:innerZ+(outerZ-innerZ)*focus,depth:innerDepth+(outerDepth-innerDepth)*focus,mode:"ribbon",faceTurn:sidePush*(1-focus*0.42),visualScale:innerScale+(outerScale-innerScale)*focus,alphaBoost:visibleByCount?edgeFade:0,centerFocus};});}
 function updateRibbonAutoscroll(now){if(viewMode!=="project"||dragging||now<ribbonAutoPausedUntil||projectFocusTarget>0||projectFocusProgress>0.05){ribbonAutoSpeed+=(0-ribbonAutoSpeed)*0.08;return false;}if(!ribbonAutoPhaseStartedAt){ribbonAutoPhaseStartedAt=now;}let elapsed=now-ribbonAutoPhaseStartedAt;
 const cycle=24000;if(elapsed>=cycle){const cycles=Math.floor(elapsed/cycle);ribbonAutoPhaseStartedAt+=cycles*cycle;elapsed=now-ribbonAutoPhaseStartedAt;if(cycles%2===1){ribbonAutoDirection*=-1;}}const cycleTime=elapsed;
 let targetSpeed;if(cycleTime<20000){const startEase=smoothstep(Math.min(1,cycleTime/1800));targetSpeed=ribbonAutoDirection*0.0022*startEase;}else if(cycleTime<21000){const kick=smoothstep((cycleTime-20000)/1000);targetSpeed=-ribbonAutoDirection*(0.024+kick*0.068);}else{const stop=1-smoothstep((cycleTime-21000)/3000);targetSpeed=-ribbonAutoDirection*0.024*stop;}const response=Math.abs(targetSpeed)>Math.abs(ribbonAutoSpeed)?0.34:0.075;ribbonAutoSpeed+=(targetSpeed-ribbonAutoSpeed)*response;ribbonTargetOffset+=ribbonAutoSpeed;return true;}
