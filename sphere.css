@@ -3139,3 +3139,35 @@ input {
     scroll-snap-align: start;
   }
 }
+
+/* Desktop CV: keep the heading anchored and scroll only the card rail. */
+@media (min-width: 1024px) {
+  .sphere-page.is-cv .cv-experience {
+    overflow: visible;
+  }
+
+  .sphere-page.is-cv .cv-experience-track {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(210px, 1fr);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    cursor: grab;
+    touch-action: pan-y;
+  }
+
+  .sphere-page.is-cv .cv-experience-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sphere-page.is-cv .cv-experience-track.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+}
