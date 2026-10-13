@@ -3196,8 +3196,8 @@ input {
     background: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    mask-image: linear-gradient(to right, var(--cv-fade-left) 0, #000 42px, #000 calc(100% - 42px), var(--cv-fade-right) 100%);
-    -webkit-mask-image: linear-gradient(to right, var(--cv-fade-left) 0, #000 42px, #000 calc(100% - 42px), var(--cv-fade-right) 100%);
+    mask-image: linear-gradient(to right, var(--cv-fade-left) 0, #000 84px, #000 calc(100% - 84px), var(--cv-fade-right) 100%);
+    -webkit-mask-image: linear-gradient(to right, var(--cv-fade-left) 0, #000 84px, #000 calc(100% - 84px), var(--cv-fade-right) 100%);
   }
 
   .sphere-page.is-cv .cv-experience-track.can-scroll-left {
