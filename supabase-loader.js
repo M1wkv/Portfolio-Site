@@ -188,7 +188,7 @@
   function loadSphereScript() {
     const script = document.createElement("script");
     script.async = false;
-    script.src = "sphere.js?v=20260829-video-media-1";
+    script.src = "sphere.js?v=20261013-project-wheel-1";
     script.onload = () => {
       document.documentElement.dataset.sphereScriptLoaded = "true";
     };
