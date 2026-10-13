@@ -3079,3 +3079,17 @@ input {
 .sphere-page.is-project #projectRoleTags span {
   padding-top: 1px;
 }
+
+
+/* Keep the CV contact links centered relative to the desktop page. */
+@media (min-width: 1024px) {
+  .sphere-page.is-cv .cv-contacts {
+    width: 100%;
+  }
+
+  .sphere-page.is-cv #cvContactLinks {
+    width: 100%;
+    margin-inline: auto;
+    justify-content: center;
+  }
+}
