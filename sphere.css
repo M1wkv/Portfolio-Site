@@ -3173,6 +3173,12 @@ input {
 }
 
 /* Fade only the scrolling CV content; keep the glass panel intact. */
+@media (max-width: 1023px) {
+  .sphere-page.is-cv .cv-experience-window {
+    display: contents;
+  }
+}
+
 @media (min-width: 1024px) {
   .sphere-page.is-cv .cv-experience-window {
     width: 100%;
