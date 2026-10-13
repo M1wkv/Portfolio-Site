@@ -3208,3 +3208,42 @@ input {
     --cv-fade-right: transparent;
   }
 }
+
+/* Add a soft blur to the existing CV edge fade. */
+@media (min-width: 1024px) {
+  .sphere-page.is-cv .cv-experience-window {
+    position: relative;
+  }
+
+  .sphere-page.is-cv .cv-experience-window::before,
+  .sphere-page.is-cv .cv-experience-window::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    width: 84px;
+    pointer-events: none;
+    opacity: 0;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: opacity 180ms ease;
+  }
+
+  .sphere-page.is-cv .cv-experience-window::before {
+    left: 0;
+    mask-image: linear-gradient(to right, #000, transparent);
+    -webkit-mask-image: linear-gradient(to right, #000, transparent);
+  }
+
+  .sphere-page.is-cv .cv-experience-window::after {
+    right: 0;
+    mask-image: linear-gradient(to left, #000, transparent);
+    -webkit-mask-image: linear-gradient(to left, #000, transparent);
+  }
+
+  .sphere-page.is-cv .cv-experience-window:has(.can-scroll-left)::before,
+  .sphere-page.is-cv .cv-experience-window:has(.can-scroll-right)::after {
+    opacity: 1;
+  }
+}
