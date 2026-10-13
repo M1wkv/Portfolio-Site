@@ -532,3 +532,80 @@ window.addEventListener("resize",resize);document.addEventListener("visibilitych
 
 
 
+
+/* Smooth desktop-only horizontal scrolling for the CV experience cards. */
+(()=>{
+  const track=document.getElementById("cvExperienceList");
+  if(!track)return;
+  const isDesktop=()=>window.matchMedia("(min-width: 1024px)").matches;
+  const limit=()=>Math.max(0,track.scrollWidth-track.clientWidth);
+  const clamp=(value)=>Math.max(0,Math.min(limit(),value));
+  let frame=0,target=0,velocity=0,dragging=false,pointerId=null,startX=0,startScroll=0,lastX=0,lastTime=0;
+  const stop=()=>{if(frame){cancelAnimationFrame(frame);frame=0;}};
+  const ease=()=>{
+    const remaining=target-track.scrollLeft;
+    if(Math.abs(remaining)<0.5){track.scrollLeft=target;frame=0;return;}
+    track.scrollLeft+=remaining*0.16;
+    frame=requestAnimationFrame(ease);
+  };
+  const inertia=()=>{
+    stop();
+    const step=()=>{
+      velocity*=0.92;
+      if(Math.abs(velocity)<0.02){frame=0;target=track.scrollLeft;return;}
+      const next=clamp(track.scrollLeft+velocity*16);
+      if(next===track.scrollLeft){frame=0;velocity=0;target=next;return;}
+      track.scrollLeft=next;
+      target=next;
+      frame=requestAnimationFrame(step);
+    };
+    frame=requestAnimationFrame(step);
+  };
+  track.addEventListener("wheel",(event)=>{
+    if(!isDesktop()||limit()<=0)return;
+    const delta=Math.abs(event.deltaX)>Math.abs(event.deltaY)?event.deltaX:event.deltaY;
+    if(!delta)return;
+    const next=clamp((frame?target:track.scrollLeft)+delta);
+    event.preventDefault();
+    event.stopPropagation();
+    if(next===track.scrollLeft&&next===target)return;
+    stop();
+    target=next;
+    frame=requestAnimationFrame(ease);
+  },{passive:false});
+  track.addEventListener("pointerdown",(event)=>{
+    if(!isDesktop()||event.button!==0||limit()<=0)return;
+    stop();
+    dragging=true;
+    pointerId=event.pointerId;
+    startX=lastX=event.clientX;
+    startScroll=track.scrollLeft;
+    lastTime=performance.now();
+    velocity=0;
+    track.classList.add("is-dragging");
+    track.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  });
+  track.addEventListener("pointermove",(event)=>{
+    if(!dragging||event.pointerId!==pointerId)return;
+    const now=performance.now();
+    const next=clamp(startScroll-(event.clientX-startX));
+    velocity=(lastX-event.clientX)/Math.max(1,now-lastTime);
+    track.scrollLeft=target=next;
+    lastX=event.clientX;
+    lastTime=now;
+    event.preventDefault();
+  });
+  const finish=(event)=>{
+    if(!dragging||event.pointerId!==pointerId)return;
+    dragging=false;
+    track.classList.remove("is-dragging");
+    if(track.hasPointerCapture(event.pointerId))track.releasePointerCapture(event.pointerId);
+    pointerId=null;
+    inertia();
+  };
+  track.addEventListener("pointerup",finish);
+  track.addEventListener("pointercancel",finish);
+  track.addEventListener("dragstart",(event)=>event.preventDefault());
+  window.addEventListener("resize",()=>{target=clamp(track.scrollLeft);});
+})();
