@@ -1,1 +1,0 @@
-window.SPHERE_ASSETS = [];
