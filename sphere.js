@@ -59,7 +59,8 @@ const defaultAssets=(window.SPHERE_ASSETS||[]).slice(0,100);
 const bootstrapAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);
 const bootstrapProjectAssets=normalizeAssets(bootstrapData.projectAssets||window.PORTFOLIO_BOOTSTRAP?.projectAssets||[]);
 const bootstrapProjects=(Array.isArray(bootstrapData.projects)?bootstrapData.projects:window.PORTFOLIO_BOOTSTRAP?.projects||[]).filter((project)=>project&&project.projectId).map((project)=>({projectId:String(project.projectId),title:String(project.title||"Проект"),description:String(project.description||""),tools:String(project.tools||""),timeline:String(project.timeline||""),task:String(project.task||""),idea:String(project.idea||""),role:String(project.role||"")}));
-let assets=bootstrapAssets.length?bootstrapAssets:loadStoredAssets();
+const hasBootstrapAssets=Array.isArray(bootstrapData.assets)||Array.isArray(window.PORTFOLIO_BOOTSTRAP?.assets);
+let assets=hasBootstrapAssets?bootstrapAssets:loadStoredAssets();
 let projectMediaAssets=bootstrapProjectAssets.length?bootstrapProjectAssets:assets;
 let items=[];
 let projectMediaItems=[];
@@ -312,8 +313,8 @@ let cvNodes=bootstrapCvNodes.length?normalizeCvNodes(bootstrapCvNodes):loadStore
 const parsed=JSON.parse(value);return parsed||fallback;}catch(error){return fallback;}}
 function readBootstrapData(){try{return JSON.parse(document.getElementById("sphereBootstrapData")?.textContent||"{}")||{};}catch(error){return{};}}
 function normalizeAssets(nextAssets){if(!Array.isArray(nextAssets))return defaultAssets.slice();return nextAssets.filter((asset)=>asset&&typeof asset.src==="string"&&asset.src.trim()).map((asset)=>({src:asset.src.trim(),title:typeof asset.title==="string"?asset.title.trim():"",projectId:typeof asset.projectId==="string"?asset.projectId:(typeof asset.project_id==="string"?asset.project_id:"")}));}
-function loadStoredAssets(){return normalizeAssets(readJsonStorage(STORAGE_ASSETS,defaultAssets));}async function loadStoredAssetsAsync(){try{const directAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);if(directAssets.length)return directAssets;
-const storedAssets=loadStoredAssets();if(storedAssets.length)return storedAssets;if(!window.PortfolioStorage)return storedAssets;return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS)||storedAssets);}catch(error){return loadStoredAssets();}}async function loadSupabaseAssets(){const client=window.createPortfolioSupabase?window.createPortfolioSupabase():null;if(!client)return[];
+function loadStoredAssets(){return normalizeAssets(readJsonStorage(STORAGE_ASSETS,defaultAssets));}async function loadStoredAssetsAsync(){try{const directAssets=normalizeAssets(bootstrapData.assets||window.PORTFOLIO_BOOTSTRAP?.assets||[]);if(hasBootstrapAssets)return directAssets;
+const storedAssets=loadStoredAssets();if(storedAssets.length)return storedAssets;if(!window.PortfolioStorage)return storedAssets;return normalizeAssets(await window.PortfolioStorage.get(STORAGE_ASSETS)||storedAssets);}catch(error){return hasBootstrapAssets?bootstrapAssets:loadStoredAssets();}}async function loadSupabaseAssets(){const client=window.createPortfolioSupabase?window.createPortfolioSupabase():null;if(!client)return[];
 const{data:projects,error:projectError}=await client.from("projects").select("id,title,cover_url,sort_order,status").eq("status","published").order("sort_order",{ascending:true}).order("created_at",{ascending:false});if(projectError||!Array.isArray(projects)||!projects.length)return[];
 const ids=projects.map((project)=>project.id);
 const{data:images}=await client.from("project_images").select("project_id,image_url,title,sort_order").in("project_id",ids).order("sort_order",{ascending:true}).order("created_at",{ascending:true});
